@@ -29,7 +29,7 @@ public class UserIdAppIdMapping {
                 if (appId.contains("hipu")) {
                     appId = "yidian";
                 }
-                map.put(userId, appId);
+                map.put(userId, appId.intern());
                 validRecordCount ++;
             }
         } catch (FileNotFoundException e) {
