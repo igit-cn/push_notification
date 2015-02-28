@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.yidian</groupId>
+    <groupId>com.yidian.push</groupId>
     <artifactId>com.yidian.push</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
@@ -14,9 +14,20 @@
         <module>core</module>
         <module>generator</module>
         <module>processor</module>
+        <module>statistics</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.14.8</lombok.version>
+        <testng.version>6.1.1</testng.version>
+        <commons-io.version>2.4</commons-io.version>
+        <gson.version>1.7.1</gson.version>
+        <org.slf4j.version>1.7.5</org.slf4j.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <testng.version>6.1.1</testng.version>
+        <jackson.version>1.9.4</jackson.version>
+        <mongo-java-driver.version>2.12.3</mongo-java-driver.version>
+        <javax.mail.version>1.4.5</javax.mail.version>
     </properties>
 
     <build>
