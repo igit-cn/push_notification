@@ -1,0 +1,18 @@
+{
+    "dailyStatMongoHost": "10.111.0.42",
+    "dailyStatMongoPort": 27017,
+    "dailyStatMongoDB": "push_daily_stat",
+    "dailyStatCollection": "daily_stat",
+    "newsStatMongoHost": "10.111.0.42",
+    "newsStatMongoPort": 27017,
+    "newsStatMongoDB": "push_news_stat",
+    "newsStatCollection": "news_stat",
+    "userStatMongoHost": "10.111.0.42",
+    "userStatMongoPort": 27017,
+    "userStatMongoDB": "push_user_stat",
+    "userStatCollection": "user_stat",
+    "logBase": "/home/services/push_notification/log",
+    "mappingBase": "/home/services/push_notification/cache/userid_appid_mapping",
+    "mappingLookBackDays": 7,
+    "countLookBackDays": 2
+}

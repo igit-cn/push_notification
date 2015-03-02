@@ -94,6 +94,11 @@ public class DateUtil {
         }
     }
 
+    public static String dateToYYYYMMDDHHMMSS(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return dateFormat.format(date);
+    }
+
     public static long dateDiffInDays(Date startDate, Date endDate) {
         Calendar sCal = new GregorianCalendar();
         sCal.setTime(startDate);

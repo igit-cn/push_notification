@@ -28,6 +28,7 @@
         <jackson.version>1.9.4</jackson.version>
         <mongo-java-driver.version>2.12.3</mongo-java-driver.version>
         <javax.mail.version>1.4.5</javax.mail.version>
+        <alibaba.fastjson.version>1.1.24</alibaba.fastjson.version>
     </properties>
 
     <build>

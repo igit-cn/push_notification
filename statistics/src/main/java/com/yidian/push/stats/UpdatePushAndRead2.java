@@ -17,8 +17,6 @@ import java.util.*;
 
 @Log4j
 public class UpdatePushAndRead2 {
-    private static final String MONGO_HOST = "10.111.0.42";
-    private static final int MONGO_PORT = 27017;
     private Map<String, List<Integer>> bucketPlatAppEventKeys;
     private Map<String, Integer> strToInt;
     private Map<Integer, String> intToStr;
@@ -103,7 +101,8 @@ public class UpdatePushAndRead2 {
     }
 
     public void updateCounters(String logBase, List<String> days, Map<Integer, String> userId2AppIdMapping) throws IOException {
-        Mongo mongo = null;
+        Mongo userMongo = null;
+        Mongo dailyMongo = null;
         Platform[] platforms = {Platform.ANDROID, Platform.IPHONE};
         try {
             //0. get day_plat => push users & update push stat
@@ -129,10 +128,11 @@ public class UpdatePushAndRead2 {
             }
 
             // update push & open, push & read
-            mongo = new Mongo(MONGO_HOST, MONGO_PORT);
-            DB db = mongo.getDB("push_user_stat");
+            userMongo = new Mongo(Config.getInstance().getUserStatMongoHost(), Config.getInstance().getUserStatMongoPort());
+            DB db = userMongo.getDB("push_user_stat");
             DBCollection dbCollection = db.getCollection("user_stat");
-            DB dailyDB = mongo.getDB("push_daily_stat");
+            dailyMongo = new Mongo(Config.getInstance().getDailyStatMongoHost(), Config.getInstance().getDailyStatMongoPort());
+            DB dailyDB = dailyMongo.getDB("push_daily_stat");
             DBCollection dailyStatColl = dailyDB.getCollection("daily_stat");
             DBCursor cursor = dbCollection.find();
             log.info("user_stat size is : " + cursor.size());
@@ -176,21 +176,38 @@ public class UpdatePushAndRead2 {
             //System.out.println(GsonFactory.getPrettyGson().toJson(realDailyStat));
         } finally {
             log.info("done");
-            if (mongo!=null) {
-                mongo.close();
+            if (userMongo!=null) {
+                userMongo.close();
+            }
+            if (dailyMongo!= null) {
+                dailyMongo.close();
             }
         }
     }
 
     public static void main(String[] args) throws IOException {
-        String logBase = "/home/services/push_notification/log";
-        String mappingBase = "/home/services/push_notification/cache/userid_appid_mapping";
-        int lookBackDays = 7;
-        if (args.length >= 2) {
-            logBase = args[0];
-            mappingBase = args[1];
+        if (args.length < 1) {
+            System.out.println("Usage: UpdatePushAndRead2 <config_file>");
+            System.exit(-1);
         }
-        String mappingFile = DailyStatUtils.getLatestAvailableMappingFile(mappingBase, lookBackDays);
+        String configFile = args[0];
+        Config.setCONFIG_FILE(configFile);
+
+        String logBase = Config.getInstance().getLogBase();
+        String mappingBase = Config.getInstance().getMappingBase();
+        int mappingLookBackDays = Config.getInstance().getMappingLookBackDays();
+        int countLookBackDays = Config.getInstance().getCountLookBackDays();
+
+        Date today = new Date();
+       // String[] days = {DateUtil.dateToYYYY_MM_DD(new Date()), DateUtil.dateToYYYY_MM_DD(DateUtil.incrDate(new Date(), -1))};
+        List<String> days = new ArrayList<>();
+        for (int i = 0; i < countLookBackDays; i ++) {
+            Date date = DateUtil.incrDate(new Date(), -1 * i);
+            days.add(DateUtil.dateToYYYY_MM_DD(date));
+        }
+        log.info("days to count: " + GsonFactory.getNonPrettyGson().toJson(days));
+
+        String mappingFile = DailyStatUtils.getLatestAvailableMappingFile(mappingBase, mappingLookBackDays);
         if (StringUtils.isEmpty(mappingFile)) {
             System.out.println("UserId 2 AppId Mapping file doesn't exist...");
             System.exit(-1);
@@ -198,9 +215,8 @@ public class UpdatePushAndRead2 {
         log.info("mapping file is :" + mappingFile);
         Map<Integer, String> userId2AppIdMapping = UserIdAppIdMapping.loadMapping(mappingFile);
         log.info("mapping size is :" + userId2AppIdMapping.size());
-        String[] days = {DateUtil.dateToYYYY_MM_DD(new Date()), DateUtil.dateToYYYY_MM_DD(DateUtil.incrDate(new Date(), -1))};
 
         UpdatePushAndRead2 updatePushAndRead = new UpdatePushAndRead2();
-        updatePushAndRead.updateCounters(logBase, Arrays.asList(days), userId2AppIdMapping);
+        updatePushAndRead.updateCounters(logBase, days, userId2AppIdMapping);
     }
 }
