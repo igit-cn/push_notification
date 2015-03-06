@@ -1,5 +1,7 @@
 package com.yidian.push.data;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,8 +9,11 @@ import java.util.List;
  * Created by yidianadmin on 15-1-14.
  */
 public enum Platform {
+    @SerializedName("all")
     ALL("all"),
+    @SerializedName("android")
     ANDROID("android"),
+    @SerializedName("iPhone")
     IPHONE("iPhone");
     private String name;
     private Platform(String name) {

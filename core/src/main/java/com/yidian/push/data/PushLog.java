@@ -30,8 +30,8 @@ public class PushLog {
 
     private static Logger logger = Logger.getLogger(PushLog.class);
 
-    // format_1: [data_len:0][push_type:1][push_date:2..6][userid:6..10][docid:10..26][pushChannel:26:42] = 42 bytes
-    // format_2: [data_len0][push_type:1][push_date:2..6][userid:6..10][docid:10..26][pushChannel:26:30] = 30 bytes
+    // format_1: [data_len:0][push_type:1][push_date:2..6][userid:6..10][docid:10..26][newsChannel:26:42] = 42 bytes
+    // format_2: [data_len0][push_type:1][push_date:2..6][userid:6..10][docid:10..26][newsChannel:26:30] = 30 bytes
     // format_3: [data_len:0][push_type:1][push_date:2..6][userid:6..10][docid:10..26] = 26 bytes
 
     private int len;

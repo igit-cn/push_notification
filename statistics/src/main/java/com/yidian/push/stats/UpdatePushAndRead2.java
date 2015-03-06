@@ -129,11 +129,11 @@ public class UpdatePushAndRead2 {
 
             // update push & open, push & read
             userMongo = new Mongo(Config.getInstance().getUserStatMongoHost(), Config.getInstance().getUserStatMongoPort());
-            DB db = userMongo.getDB("push_user_stat");
-            DBCollection dbCollection = db.getCollection("user_stat");
+            DB db = userMongo.getDB(Config.getInstance().getUserStatMongoDB());
+            DBCollection dbCollection = db.getCollection(Config.getInstance().getUserStatCollection());
             dailyMongo = new Mongo(Config.getInstance().getDailyStatMongoHost(), Config.getInstance().getDailyStatMongoPort());
-            DB dailyDB = dailyMongo.getDB("push_daily_stat");
-            DBCollection dailyStatColl = dailyDB.getCollection("daily_stat");
+            DB dailyDB = dailyMongo.getDB(Config.getInstance().getDailyStatMongoDB());
+            DBCollection dailyStatColl = dailyDB.getCollection(Config.getInstance().getDailyStatCollection());
             DBCursor cursor = dbCollection.find();
             log.info("user_stat size is : " + cursor.size());
             while (cursor.hasNext()) {

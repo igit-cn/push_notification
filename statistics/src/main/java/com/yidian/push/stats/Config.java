@@ -43,8 +43,12 @@ public class Config {
         if (null != config) {
             return config;
         }
-        String str = FileUtils.readFileToString(new File(CONFIG_FILE));
-        config = GsonFactory.getDefaultGson().fromJson(str, Config.class);
+        synchronized (Config.class) {
+            if (config == null) {
+                String str = FileUtils.readFileToString(new File(CONFIG_FILE));
+                config = GsonFactory.getDefaultGson().fromJson(str, Config.class);
+            }
+        }
         return config;
     }
 

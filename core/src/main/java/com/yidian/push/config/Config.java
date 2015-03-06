@@ -16,7 +16,8 @@ import java.io.IOException;
 public class Config {
     // fields
     private String lockFile = null ;
-    private String baseDir = "";
+    private String pushRequestBaseDir = "";
+    private String requestBaseDir = "";
     private GeneratorConfig generatorConfig = null;
     private ProcessorConfig processorConfig = null;
     //
@@ -32,8 +33,12 @@ public class Config {
         if (null != config) {
             return config;
         }
-        String str = FileUtils.readFileToString(new File(CONFIG_FILE));
-        config = GsonFactory.getDefaultGson().fromJson(str, Config.class);
+        synchronized (Config.class) {
+            if (config == null) {
+                String str = FileUtils.readFileToString(new File(CONFIG_FILE));
+                config = GsonFactory.getDefaultGson().fromJson(str, Config.class);
+            }
+        }
         return config;
     }
 }

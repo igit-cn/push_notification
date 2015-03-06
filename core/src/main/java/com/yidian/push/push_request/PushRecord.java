@@ -1,5 +1,6 @@
 package com.yidian.push.push_request;
 
+import com.yidian.push.data.PushChannel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
@@ -20,25 +21,27 @@ public class PushRecord {
     private String appId;
     private String docId;
     private String title;
-    private String pushType;
-    private String pushChannel; //
-    private int nid;
-    private int useChannel;
+    private String head;
+    private int newsType;
+    private String newsChannel;
+    private int nid = 0; // xiaomi notify id [0,4]
+    private PushChannel pushChannel;
     private int sound;
 
 
     public PushRecord(int uid, List<String> tokens, String appId,
-                      String docId, String title, String pushType,
-                      String pushChannel, int nid, int useChannel, int sound) {
+                      String docId, String title, String head, int newsType,
+                      String newsChannel, int nid, PushChannel pushChannel, int sound) {
         this.uid = uid;
         this.tokens = tokens;
         this.appId = appId;
         this.docId = docId;
         this.title = title;
-        this.pushType = pushType;
-        this.pushChannel = pushChannel;
+        this.head = head;
+        this.newsType = newsType;
+        this.newsChannel = newsChannel;
         this.nid = nid;
-        this.useChannel = useChannel;
+        this.pushChannel = pushChannel;
         this.sound = sound;
     }
 
@@ -52,14 +55,16 @@ public class PushRecord {
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append(uid).append(FILED_SEPARATOR).append(StringUtils.join(tokens, TOKEN_SEPARATOR))
-                .append(FILED_SEPARATOR).append(appId)
-                .append(FILED_SEPARATOR).append(docId)
-                .append(FILED_SEPARATOR).append(title)
-                .append(FILED_SEPARATOR).append(pushType)
-                .append(FILED_SEPARATOR).append(pushChannel)
+        sb.append(uid).append(FILED_SEPARATOR)
+                .append(StringUtils.join(tokens, TOKEN_SEPARATOR))
+                .append(FILED_SEPARATOR).append(appId == null ? "" : appId)
+                .append(FILED_SEPARATOR).append(docId == null ? "" : docId)
+                .append(FILED_SEPARATOR).append(title == null ? "" : title)
+                .append(FILED_SEPARATOR).append(head == null ? "" : head)
+                .append(FILED_SEPARATOR).append(newsType)
+                .append(FILED_SEPARATOR).append(newsChannel == null ? "" : newsChannel)
                 .append(FILED_SEPARATOR).append(nid)
-                .append(FILED_SEPARATOR).append(useChannel)
+                .append(FILED_SEPARATOR).append(pushChannel.getId())
                 .append(FILED_SEPARATOR).append(sound);
         return sb.toString();
     }

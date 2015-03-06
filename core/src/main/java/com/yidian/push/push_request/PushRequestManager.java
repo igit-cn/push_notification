@@ -16,7 +16,11 @@ public class PushRequestManager {
 
     public static PushRequestManager getInstance() {
         if (pushRequestManager == null) {
-            pushRequestManager = new PushRequestManager();
+            synchronized (PushRequestManager.class) {
+                if (pushRequestManager == null) {
+                    pushRequestManager = new PushRequestManager();
+                }
+            }
         }
         return pushRequestManager;
     }
@@ -30,9 +34,14 @@ public class PushRequestManager {
     public List<PushRequest> getRequests(PushRequestStatus pushRequestStatus) throws IOException {
         String dir = getRequestStatusDir(pushRequestStatus);
         List<PushRequest> list = new ArrayList<>();
-        File file = new File(dir);
-        if (file.isDirectory() && file.exists()) {
-            list.add(new PushRequest(file.getAbsolutePath()));
+        File dirFile = new File(dir);
+        if (dirFile.isDirectory() && dirFile.exists()) {
+            File[] files = dirFile.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    list.add(new PushRequest(file.getAbsolutePath()));
+                }
+            }
         }
         return list;
     }
@@ -54,10 +63,10 @@ public class PushRequestManager {
     }
 
     public String getRequestStatusDir(PushRequestStatus pushRequestStatus) throws IOException {
-        return new StringBuilder(Config.getInstance().getBaseDir()).append('/').append(pushRequestStatus.toString()).toString();
+        return new StringBuilder(Config.getInstance().getPushRequestBaseDir()).append('/').append(pushRequestStatus.toString()).toString();
     }
 
-    public boolean changeRequestStatus(PushRequest pushRequest, PushRequestStatus newPushRequestStatus) throws IOException {
+    private boolean changeRequestStatus(PushRequest pushRequest, PushRequestStatus newPushRequestStatus) throws IOException {
         String[] filePath = pushRequest.getFileName().split("/");
         String file = filePath[filePath.length-1];
         String newStatusDirPath = getRequestStatusDir(newPushRequestStatus);
