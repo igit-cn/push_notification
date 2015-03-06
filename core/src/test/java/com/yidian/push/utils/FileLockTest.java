@@ -11,6 +11,7 @@ public class FileLockTest {
 
     @Test
     public void testLockInstance() throws Exception {
+        System.out.println(System.getProperty("user.dir"));
         String lockFile = SystemTmpPath + "/" + "FileLockTest.lock";
         System.out.println("1:" + FileLock.lockInstance(lockFile));
         System.out.println("2:" + FileLock.lockInstance(lockFile));
