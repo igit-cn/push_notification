@@ -1,6 +1,7 @@
 package com.yidian.push.data;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +11,17 @@ import java.util.List;
  */
 public enum Platform {
     @SerializedName("all")
-    ALL("all"),
+    ALL("all", ""),
     @SerializedName("android")
-    ANDROID("android"),
+    ANDROID("android", "PUSH_FOR_ANDROID"),
     @SerializedName("iPhone")
-    IPHONE("iPhone");
+    IPHONE("iPhone", "PUSH");
     private String name;
-    private Platform(String name) {
+    @Getter
+    private String table;
+    private Platform(String name, String table) {
         this.name = name;
+        this.table = table;
     }
 
     private static List<Platform> ALL_PLATFORMS = null;

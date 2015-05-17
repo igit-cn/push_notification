@@ -26,15 +26,15 @@ public class RequestManager {
         return requestManager;
     }
 
-    public List<PushRequest> getRequests(RequestStatus requestStatus) throws IOException {
+    public List<Request> getRequests(RequestStatus requestStatus) throws IOException {
         String dir = getRequestStatusDir(requestStatus);
-        List<PushRequest> list = new ArrayList<>();
+        List<Request> list = new ArrayList<>();
         File dirFile = new File(dir);
         if (dirFile.isDirectory() && dirFile.exists()) {
             File[] files = dirFile.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    list.add(new PushRequest(file.getAbsolutePath()));
+                    list.add(new Request(file.getAbsolutePath()));
                 }
             }
         }
