@@ -32,6 +32,7 @@ public class FileLock {
                             fileLock.release();
                             randomAccessFile.close();
                             file.delete();
+                            log.info("release the lock file");
                         } catch (Exception e) {
                             log.error("Unable to remove LOCK FILE: " + lockFile, e);
                         }

@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GeneratorConfig {
+    private String basePath = null;
 
 
 }
