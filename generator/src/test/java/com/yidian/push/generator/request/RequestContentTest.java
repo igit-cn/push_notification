@@ -17,5 +17,10 @@ public class RequestContentTest {
         Platform[] plats = {Platform.IPHONE, Platform.ANDROID};
         assert Arrays.asList(plats).equals(requestContent.getPlatform());
 
+        str = "{\"_id\":\"08OqC6h9\",\"platform\":[\"iPhone\",\"android\"],\"hash\":\"\",\"docid\":\"08OqC6h9\",\"title\":\"\\u56fd\\u5bb6\\u7edf\\u8ba1\\u5c40\\u6d88\\u606f\\uff0c2\\u6708\\u4efdcpi\\u6da8\\u5e45\\u56de\\u5347\\u81f31.4%\\uff0cppi\\u540c\\u6bd4\\u964d4.8%>>\\u8be6\\u7ec6\",\"date\":\"2015-03-10 09:43:23\",\"channel\":\"u703,sc24\",\"createTime\":\"2015-03-10 09:43:23\",\"userids\":[\"auto\"],\"type\":\"e\",\"operator\":\"xunjianguo\",\"key\":\"fe833ec4e9f216757e03af75201f2b5f\"}";
+        RequestContent requestContent1 = RequestContent.buildRequestContent(str);
+        assert "国家统计局消息，2月份cpi涨幅回升至1.4%，ppi同比降4.8%>>详细".equals(requestContent1.getTitle());
+
+
     }
 }
