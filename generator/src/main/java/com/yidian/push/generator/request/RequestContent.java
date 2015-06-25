@@ -2,6 +2,9 @@ package com.yidian.push.generator.request;
 
 import com.google.gson.annotations.SerializedName;
 import com.yidian.push.data.Platform;
+import com.yidian.push.data.PushChannel;
+import com.yidian.push.data.PushType;
+import com.yidian.push.generator.Task;
 import com.yidian.push.utils.GsonFactory;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +12,8 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,6 +22,7 @@ import java.util.List;
 @Getter
 @Setter
 public class RequestContent {
+    private static int VALID_MAX_HEAD_LENGTH = 15;
     @SerializedName("_id")
     private String id;
     private List<Platform> platform;
@@ -24,9 +30,10 @@ public class RequestContent {
     @SerializedName("docid")
     private String docId;
     private String title;
-    private String head;
+    private String head = "";
     private String date;
-    private String channel;
+    @SerializedName("channel")
+    private String newsChannel;
     private String createTime;
     @SerializedName("userids")
     private List<String> userIds;

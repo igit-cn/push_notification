@@ -26,15 +26,34 @@ public class RequestManager {
         return requestManager;
     }
 
-    public List<Request> getRequests(RequestStatus requestStatus) throws IOException {
-        String dir = getRequestStatusDir(requestStatus);
+    public List<Request> getReadyRequestsAndMarkProcessing() throws IOException {
+        String dir = getRequestStatusDir(RequestStatus.READY);
         List<Request> list = new ArrayList<>();
         File dirFile = new File(dir);
         if (dirFile.isDirectory() && dirFile.exists()) {
             File[] files = dirFile.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    list.add(new Request(file.getAbsolutePath()));
+                    Request request = new Request(file.getAbsolutePath());
+                    markAsProcessing(request);
+                    list.add(request);
+                }
+            }
+        }
+        return list;
+    }
+
+    public List<Request> getRequests(RequestStatus requestStatus) throws IOException {
+        String dir = getRequestStatusDir(requestStatus);
+        List<Request> list = new ArrayList<>(5);
+        File dirFile = new File(dir);
+        if (dirFile.isDirectory() && dirFile.exists()) {
+            File[] files = dirFile.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    Request request = new Request(file.getAbsolutePath());
+                    //markAsProcessing(request);
+                    list.add(request);
                 }
             }
         }
@@ -69,5 +88,13 @@ public class RequestManager {
         FileUtils.moveFileToDirectory(new File(request.getFileName()), new File(newFile), true);
         request.setFileName(newFile);
         return true;
+    }
+
+    public static void forceMakeDir(String dir) {
+        File newStatusDir = new File(dir);
+        File file = new File(dir);
+        if (!file.isDirectory()) {
+            file.mkdirs();
+        }
     }
 }

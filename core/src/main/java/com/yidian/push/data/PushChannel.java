@@ -20,7 +20,7 @@ public enum PushChannel {
 
     private int id;
     private String name;
-    private PushChannel(int id, String name) {
+    PushChannel(int id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -29,6 +29,9 @@ public enum PushChannel {
     }
     public int getId() {
         return id;
+    }
+    public String toString(){
+        return name;
     }
 
 }

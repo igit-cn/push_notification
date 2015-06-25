@@ -4,6 +4,8 @@ package com.yidian.push.utils;
  * Created by yidianadmin on 14-8-20.
  */
 
+import org.joda.time.DateTime;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -118,5 +120,10 @@ public class DateUtil {
         Date date = new Date(seconds * 1000);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return dateFormat.format(date);
+    }
+
+    public static int getMinOfDay(DateTime dateTime) {
+        return dateTime.getHourOfDay() * 60
+                + dateTime.getMinuteOfHour();
     }
 }

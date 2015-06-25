@@ -1,0 +1,46 @@
+{
+    "host": "10.111.0.57",
+    "port": 5266,
+    "httpsPort": 9980,
+    "jettyMinThreads": 50,
+    "jettyMaxThreads": 500,
+    "jettyMaxFormContentSize":20971520,
+    "getuiConfig" : {
+        "pemBase": "/home/services/push_notification/data/getui/",
+        "pattern": "*.getui",
+        "OSURL": "http://sdk.open.api.igexin.com/apiex.htm",
+        "MMPhost": "sdk.open.mmp.igexin.com",
+        "MMPport": 5266,
+        "expireTime": 10800
+    },
+    "apnsConfig" : {
+        "pemBase" : "/home/services/push_notification/data/apns/",
+        "pattern" : "*.p12",
+        "password" : 1,
+        "isDevEnv" : false,
+        "notificationExpireTime" : 10800,
+        "connectionPoolSize" : 5,
+        "resendCacheLength" : 1001,
+        "retries" : 3,
+        "idleIntervalTime" : 1800000,
+        "socketReadTimeout" : 10000
+    },
+    "umengConfig" : {
+        "pemBase" : "/home/services/push_notification/data/umeng/",
+        "pattern" : "*.p12",
+        "CA" : "CA.p12",
+        "keyPassword" : "123456",
+        "trustPassword" : "123456",
+        "servicePoolSize" : 3,
+        "poolMaxTotal" : 4,
+        "poolMaxIdle" : 3,
+        "poolMinIdle" : 1,
+        "poolTestOnBorrow" : true,
+        "poolTestOnReturn" : true,
+        "retries" : 3,
+        "notificationExpireTime" : 10800,
+        "readTimeout" : 10000,
+        "host" : "msg3.umeng.com",
+        "port" : 8080
+    }
+}
