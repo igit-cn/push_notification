@@ -1,6 +1,7 @@
 package com.yidian.push.generator.gen.config;
 
 import com.yidian.push.data.HostPortDB;
+import com.yidian.push.generator.Table;
 import com.yidian.push.generator.Task;
 import com.yidian.push.generator.gen.SqlUtil;
 import lombok.Getter;
@@ -42,7 +43,7 @@ public class PushAllConfig {
         if (todayFirstUserId > 0) {
             priority.append(" and userid < ").append(todayFirstUserId);
         }
-        if ("PUSH".equals(table)) {
+        if (Table.isIPhone(table)) {
             //select userid, token, push_level, appid, enable, time_zone, version from %s where (enable = 1 or enable & %d) %s order by userid desc, version desc
 
             sql.append("select userid, token, push_level, appid," +

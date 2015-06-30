@@ -46,6 +46,10 @@ public class PushRecord {
         this.sound = sound;
     }
 
+    public String getKey() {
+        return new StringBuilder().append(uid).append(',').append(appId).toString();
+    }
+
     public void addToken(String token) {
         if (tokens == null) {
             tokens = new ArrayList<>();
@@ -57,7 +61,7 @@ public class PushRecord {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(uid).append(FILED_SEPARATOR)
-                .append(StringUtils.join(tokens, TOKEN_SEPARATOR))
+                .append(tokens == null ? "" : StringUtils.join(tokens, TOKEN_SEPARATOR))
                 .append(FILED_SEPARATOR).append(appId == null ? "" : appId)
                 .append(FILED_SEPARATOR).append(docId == null ? "" : docId)
                 .append(FILED_SEPARATOR).append(title == null ? "" : title)
@@ -66,7 +70,7 @@ public class PushRecord {
                 .append(FILED_SEPARATOR).append(newsChannel == null ? "" : newsChannel)
                 .append(FILED_SEPARATOR).append(sound)
                 .append(FILED_SEPARATOR).append(nid)
-                .append(FILED_SEPARATOR).append(pushChannel.getId());
+                .append(FILED_SEPARATOR).append(pushChannel == null ? "" : pushChannel.getId());
         return sb.toString();
     }
 

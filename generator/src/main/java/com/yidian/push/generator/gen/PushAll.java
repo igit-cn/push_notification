@@ -5,6 +5,7 @@ import com.yidian.push.config.GeneratorConfig;
 import com.yidian.push.data.HostPortDB;
 import com.yidian.push.data.PushType;
 import com.yidian.push.generator.MySqlConnectionPool;
+import com.yidian.push.generator.Table;
 import com.yidian.push.generator.Task;
 import com.yidian.push.generator.gen.config.PushAllConfig;
 import com.yidian.push.generator.gen.config.Range;
@@ -19,10 +20,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -79,7 +77,7 @@ public class PushAll {
             int localTime = DateTime.now().getMinuteOfDay();
             int startTime = config.getTask().getStartTime();
             int endTime = config.getTask().getEndTime();
-            boolean isIPhone = "PUSH".equals(config.getTable());
+            boolean isIPhone = Table.isIPhone(config.getTable());
             int batchSize = config.getBatchSize();
 
             String pushDocId = config.getTask().getPushDocId();
@@ -134,7 +132,7 @@ public class PushAll {
                 }
                 int redisId = curUserId % redisLength;
                 Map<String, PushRecord> map = pushRecordDict.get(redisId);
-                String userIdAppId = new StringBuilder(curUserId).append(",").append(appId).toString();
+                String userIdAppId = new StringBuilder().append(curUserId).append(",").append(appId).toString();
                 if (lastUserId == curUserId) {
                     if (map.containsKey(userIdAppId)) {
                         map.get(userIdAppId).addToken(tokenLevel);
@@ -144,6 +142,14 @@ public class PushAll {
                 } else {
                     if (map.size() >= batchSize) {
                         //TODO: generate the request file from the records;
+                        Collection<PushRecord> collection = map.values();
+                        try {
+                            GenerateRequestFile.generateRequestFile(config.getHostPortDB().getHost(), config.getHostPortDB().getPort(),
+                                    config.getTable(), redisId, config.getTask().getPushType().toString(),
+                                    collection, config.getBatchSize(), config.getTask().getProtectMinutes());
+                        } catch (IOException e) {
+                            log.info("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
+                        }
                         map.clear();
                     }
                 }

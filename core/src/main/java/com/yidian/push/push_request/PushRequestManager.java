@@ -62,6 +62,10 @@ public class PushRequestManager {
         return changeRequestStatus(pushRequest, PushRequestStatus.PREPARING);
     }
 
+    public boolean markAsReady(PushRequest pushRequest) throws IOException {
+        return changeRequestStatus(pushRequest, PushRequestStatus.READY);
+    }
+
     public String getRequestStatusDir(PushRequestStatus pushRequestStatus) throws IOException {
         return new StringBuilder(Config.getInstance().getPushRequestBaseDir()).append('/').append(pushRequestStatus.toString()).toString();
     }
