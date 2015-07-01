@@ -1,5 +1,6 @@
 package com.yidian.push.generator;
 
+import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushChannel;
 import com.yidian.push.push_request.PushRecord;
 import lombok.extern.log4j.Log4j;
@@ -39,7 +40,7 @@ public class PushRequestRedisUtil {
     }
 
     public static Map<String, NidLastPushTimePair> getNidAndLastPushTime(int redisId, String table, Collection<PushRecord> pushRecords) {
-        int tableId = Table.getTableId(table);
+        int tableId = Platform.getTableId(table);
         Map<String, NidLastPushTimePair> result = new HashMap<>(pushRecords.size());
         List<String> queryKeys = new ArrayList<>(pushRecords.size());
         for (PushRecord pushRecord : pushRecords) {
@@ -114,9 +115,9 @@ public class PushRequestRedisUtil {
     }
 
     public static Map<String, PushChannel> getPushChannel(int redisId, String table, Collection<PushRecord> pushRecords) {
-        int tableId = Table.getTableId(table);
+        int tableId = Platform.getTableId(table);
         Map<String, PushChannel> result = new HashMap<>(pushRecords.size());
-        PushChannel defaultChannel = Table.isIPhone(table) ? PushChannel.IOS : PushChannel.XIAOMI;
+        PushChannel defaultChannel = Platform.isIPhone(table) ? PushChannel.IOS : PushChannel.XIAOMI;
 
         List<String> queryKeys = new ArrayList<>(pushRecords.size());
         for (PushRecord pushRecord : pushRecords) {

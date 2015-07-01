@@ -79,7 +79,7 @@ public class PushRequestManager {
             newStatusDir.mkdirs();
         }
         String newFile = new StringBuilder(newStatusDirPath).append('/').append(file).toString();
-        FileUtils.moveFileToDirectory(new File(pushRequest.getFileName()), new File(newFile), true);
+        FileUtils.moveFileToDirectory(new File(pushRequest.getFileName()), newStatusDir, true);
         pushRequest.setFileName(newFile);
         return true;
     }

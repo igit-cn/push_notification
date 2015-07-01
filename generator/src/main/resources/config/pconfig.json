@@ -11,13 +11,16 @@
         "MYSQL_USER" : "",
         "MYSQL_PASSWORD" : "",
         "MYSQL_DB" : "",
-        "MYSQL_HOSTS" : [{"host":"10.111.0.70", "port":3306, "db":"account"}],
+        "MYSQL_HOSTS" : [{"host":"10.111.2.53", "port":3306, "db":"account"}],
         "REDIS_HOSTS" : [
-            {"id":"0","host":"10.111.0.108", "port":6379}
+            {"id":"0","host":"10.111.0.57", "port":16379},
+            {"id":"1","host":"10.111.0.57", "port":26379},
+            {"id":"2","host":"10.111.0.57", "port":36379},
+            {"id":"3","host":"10.111.0.57", "port":46379}
         ],
         "tomcatDBCPProperties" : {
             "driverClassName" : "com.mysql.jdbc.Driver",
-            "username" : "account",
+            "userName" : "account",
             "password" : "&t8DFylw3(r",
             "jmxEnabled" : true,
             "testWhileIdle" : false,
@@ -29,12 +32,12 @@
             "maxActive" : 100,
             "initialSize" : 10,
             "maxWait" : 10000,
-            "removeAbandonedTimeout" : 600,
+            "removeAbandonedTimeout" : 60,
             "minEvictableIdleTimeMillis" : 30000,
             "minIdle" : 10,
             "logAbandoned" : true,
             "removeAbandoned" : true,
-            "jdbcInterceptors" : "org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer;org.apache.tomcat.jdbc.pool.interceptor.ResetAbandonedTimer"
+            "jdbcInterceptors" : "org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
         },
         "jedisPoolConfig" : {
             "maxTotal" : 10,
@@ -43,15 +46,6 @@
             "testOnBorrow" : true,
             "testOnReturn" : true,
             "testWhileIdle" : true
-        },
-        "maxUserId" : 60000000,
-        "validMaxHeadLength" : 15,
-        "iPhoneRangeSize" : 60000000,
-        "androidRangeSize" : 60000000,
-        "startTime" : 360,
-        "endTime" : 1439,
-        "sleepSeconds" : 3,
-        "minUserFilePath" : "/Users/tianyuzhi/work/push_notification/trunk/cache/min_new_user_uid",
-        "lookBackDays" : 4
+        }
     }
 }

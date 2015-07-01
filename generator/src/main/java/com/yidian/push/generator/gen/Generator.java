@@ -56,8 +56,17 @@ public class Generator {
 
     public static void processOneRequest(Request request) throws IOException {
         GeneratorConfig config = Config.getInstance().getGeneratorConfig();
-        RequestContent requestContent = RequestContent.buildRequestContentFromFile(request.getFileName());
-        //'iPhone' : 'PUSH', 'android' : 'PUSH_FOR_ANDROID'
+        RequestManager.getInstance().markAsProcessing(request);
+        RequestContent requestContent= null;
+        try {
+            requestContent = RequestContent.buildRequestContentFromFile(request.getFileName());
+        } catch (IOException e) {
+            log.error("bad request " + request.getFileName());
+        }
+        if (null == requestContent) {
+            RequestManager.getInstance().markAsBad(request);
+            return;
+        }
         for (Platform platform : requestContent.getPlatform()) {
             String table = platform.getTable();
             List<String> uids = requestContent.getUserIds();
@@ -91,9 +100,10 @@ public class Generator {
                     pushType = PushType.NIGHT;
                 }
                 task.setPushType(pushType);
-                task.setAppIdInclude(Config.getInstance().getGeneratorConfig().getAPPID_YIDIAN());
+                task.setAppIdInclude(config.getAPPID_YIDIAN());
                 PushAll.processTask(task);
             }
         }
+        RequestManager.getInstance().markAsProcessed(request);
     }
 }

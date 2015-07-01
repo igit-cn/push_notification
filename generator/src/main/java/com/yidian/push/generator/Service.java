@@ -49,8 +49,21 @@ public class Service implements Runnable {
                 }
             }
         });
+
+        int sleepTime = 0;
+        try {
+            sleepTime = Config.getInstance().getGeneratorConfig().getSleepSeconds() * 1000;
+        } catch (IOException e) {
+            log.error("get the sleep time failed. just use the default: 3s ");
+            sleepTime = 3 * 1000;
+        }
         while(keepRunning) {
             Generator.process();
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                log.error("sleep failed...");
+            }
         }
     }
 

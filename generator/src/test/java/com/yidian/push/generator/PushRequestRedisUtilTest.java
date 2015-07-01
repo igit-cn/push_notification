@@ -1,6 +1,7 @@
 package com.yidian.push.generator;
 
 import com.yidian.push.config.Config;
+import com.yidian.push.data.Platform;
 import com.yidian.push.push_request.PushRecord;
 import org.testng.annotations.*;
 import org.testng.annotations.Test;
@@ -28,8 +29,8 @@ public class PushRequestRedisUtilTest {
     @Test
     public void testGenNidLastPushTimeKey() throws Exception {
         PushRecord pushRecord = new PushRecord.Builder().setUid(123).setAppId("testApp").build();
-        String table = Table.PUSH;
-        String key = PushRequestRedisUtil.genNidLastPushTimeKey(pushRecord, Table.getTableId(table));
+        String table = Platform.IPHONE.getTable();
+        String key = PushRequestRedisUtil.genNidLastPushTimeKey(pushRecord, Platform.getTableId(table));
         System.out.println(key);
 
     }
@@ -38,28 +39,28 @@ public class PushRequestRedisUtilTest {
     public void testGenNidAndLastPushTimeKeys() throws Exception {
         PushRecord pushRecord = new PushRecord.Builder().setUid(123).setAppId("testApp").build();
         PushRecord pushRecord2 = new PushRecord.Builder().setUid(123).setAppId("testApp").build();
-        String table = Table.PUSH_FOR_ANDROID;
+        String table = Platform.ANDROID.getTable();
 
 
         List<PushRecord> pushRecordList = Arrays.asList(pushRecord, pushRecord2);
-        System.out.println(PushRequestRedisUtil.genNidAndLastPushTimeKeys(pushRecordList, Table.getTableId(table)));
+        System.out.println(PushRequestRedisUtil.genNidAndLastPushTimeKeys(pushRecordList, Platform.getTableId(table)));
 
     }
 
     @Test
     public void testGenPushChannelKey() throws Exception {
         PushRecord pushRecord = new PushRecord.Builder().setUid(123).setAppId("testApp").build();
-        String table = Table.PUSH_FOR_ANDROID;
-        System.out.println(PushRequestRedisUtil.genPushChannelKey(pushRecord, Table.getTableId(table)));
+        String table = Platform.ANDROID.getTable();
+        System.out.println(PushRequestRedisUtil.genPushChannelKey(pushRecord, Platform.getTableId(table)));
     }
     @Test
     public void testGenPushChannelKeys() throws Exception {
         PushRecord pushRecord = new PushRecord.Builder().setUid(123).setAppId("testApp").build();
         PushRecord pushRecord2 = new PushRecord.Builder().setUid(124).setAppId("testApp").build();
-        String table = Table.PUSH_FOR_ANDROID;
+        String table = Platform.ANDROID.getTable();
 
         List<PushRecord> pushRecordList = Arrays.asList(pushRecord, pushRecord2);
-        System.out.println(PushRequestRedisUtil.genPushChannelKeys(pushRecordList, Table.getTableId(table)));
+        System.out.println(PushRequestRedisUtil.genPushChannelKeys(pushRecordList, Platform.getTableId(table)));
     }
 
 
@@ -68,7 +69,7 @@ public class PushRequestRedisUtilTest {
         PushRecord pushRecord = new PushRecord.Builder().setUid(77).setAppId("yidian").build();
         PushRecord pushRecord2 = new PushRecord.Builder().setUid(65).setAppId("yidian").build();
         int redisId = 1;
-        String table = Table.PUSH;
+        String table = Platform.IPHONE.getTable();
         List<PushRecord> pushRecordList = Arrays.asList(pushRecord, pushRecord2);
 
         System.out.println(PushRequestRedisUtil.getNidAndLastPushTime(redisId, table, pushRecordList));
@@ -80,7 +81,7 @@ public class PushRequestRedisUtilTest {
         PushRecord pushRecord = new PushRecord.Builder().setUid(77).setAppId("yidian").build();
         PushRecord pushRecord2 = new PushRecord.Builder().setUid(65).setAppId("yidian").build();
         int redisId = 1;
-        String table = Table.PUSH;
+        String table = Platform.IPHONE.getTable();
         List<PushRecord> pushRecordList = Arrays.asList(pushRecord, pushRecord2);
 
         System.out.println(PushRequestRedisUtil.getPushChannel(redisId, table, pushRecordList));

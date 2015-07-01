@@ -1,8 +1,10 @@
 package com.yidian.push.generator;
 
+import com.google.gson.Gson;
 import com.yidian.push.config.Config;
 import com.yidian.push.config.GeneratorConfig;
 import com.yidian.push.data.HostPortDB;
+import com.yidian.push.utils.GsonFactory;
 import lombok.extern.log4j.Log4j;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
@@ -28,8 +30,9 @@ public class MySqlConnectionPool {
         if (isInitialized) {
             return;
         }
+        System.out.println(GsonFactory.getNonPrettyGson().toJson(Config.getInstance().getGeneratorConfig().getTomcatDBCPProperties()));
         GeneratorConfig generatorConfig = Config.getInstance().getGeneratorConfig();
-        PoolProperties poolProperties = generatorConfig.getTomcatDBCPProperties();
+        PoolProperties poolProperties = GsonFactory.getNonPrettyGson().fromJson(GsonFactory.getNonPrettyGson().toJson(generatorConfig.getTomcatDBCPProperties()), PoolProperties.class);//generatorConfig.getTomcatDBCPProperties();
         for (HostPortDB hostPortDB : generatorConfig.getMYSQL_HOSTS()) {
             String key = hostPortDB.getMysqlUrl();
             if (CachedDataSources.containsKey(key)) {
@@ -53,6 +56,7 @@ public class MySqlConnectionPool {
         poolProperties.setUrl(hostPortDB.getMysqlUrl());
         DataSource dataSource = new DataSource();
         dataSource.setPoolProperties(poolProperties);
+        System.out.println(poolProperties);
         return dataSource;
     }
 

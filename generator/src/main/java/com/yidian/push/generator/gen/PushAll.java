@@ -3,9 +3,9 @@ package com.yidian.push.generator.gen;
 import com.yidian.push.config.Config;
 import com.yidian.push.config.GeneratorConfig;
 import com.yidian.push.data.HostPortDB;
+import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushType;
 import com.yidian.push.generator.MySqlConnectionPool;
-import com.yidian.push.generator.Table;
 import com.yidian.push.generator.Task;
 import com.yidian.push.generator.gen.config.PushAllConfig;
 import com.yidian.push.generator.gen.config.Range;
@@ -35,7 +35,7 @@ public class PushAll {
         GeneratorConfig generatorConfig = Config.getInstance().getGeneratorConfig();
 
         int rangeSize = 0;
-        if ("PUSH".equals(task.getTable())) {
+        if (Platform.isIPhone(task.getTable())) {
             rangeSize  = generatorConfig.getIPhoneRangeSize();
         } else {
             rangeSize = generatorConfig.getAndroidRangeSize();
@@ -47,7 +47,13 @@ public class PushAll {
                 final PushAllConfig pushAllConfig = new PushAllConfig();
                 pushAllConfig.setUserRange(new Range(index - rangeSize, index));
                 pushAllConfig.setHostPortDB(hostPortDB);
+                pushAllConfig.setTask(task);
                 index -= rangeSize;
+//                try {
+//                    processPushAll(pushAllConfig);
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
                 executor.submit(new Runnable() {
                     @Override
                     public void run() {
@@ -69,6 +75,8 @@ public class PushAll {
         Statement st = null;
         ResultSet rs = null;
         String sql = config.genSql();
+        String table = config.getTask().getTable();
+        System.out.println(sql);
         try {
             st = connection.createStatement();
             rs = st.executeQuery(sql);
@@ -77,7 +85,7 @@ public class PushAll {
             int localTime = DateTime.now().getMinuteOfDay();
             int startTime = config.getTask().getStartTime();
             int endTime = config.getTask().getEndTime();
-            boolean isIPhone = Table.isIPhone(config.getTable());
+            boolean isIPhone = Platform.isIPhone(table);
             int batchSize = config.getBatchSize();
 
             String pushDocId = config.getTask().getPushDocId();
@@ -87,15 +95,9 @@ public class PushAll {
             PushType pushType = config.getTask().getPushType();
             int redisLength = Config.getInstance().getGeneratorConfig().getREDIS_HOSTS().size();
             List<Map<String, PushRecord>> pushRecordDict = new ArrayList<>(redisLength);
-            for (Map<String, PushRecord> map : pushRecordDict) {
-                map = new HashMap<>();
+            for (int i = 0; i < redisLength; i ++) {
+                pushRecordDict.add(new HashMap<String, PushRecord>(config.getBatchSize()));
             }
-//        uid   	= int(r[0])
-//        token 	= r[1]
-//        push_level = int(r[2])
-//        appid 	= r[3]
-//        enable 	= r[4]
-//        timezone= r[5]
 
             while (rs.next()) {
                 int curUserId = rs.getInt(1);
@@ -145,19 +147,30 @@ public class PushAll {
                         Collection<PushRecord> collection = map.values();
                         try {
                             GenerateRequestFile.generateRequestFile(config.getHostPortDB().getHost(), config.getHostPortDB().getPort(),
-                                    config.getTable(), redisId, config.getTask().getPushType().toString(),
+                                    table, redisId, config.getTask().getPushType().toString(),
                                     collection, config.getBatchSize(), config.getTask().getProtectMinutes());
                         } catch (IOException e) {
                             log.info("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
                         }
                         map.clear();
                     }
+                    map.put(userIdAppId, pushRecord);
                 }
                 lastUserId = curUserId;
             }
-            for (Map<String, PushRecord> map : pushRecordDict) {
+            for (int i = 0; i < pushRecordDict.size(); i ++) {
+                int redisId = i;
+                Map<String, PushRecord> map = pushRecordDict.get(i);
                 if (map.size() > 0) {
-                    // TODO : generate the request file from the records
+                    Collection<PushRecord> collection = map.values();
+                    try {
+                        GenerateRequestFile.generateRequestFile(config.getHostPortDB().getHost(), config.getHostPortDB().getPort(),
+                                table, redisId, config.getTask().getPushType().getString(),
+                                collection, config.getBatchSize(), config.getTask().getProtectMinutes());
+                    } catch (IOException e) {
+                        log.info("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
+                    }
+                    map.clear();
                 }
             }
         } finally {

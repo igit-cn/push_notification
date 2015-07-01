@@ -34,6 +34,9 @@ public class GeneratorConfig {
     private int androidRangeSize = 300000;
     private int startTime = 6 * 60;
     private int endTime = 24 * 60 - 1;
+    private int sleepSeconds = 3;
+    private String minUserFilePath = "/Users/tianyuzhi/work/push_notification/trunk/cache/min_new_user_uid";
+    private int lookBackDays = 4;
 
     public int getMysqlId(HostPortDB hostPortDB) {
         if (null == MYSQL_HOSTS || MYSQL_HOSTS.size() == 0) {

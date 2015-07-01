@@ -1,9 +1,11 @@
 package com.yidian.push.generator.gen;
 
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +28,21 @@ public class GetTodayFirstUserId {
             this.table = table;
             this.userId = userId;
         }
+    }
+
+    public static List<HostPortTableUserId> getLatestFirstUserId(String path, int lookBackDays) throws IOException {
+        List<HostPortTableUserId> list = new ArrayList<>(4);
+        for (int i = 0; i < lookBackDays; i ++) {
+            String day = DateTime.now().plusDays(i * -1).toString("yyyy-MM-dd");
+            String fileName = new StringBuilder(path).append("/host_table_userid.").append(day).toString();
+            File file = new File(fileName);
+            if (!file.isFile()) {continue;}
+            list = getFirstUserFromFile(fileName);
+        }
+        if (null == list || list.size() < 0) {
+            log.error("could not get the first user id");
+        }
+        return list;
     }
 
     public static List<HostPortTableUserId> getTodayFirstUserId(String path) throws IOException {

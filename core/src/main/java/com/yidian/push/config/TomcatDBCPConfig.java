@@ -11,7 +11,7 @@ import lombok.Setter;
 public class TomcatDBCPConfig {
     private String db = "account";
     private String driverClassName = "com.mysql.jdbc.Driver";
-    private String userName = "account";
+    private String username = "account";
     private String password = "&t8DFylw3(r";
     private boolean isJmsEnabled = true;
     private boolean isTestWhileIdle = false;

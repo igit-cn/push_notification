@@ -2,6 +2,7 @@ package com.yidian.push.generator.request;
 
 import com.yidian.push.config.Config;
 import com.yidian.push.push_request.PushRequest;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import java.util.List;
 /**
  * Created by yidianadmin on 15-3-4.
  */
+@Log4j
 public class RequestManager {
     private static RequestManager requestManager = null;
     private RequestManager() {}
@@ -84,9 +86,14 @@ public class RequestManager {
         if (!newStatusDir.isDirectory()) {
             newStatusDir.mkdirs();
         }
-        String newFile = new StringBuilder(newStatusDirPath).append('/').append(file).toString();
-        FileUtils.moveFileToDirectory(new File(request.getFileName()), new File(newFile), true);
-        request.setFileName(newFile);
+        String newFileName = new StringBuilder(newStatusDirPath).append('/').append(file).toString();
+        File newFile = new File(newFileName);
+        if (newFile.exists()) {
+            log.info(newFile + " already exists...");
+            FileUtils.forceDelete(newFile);
+        }
+        FileUtils.moveFileToDirectory(new File(request.getFileName()), newStatusDir, true);
+        request.setFileName(newFileName);
         return true;
     }
 

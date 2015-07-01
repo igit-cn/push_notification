@@ -22,7 +22,7 @@ import java.util.List;
 @Getter
 @Setter
 public class RequestContent {
-    private static int VALID_MAX_HEAD_LENGTH = 15;
+    transient private static int VALID_MAX_HEAD_LENGTH = 15;
     @SerializedName("_id")
     private String id;
     private List<Platform> platform;

@@ -65,12 +65,12 @@ public class PushRecord {
                 .append(FILED_SEPARATOR).append(appId == null ? "" : appId)
                 .append(FILED_SEPARATOR).append(docId == null ? "" : docId)
                 .append(FILED_SEPARATOR).append(title == null ? "" : title)
-                .append(FILED_SEPARATOR).append(description == null ? "" : description)
                 .append(FILED_SEPARATOR).append(newsType)
                 .append(FILED_SEPARATOR).append(newsChannel == null ? "" : newsChannel)
-                .append(FILED_SEPARATOR).append(sound)
                 .append(FILED_SEPARATOR).append(nid)
-                .append(FILED_SEPARATOR).append(pushChannel == null ? "" : pushChannel.getId());
+                .append(FILED_SEPARATOR).append(pushChannel == null ? "" : pushChannel.getId())
+                .append(FILED_SEPARATOR).append(description == null ? "" : description)
+                .append(FILED_SEPARATOR).append(sound);
         return sb.toString();
     }
 
