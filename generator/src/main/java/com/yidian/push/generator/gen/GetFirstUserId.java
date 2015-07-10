@@ -15,14 +15,14 @@ import java.util.List;
  * Created by tianyuzhi on 15/6/19.
  */
 @Log4j
-public class GetTodayFirstUserId {
+public class GetFirstUserId {
     public static class HostPortTableUserId {
         String host;
         int port;
         String table;
-        int userId;
+        long userId;
 
-        public HostPortTableUserId(String host, int port, String table, int userId) {
+        public HostPortTableUserId(String host, int port, String table, long userId) {
             this.host = host;
             this.port = port;
             this.table = table;
@@ -30,28 +30,49 @@ public class GetTodayFirstUserId {
         }
     }
 
-    public static List<HostPortTableUserId> getLatestFirstUserId(String path, int lookBackDays) throws IOException {
-        List<HostPortTableUserId> list = new ArrayList<>(4);
+    public static long getTodayFirstUserId(String path, String prefix, String host, int port, String table) throws IOException {
+        List<HostPortTableUserId> list = null;
+        try {
+            getTodayFirstUserId(path, prefix);
+            if (null != list) {
+                for (HostPortTableUserId item : list) {
+                    if (item.host.equals(host) && item.port == port && item.table.equals(table)) {
+                        return item.userId;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            log.error("could not get the first userId");
+        }
+        return -1;
+    }
+
+    public static List<HostPortTableUserId> getLatestFirstUserId(String path, String prefix, int lookBackDays) throws IOException {
+        List<HostPortTableUserId> list = null;
         for (int i = 0; i < lookBackDays; i ++) {
             String day = DateTime.now().plusDays(i * -1).toString("yyyy-MM-dd");
-            String fileName = new StringBuilder(path).append("/host_table_userid.").append(day).toString();
+            String fileName = getFileName(path, prefix, day);
             File file = new File(fileName);
             if (!file.isFile()) {continue;}
             list = getFirstUserFromFile(fileName);
         }
-        if (null == list || list.size() < 0) {
+        if (null == list || list.size() <= 0) {
             log.error("could not get the first user id");
         }
         return list;
     }
 
-    public static List<HostPortTableUserId> getTodayFirstUserId(String path) throws IOException {
-        String today = DateTime.now().toString("yyyy-MM-dd");
-        return getFirstUserIdOfDay(path, today);
+    private static String getFileName(String path, String prefix, String day) {
+        return new StringBuilder(path).append("/").append(prefix).append(".").append(day).toString();
     }
 
-    public static List<HostPortTableUserId> getFirstUserIdOfDay(String path, String day) throws IOException {
-        String file = new StringBuilder(path).append("/host_table_userid.").append(day).toString();
+    public static List<HostPortTableUserId> getTodayFirstUserId(String path, String prefix) throws IOException {
+        String today = DateTime.now().toString("yyyy-MM-dd");
+        return getFirstUserIdOfDay(path, prefix, today);
+    }
+
+    public static List<HostPortTableUserId> getFirstUserIdOfDay(String path, String prefix,  String day) throws IOException {
+        String file = getFileName(path, prefix, day);
         return getFirstUserFromFile(file);
     }
 

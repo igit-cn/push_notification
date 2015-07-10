@@ -1,7 +1,7 @@
 {
     "lockFile" : "/tmp/push_notification_request_generator.lck",
-    "pushRequestBaseDir" : "/home/services/tianzy/test_generator/requests",
-    "requestBaseDir" : "/home/services/tianzy/test_generator/task",
+    "pushRequestBaseDir" : "/Users/tianyuzhi/test/requests",
+    "requestBaseDir" : "/Users/tianyuzhi/test/task",
     "generatorConfig" : {
         "lockFile" : "/tmp/push_notification_generator.lck",
         "basePath" : "",
@@ -62,15 +62,7 @@
         "pushAllSqlFields" : "userid, token, push_level, appid, enable, time_zone, version",
         "pushAllIndexFile" : "/tmp/push_all/push_all_index",
         "pushAllBaseDir" : "/tmp/push_all",
-        "pushAllThreadPoolSize" : 30,
         "mysqlFetchSize" : 30000,
-        "minUserFilePath" : "/home/services/push_notification/cache/min_new_user_uid/",
-        "minUserFilePrefix" : "host_table_userid",
-        "minUserLookBackDays" : 4,
-        "cacheBasePath" : "/home/services/push_notification/cache",
-        "localChannelCachePath" : "/home/services/push_services/local_news/cache",
-        "localChannelMappingFile" : "/home/services/push_services/local_news/cache/location_channel_cache.data",
-        "autoRecommendCacheIndex" : 2,
-        "maxCacheIndex" : 3
+        "pushAllThreadPoolSize" : 30
     }
 }

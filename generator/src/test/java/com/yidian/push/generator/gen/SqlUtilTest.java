@@ -1,11 +1,10 @@
 package com.yidian.push.generator.gen;
 
+import com.yidian.push.generator.util.SqlUtil;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static org.testng.Assert.*;
 
 /**
  * Created by tianyuzhi on 15/6/30.

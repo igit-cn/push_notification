@@ -1,5 +1,6 @@
 package com.yidian.push.generator;
 
+import com.yidian.push.generator.util.RedisUtil;
 import org.testng.annotations.*;
 import org.testng.annotations.Test;
 import redis.clients.jedis.Jedis;
@@ -7,8 +8,6 @@ import redis.clients.jedis.Jedis;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.testng.Assert.*;
 
 /**
  * Created by tianyuzhi on 15/6/25.

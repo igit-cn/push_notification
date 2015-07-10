@@ -17,7 +17,7 @@ public class PushRecord {
     public static final String FILED_SEPARATOR = "\u0001";
     public static final String TOKEN_SEPARATOR = "\u0002";
     public static final String TOKEN_ITEM_SEPARATOR = "\u0003";
-    private int uid;
+    private long uid;
     private List<String> tokens;
     private String appId;
     private String docId;
@@ -30,7 +30,7 @@ public class PushRecord {
     private PushChannel pushChannel;
 
 
-    public PushRecord(int uid, List<String> tokens, String appId,
+    public PushRecord(long uid, List<String> tokens, String appId,
                       String docId, String title, String description, int newsType,
                       String newsChannel, int nid, PushChannel pushChannel, int sound) {
         this.uid = uid;
@@ -75,7 +75,7 @@ public class PushRecord {
     }
 
     public static class Builder {
-        private int uid;
+        private long uid;
         private List<String> tokens;
         private String appId;
         private String docId;
@@ -95,7 +95,7 @@ public class PushRecord {
             return this;
         }
 
-        public Builder setUid(int uid) {
+        public Builder setUid(long uid) {
             this.uid = uid;
             return this;
         }

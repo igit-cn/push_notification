@@ -54,7 +54,6 @@ public class RequestManager {
             if (files != null) {
                 for (File file : files) {
                     Request request = new Request(file.getAbsolutePath());
-                    //markAsProcessing(request);
                     list.add(request);
                 }
             }

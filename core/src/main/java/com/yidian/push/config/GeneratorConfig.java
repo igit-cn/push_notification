@@ -2,6 +2,7 @@ package com.yidian.push.config;
 
 import com.yidian.push.data.Environment;
 import com.yidian.push.data.HostPortDB;
+import com.yidian.push.data.Platform;
 import com.yidian.push.data.RedisHostPort;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,9 +35,29 @@ public class GeneratorConfig {
     private int androidRangeSize = 300000;
     private int startTime = 6 * 60;
     private int endTime = 24 * 60 - 1;
-    private int sleepSeconds = 3;
+    private int requestScanIntervalInSeconds = 3;
+
+    private int iPhoneThreadPoolSize = 10;
+    private int androidThreadPoolSize = 40;
+    private int secondsToWaitThreadPoolShutDownTimeout = 5 * 60;
+    private String pushAllSqlFields = "userid, token, push_level, appid, enable, time_zone, version";
+    private String pushAllIndexFile = "config/push_all_index";
+    private String pushAllBaseDir = "/tmp/push_all";
+    private int pushAllThreadPoolSize = 50;
+    private int mysqlFetchSize = 30000;
+    // today first userid
     private String minUserFilePath = "/Users/tianyuzhi/work/push_notification/trunk/cache/min_new_user_uid";
-    private int lookBackDays = 4;
+    private String minUserFilePrefix = "host_table_userid";
+    private int minUserLookBackDays = 4;
+    // channel to users cache path :
+    private String cacheBasePath = "/home/services/push_notification/cache";
+    // local channel cache path
+    private String localChannelCachePath = "/home/services/push_services/local_news/cache";
+    private String localChannelMappingFile = "/home/services/push_services/local_news/cache/location_channel_cache.data";
+    private int autoRecommendCacheIndex = 2;
+    private int maxCacheIndex = 3;
+
+
 
     public int getMysqlId(HostPortDB hostPortDB) {
         if (null == MYSQL_HOSTS || MYSQL_HOSTS.size() == 0) {
@@ -50,5 +71,23 @@ public class GeneratorConfig {
             }
         }
         return -1;
+    }
+
+    public int getRangeSize(String table) {
+        if (Platform.isIPhone(table)) {
+            return iPhoneRangeSize;
+        }
+        else {
+            return androidRangeSize;
+        }
+    }
+
+    public int getPoolSize(String table) {
+        if (Platform.isIPhone(table)) {
+            return iPhoneThreadPoolSize;
+        }
+        else {
+            return androidThreadPoolSize;
+        }
     }
 }

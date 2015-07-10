@@ -1,4 +1,4 @@
-package com.yidian.push.generator;
+package com.yidian.push.generator.gen;
 
 import com.yidian.push.config.Config;
 import com.yidian.push.config.GeneratorConfig;

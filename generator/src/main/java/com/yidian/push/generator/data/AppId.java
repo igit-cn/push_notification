@@ -1,4 +1,4 @@
-package com.yidian.push.generator;
+package com.yidian.push.generator.data;
 
 /**
  * Created by tianyuzhi on 15/6/29.

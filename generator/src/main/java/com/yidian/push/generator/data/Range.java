@@ -1,4 +1,4 @@
-package com.yidian.push.generator.gen.config;
+package com.yidian.push.generator.data;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,5 +15,9 @@ public class Range {
     public Range(int start, int end) {
         this.start = start;
         this.end = end;
+    }
+
+    public String toString() {
+        return "start:" + start + ", end:" + end;
     }
 }

@@ -2,6 +2,8 @@ package com.yidian.push.generator;
 
 import com.yidian.push.config.Config;
 import com.yidian.push.data.Platform;
+import com.yidian.push.generator.gen.RedisConnectionPool;
+import com.yidian.push.generator.util.PushRequestRedisUtil;
 import com.yidian.push.push_request.PushRecord;
 import org.testng.annotations.*;
 import org.testng.annotations.Test;

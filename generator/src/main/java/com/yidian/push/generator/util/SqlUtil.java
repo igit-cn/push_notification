@@ -1,4 +1,4 @@
-package com.yidian.push.generator.gen;
+package com.yidian.push.generator.util;
 
 import java.util.List;
 

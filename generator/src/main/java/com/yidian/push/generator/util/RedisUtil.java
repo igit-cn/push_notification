@@ -1,4 +1,4 @@
-package com.yidian.push.generator;
+package com.yidian.push.generator.util;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;

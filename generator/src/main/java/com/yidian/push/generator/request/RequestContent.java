@@ -2,9 +2,6 @@ package com.yidian.push.generator.request;
 
 import com.google.gson.annotations.SerializedName;
 import com.yidian.push.data.Platform;
-import com.yidian.push.data.PushChannel;
-import com.yidian.push.data.PushType;
-import com.yidian.push.generator.Task;
 import com.yidian.push.utils.GsonFactory;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +9,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

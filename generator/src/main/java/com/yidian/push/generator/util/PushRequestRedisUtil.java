@@ -1,7 +1,9 @@
-package com.yidian.push.generator;
+package com.yidian.push.generator.util;
 
 import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushChannel;
+import com.yidian.push.generator.data.NidLastPushTimePair;
+import com.yidian.push.generator.gen.RedisConnectionPool;
 import com.yidian.push.push_request.PushRecord;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.exception.ExceptionUtils;

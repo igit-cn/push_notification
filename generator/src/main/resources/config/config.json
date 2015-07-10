@@ -52,6 +52,9 @@
         "endTime" : 1439,
         "sleepSeconds" : 3,
         "minUserFilePath" : "/Users/tianyuzhi/work/push_notification/trunk/cache/min_new_user_uid",
-        "lookBackDays" : 4
+        "lookBackDays" : 4,
+        "iPhonePoolSize" : 10,
+        "androidPoolSize" : 100,
+        "secondsToWaitThreadPoolShutDownTimeout" : 300
     }
 }

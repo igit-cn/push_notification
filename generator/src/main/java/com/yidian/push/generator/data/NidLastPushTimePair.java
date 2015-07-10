@@ -1,4 +1,4 @@
-package com.yidian.push.generator;
+package com.yidian.push.generator.data;
 
 import lombok.Getter;
 import lombok.Setter;

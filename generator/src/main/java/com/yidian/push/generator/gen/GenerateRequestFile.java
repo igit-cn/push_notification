@@ -2,11 +2,10 @@ package com.yidian.push.generator.gen;
 
 import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushChannel;
-import com.yidian.push.generator.AppId;
-import com.yidian.push.generator.NidLastPushTimePair;
-import com.yidian.push.generator.PushRequestRedisUtil;
+import com.yidian.push.generator.data.AppId;
+import com.yidian.push.generator.data.NidLastPushTimePair;
+import com.yidian.push.generator.util.PushRequestRedisUtil;
 import com.yidian.push.generator.request.RequestManager;
-import com.yidian.push.generator.request.RequestStatus;
 import com.yidian.push.push_request.PushRecord;
 import com.yidian.push.push_request.PushRequest;
 import com.yidian.push.push_request.PushRequestManager;
@@ -115,7 +114,7 @@ public class GenerateRequestFile {
                     .append(fileNameBase).append(".offset.")
                     .append(index).append(".job").toString();
             PushRequest pushRequest = new PushRequest(preparingFile);
-            int lastUserId = 0;
+            long lastUserId = 0;
             int userCount = 0;
             BufferedWriter bw = null;
             try {
@@ -145,7 +144,7 @@ public class GenerateRequestFile {
                 }
             }
         }
-        PushRequestRedisUtil.updateRedis(redisId, redisUpdateMap);
+        //PushRequestRedisUtil.updateRedis(redisId, redisUpdateMap);
         return totalPushUsers;
     }
 }

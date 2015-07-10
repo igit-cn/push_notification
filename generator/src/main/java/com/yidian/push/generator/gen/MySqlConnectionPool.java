@@ -1,4 +1,4 @@
-package com.yidian.push.generator;
+package com.yidian.push.generator.gen;
 
 import com.google.gson.Gson;
 import com.yidian.push.config.Config;

@@ -4,13 +4,15 @@ import com.yidian.push.config.Config;
 import com.yidian.push.config.GeneratorConfig;
 import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushType;
-import com.yidian.push.generator.Task;
+import com.yidian.push.generator.data.ProtectMinutes;
+import com.yidian.push.generator.data.Task;
 import com.yidian.push.generator.request.Request;
 import com.yidian.push.generator.request.RequestContent;
 import com.yidian.push.generator.request.RequestManager;
 import com.yidian.push.generator.request.RequestStatus;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,9 +28,15 @@ public class Generator {
             List<Request> requests = RequestManager.getInstance().getRequests(RequestStatus.READY);
 
             for (Request request : requests) {
+                long startTime = System.currentTimeMillis();
                 log.info("start to process request:" + request.getFileName());
-                processOneRequest(request);
-                log.info("end of processing request:" + request.getFileName());
+                try {
+                    processOneRequest(request);
+                } catch (Exception e) {
+                    log.info("request failed with exception : " + ExceptionUtils.getFullStackTrace(e));
+                }
+                long endTime = System.currentTimeMillis();
+                log.info("end of processing request:" + request.getFileName() + ", cost time (seconds) : " + (endTime - startTime)/1000.0  );
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,12 +85,16 @@ public class Generator {
             Task task = genTask(requestContent);
             task.setTable(table);
             String uid = uids.get(0);
+            int protectMinutes = ProtectMinutes.getProtectMinute(uid);
+            task.setProtectMinutes(protectMinutes);
+
             if ("auto".equals(uid)|| "auto_break".equals(uid)) {
-                task.setPushType(PushType.LOCAL);
+                PushAuto.processTaskWithFile(task);
             }
             else if ("all_yddk".equals(uid)) {
                 task.setPushType(PushType.BREAK);
                 task.setAppIdInclude(Arrays.asList("yddk"));
+                PushAll.processTaskWithFile(task);
             }
             else if ("all".equals(uid)) {
                 String title = requestContent.getTitle();
@@ -101,7 +113,8 @@ public class Generator {
                 }
                 task.setPushType(pushType);
                 task.setAppIdInclude(config.getAPPID_YIDIAN());
-                PushAll.processTask(task);
+                //PushAll.processTask(task);
+                PushAll.processTaskWithFile(task);
             }
         }
         RequestManager.getInstance().markAsProcessed(request);

@@ -1,9 +1,8 @@
-package com.yidian.push.generator.gen.config;
+package com.yidian.push.generator.data;
 
 import com.yidian.push.data.HostPortDB;
 import com.yidian.push.data.Platform;
-import com.yidian.push.generator.Task;
-import com.yidian.push.generator.gen.SqlUtil;
+import com.yidian.push.generator.util.SqlUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +20,8 @@ public class PushAllConfig {
     Set<Integer> bucketIds = null;
     Range userRange = null;
     int batchSize = 10000;
-    int todayFirstUserId = 0;
+    long todayFirstUserId = 0;
+    String file;
 
     public PushAllConfig() {}
 
@@ -53,7 +53,7 @@ public class PushAllConfig {
         }
         else {
             sql.append("select userid, token, push_level, appid," +
-                    " enable, time_zone from " + table + " where (enable = 1 or enable & ")
+                    " enable, time_zone, version from " + table + " where (enable = 1 or enable & ")
                     .append(task.getPushType().getInt()).append(")").append(priority.toString())
                     .append(" order by userid desc, version desc");
         }
