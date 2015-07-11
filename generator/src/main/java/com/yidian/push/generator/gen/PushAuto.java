@@ -30,8 +30,6 @@ import java.util.concurrent.TimeUnit;
 @Log4j
 public class PushAuto {
 
-
-
     public static void processTaskWithFile(Task task) throws IOException {
         GeneratorConfig generatorConfig = Config.getInstance().getGeneratorConfig();
         int poolSize = generatorConfig.getPoolSize(task.getTable());
@@ -103,8 +101,8 @@ public class PushAuto {
             String pushDocId = config.getTask().getPushDocId();
             String pushTitle = config.getTask().getPushTitle();
             String pushHead = config.getTask().getPushHead();
+            Map<Long, String> userIdChannelMapping = config.getUserIdChannelMapping();
             Set<String> validAppIdSet = new HashSet<>(config.getTask().getAppIdInclude());
-            String pushChannel = "";
             PushType pushType = config.getTask().getPushType();
             int intPushType = pushType.getInt();
             int redisLength = Config.getInstance().getGeneratorConfig().getREDIS_HOSTS().size();
@@ -127,7 +125,13 @@ public class PushAuto {
                 int timezone = Integer.parseInt(arr[5]);
                 int version = Integer.parseInt(arr[6]);
                 int bucketId = Bucket.getBucketId(curUserId);
+                String newsChannel = null;
 
+                if (null == userIdChannelMapping || !userIdChannelMapping.containsKey(curUserId)) {
+                    continue;
+                } else {
+                    newsChannel = userIdChannelMapping.get(curUserId);
+                }
                 if (enable == 1 && firstDayUserId != -1 && curUserId > firstDayUserId) {
                     continue;
                 }
@@ -137,7 +141,7 @@ public class PushAuto {
                 if (config.getBucketIds() != null && !config.getBucketIds().contains(bucketId)) {
                     continue;
                 }
-                if (null != validAppIdSet && !validAppIdSet.contains(appId)) {
+                if (null == validAppIdSet || !validAppIdSet.contains(appId)) {
                     continue;
                 }
 
@@ -151,12 +155,14 @@ public class PushAuto {
                 if (isIPhone) {
                     pushRecord = new PushRecord.Builder().setUid(curUserId).setAppId(appId)
                             .setDocId(pushDocId).setTitle(pushTitle)
+                            .setNewsChannel(newsChannel)
                             .setNewsType(pushType.getInt()).addToken(tokenLevel)
                             .setNid(version).build();
                 } else {
                     pushRecord = new PushRecord.Builder().setUid(curUserId).setAppId(appId)
                             .setDocId(pushDocId).setTitle(pushTitle)
                             .setHead(pushHead)
+                            .setNewsChannel(newsChannel)
                             .setNewsType(pushType.getInt()).addToken(tokenLevel).build();
                 }
                 int redisId = (int)(curUserId % redisLength);
