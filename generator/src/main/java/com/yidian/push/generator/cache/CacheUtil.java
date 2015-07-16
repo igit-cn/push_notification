@@ -3,7 +3,6 @@ package com.yidian.push.generator.cache;
 import com.yidian.push.config.Config;
 import com.yidian.push.config.GeneratorConfig;
 import com.yidian.push.data.Platform;
-import com.yidian.push.generator.gen.Generator;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -19,6 +18,8 @@ import java.util.*;
 @Log4j
 public class CacheUtil {
 
+    private static Set<String> LOCAL_CHANNELS = null;
+
     public static Map<Long, String> getUserIdChannelMapping(String table, List<String> channels) {
         if (null == channels || channels.size() == 0) {
             return new HashMap<>();
@@ -32,19 +33,17 @@ public class CacheUtil {
                 if (StringUtils.isEmpty(channel)) {
                     continue;
                 }
+                int index = config.getAutoRecommendCacheIndex();
                 if (localChannelSet.contains(channel)) {
-                    List<Long> userIds = getLocalChannelUsers(channel);
+                    index = config.getAutoLocalCacheIndex();
+                }
+                List<List<Long>> userIdList = getCacheUsersWithIndex(table, channel, index);
+                for (List<Long> userIds : userIdList) {
                     for (Long uid : userIds) {
                         result.put(uid, channel);
                     }
-                } else {
-                    List<List<Long>> userIdList = getCacheUsersWithIndex(table, channel, config.getAutoRecommendCacheIndex());
-                    for (List<Long> userIds : userIdList) {
-                        for (Long uid : userIds) {
-                            result.put(uid, channel);
-                        }
-                    }
                 }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -56,13 +55,15 @@ public class CacheUtil {
         GeneratorConfig config = Config.getInstance().getGeneratorConfig();
         int maxIndex = config.getMaxCacheIndex();
         List<List<Long>> result = new ArrayList<>(maxIndex);
+        Platform platform = Platform.tableToPlatform(table);
 
-        for (int i = 0; i < maxIndex; i ++) {
-            int tmp = (int)Math.pow(2.0, i*1.0);
+        for (int i = 0; i < maxIndex; i++) {
+            int tmp = (int) Math.pow(2.0, i * 1.0);
             if ((index & tmp) != tmp) {
                 continue;
             }
-            String path = new StringBuilder(config.getCacheBasePath()).append('/').append(table).append(".").append(i).append('/').append(channel).toString();
+            String path = new StringBuilder(config.getCacheBasePath()).append('/').append(platform.getName()).append(".").append(i).append('/').append(channel).toString();
+            log.info("get users from file :" + path);
             result.add(getUserSInFile(path));
         }
         //
@@ -76,7 +77,23 @@ public class CacheUtil {
     }
 
 
+    public static Set<String> getLocalChannels() {
+        GeneratorConfig config = null;
+        try {
+            config = Config.getInstance().getGeneratorConfig();
+            String localChannelMappingFile = config.getLocalChannelMappingFile();
+            return getLocalChannels(localChannelMappingFile);
+
+        } catch (IOException e) {
+            log.error("could not get local channels " + ExceptionUtils.getFullStackTrace(e));
+        }
+        return new HashSet<>();
+    }
+
     public static Set<String> getLocalChannels(String cityChannelMappingFile) {
+        if (null != LOCAL_CHANNELS && LOCAL_CHANNELS.size() > 0) {
+            return LOCAL_CHANNELS;
+        }
         Set<String> localChannels = new HashSet<>(300);
         try {
             BufferedReader br = new BufferedReader(new FileReader(cityChannelMappingFile));
@@ -140,6 +157,7 @@ public class CacheUtil {
 
             }
         }
+        log.info("file : " + file + " , has users: " + result.size());
         return result;
     }
 
@@ -170,5 +188,17 @@ public class CacheUtil {
             }
         }
         return result;
+    }
+
+    public static List<Long> getInactiveUsers(){
+        List<Long> users = null;
+        try {
+            GeneratorConfig config = Config.getInstance().getGeneratorConfig();
+
+
+        } catch (IOException e) {
+            log.error("could not get the inactive users: " + ExceptionUtils.getFullStackTrace(e));
+        }
+        return users;
     }
 }

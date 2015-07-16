@@ -45,6 +45,7 @@ public class GeneratorConfig {
     private String pushAllBaseDir = "/tmp/push_all";
     private int pushAllThreadPoolSize = 50;
     private int mysqlFetchSize = 30000;
+    private int generateRequestBatchSize = 10000;
     // today first userid
     private String minUserFilePath = "/Users/tianyuzhi/work/push_notification/trunk/cache/min_new_user_uid";
     private String minUserFilePrefix = "host_table_userid";
@@ -54,8 +55,14 @@ public class GeneratorConfig {
     // local channel cache path
     private String localChannelCachePath = "/home/services/push_services/local_news/cache";
     private String localChannelMappingFile = "/home/services/push_services/local_news/cache/location_channel_cache.data";
+    private int autoLocalCacheIndex = 4;
     private int autoRecommendCacheIndex = 2;
     private int maxCacheIndex = 3;
+    private int pushToUsersBatchSize = 10000;
+    // inactive users cache path
+    private String inactiveUserFilePath = "/home/services/push_notification/cache/recommend_push_users";
+    private String inactiveUserFilePrefix = "inactive_users";
+    private int inactiveUserLookBackDays = 4;
 
 
 

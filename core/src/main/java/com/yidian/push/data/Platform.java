@@ -35,12 +35,15 @@ public enum Platform {
 
     private static List<Platform> ALL_PLATFORMS = null;
     private static Map<String, Integer> TABLE_ID_MAPPING = null;
+    private static Map<String, Platform> TABLE_PLATFORM_MAPPING = null;
     static {
         ALL_PLATFORMS = new ArrayList<>();
         TABLE_ID_MAPPING = new HashMap<>(5);
+        TABLE_PLATFORM_MAPPING = new HashMap<>(5);
         for (Platform platform : Platform.values()) {
             ALL_PLATFORMS.add(platform);
             TABLE_ID_MAPPING.put(platform.getTable(), platform.getTableId());
+            TABLE_PLATFORM_MAPPING.put(platform.getTable(), platform);
         }
     }
     public static List<Platform> getAllPlatforms() {
@@ -62,4 +65,8 @@ public enum Platform {
     public String toString() {
         return name;
     }
+    public static Platform tableToPlatform(String table) {
+        return TABLE_PLATFORM_MAPPING.get(table);
+    }
+
 }

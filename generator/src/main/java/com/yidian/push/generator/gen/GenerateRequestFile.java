@@ -91,9 +91,11 @@ public class GenerateRequestFile {
             String nidKey = PushRequestRedisUtil.genNidLastPushTimeKey(pushRecord, tableId);
             NidLastPushTimePair nidLastPushTimePair = recordNidLastPushTimeMap.get(nidKey);
             if (null == nidLastPushTimePair) {
+                log.info("filtered by nidLastPushTimePair: " + pushRecord.getUid());
                 continue;
             }
             if (nidLastPushTimePair.lastPushTime > validLastPushTime) {
+                log.info("filtered by lastPushTime: " + pushRecord.getUid());
                 continue;
             }
             int nextNid = getNid(table, nidLastPushTimePair.nid, pushRecord);

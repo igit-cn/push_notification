@@ -13,7 +13,7 @@ public enum ProtectMinutes {
     ALL_YDDK("all_yddk", 0),
     AUTO("auto", 30),
     AUTO_BREAK("auto_break", 0),
-    IN_ACTIVITY("inactivity", 0);
+    IN_ACTIVITY("all_inactivity", 0);
 
     private static Map<String, Integer> nameMinMapping = new HashMap<>(6);
     static {

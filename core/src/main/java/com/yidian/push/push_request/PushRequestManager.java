@@ -75,8 +75,10 @@ public class PushRequestManager {
         String file = filePath[filePath.length-1];
         String newStatusDirPath = getRequestStatusDir(newPushRequestStatus);
         File newStatusDir = new File(newStatusDirPath);
-        if (!newStatusDir.isDirectory()) {
-            newStatusDir.mkdirs();
+        synchronized (PushRequestManager.class) {
+            if (!newStatusDir.isDirectory()) {
+                newStatusDir.mkdirs();
+            }
         }
         String newFile = new StringBuilder(newStatusDirPath).append('/').append(file).toString();
         FileUtils.moveFileToDirectory(new File(pushRequest.getFileName()), newStatusDir, true);

@@ -53,16 +53,14 @@
         "androidRangeSize" : 300000,
         "startTime" : 360,
         "endTime" : 1439,
-        "sleepSeconds" : 3,
-        "minUserFilePath" : "/Users/tianyuzhi/work/push_notification/trunk/cache/min_new_user_uid",
-        "lookBackDays" : 4,
-        "iPhonePoolSize" : 10,
-        "androidPoolSize" : 100,
+        "requestScanIntervalInSeconds" : 3,
+        "iPhoneThreadPoolSize" : 10,
+        "androidThreadPoolSize" : 40,
         "secondsToWaitThreadPoolShutDownTimeout" : 300,
         "pushAllSqlFields" : "userid, token, push_level, appid, enable, time_zone, version",
         "pushAllIndexFile" : "/tmp/push_all/push_all_index",
         "pushAllBaseDir" : "/tmp/push_all",
-        "pushAllThreadPoolSize" : 30,
+        "pushAllThreadPoolSize" : 50,
         "mysqlFetchSize" : 30000,
         "minUserFilePath" : "/home/services/push_notification/cache/min_new_user_uid/",
         "minUserFilePrefix" : "host_table_userid",
@@ -70,7 +68,12 @@
         "cacheBasePath" : "/home/services/push_notification/cache",
         "localChannelCachePath" : "/home/services/push_services/local_news/cache",
         "localChannelMappingFile" : "/home/services/push_services/local_news/cache/location_channel_cache.data",
+        "autoLocalCacheIndex" : 4,
         "autoRecommendCacheIndex" : 2,
-        "maxCacheIndex" : 3
+        "maxCacheIndex" : 3,
+        "inactiveUserFilePath" : "/home/services/push_notification/cache/recommend_push_users",
+        "inactiveUserFilePrefix" : "inactive_users",
+        "inactiveUserLookBackDays" : 4
+
     }
 }

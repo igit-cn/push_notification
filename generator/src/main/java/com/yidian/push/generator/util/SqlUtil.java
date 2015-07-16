@@ -22,4 +22,21 @@ public class SqlUtil {
         }
         return sb.toString();
     }
+
+    public static String genQuotedLongList(List<Long> list) {
+        StringBuilder sb = new StringBuilder();
+        boolean isFirst = true;
+        if (null != list && list.size() > 0) {
+            sb.append("(");
+            for (Long str : list) {
+                if (!isFirst) {
+                    sb.append(",");
+                }
+                isFirst = false;
+                sb.append(str);
+            }
+            sb.append(")");
+        }
+        return sb.toString();
+    }
 }

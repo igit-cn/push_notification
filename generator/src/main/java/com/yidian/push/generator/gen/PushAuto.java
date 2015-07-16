@@ -7,19 +7,21 @@ import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushType;
 import com.yidian.push.generator.cache.CacheUtil;
 import com.yidian.push.generator.data.*;
+import com.yidian.push.generator.util.OutServiceUtil;
 import com.yidian.push.push_request.PushRecord;
 import com.yidian.push.utils.GsonFactory;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.channels.Channel;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +38,24 @@ public class PushAuto {
         ExecutorService executor = Executors.newFixedThreadPool(poolSize);
         PushIndex latestPushIndex = RefreshTokens.getInstance().getLatestIndex();
         String latestPushDataPath = latestPushIndex.getDataPath();
+        PushType pushType = PushType.BREAK;
+
+        if (null == task.getPushChannel() || task.getPushChannel().size() == 0) {
+            List<String> pushChannels = OutServiceUtil.getRelatedChannels(task.getPushDocId());
+            if (pushChannels.size() == 0) {
+                log.error("has no related channels for task : " + GsonFactory.getNonPrettyGson().toJson(task));
+                return;
+            }
+            task.setPushChannel(pushChannels);
+        }
+        Set<String> localChannels = CacheUtil.getLocalChannels(generatorConfig.getLocalChannelMappingFile());
+        for (String channel : task.getPushChannel()) {
+            if (localChannels.contains(channel)) {
+                pushType = PushType.LOCAL;
+                break;
+            }
+        }
+        task.setPushType(pushType);
 
         try {
             latestPushIndex.markAsUsing();
@@ -46,7 +66,9 @@ public class PushAuto {
                         hostPortDB.getPort(),
                         task.getTable());
                 String path = RefreshTokens.getPathForHostTable(latestPushDataPath, hostPortDB, task.getTable());
-                Map<Long, String> userIdChannelMap = CacheUtil.getUserIdChannelMapping(task.getTable(), task.getPushChannel());
+                Map<Long, String> userIdChannelMap = new ConcurrentHashMap<>(CacheUtil.getUserIdChannelMapping(task.getTable(), task.getPushChannel()));
+                log.info(task.getPushChannel() + " has " + userIdChannelMap.size() + " users ");
+                log.info(task.getTable() + " today first userid : " + firstDayUserId);
                 File[] files = new File(path).listFiles();
                 if (null == files || files.length == 0) {
                     continue;
@@ -58,6 +80,7 @@ public class PushAuto {
                     pushAutoConfig.setUserIdChannelMapping(userIdChannelMap);
                     pushAutoConfig.setTodayFirstUserId(firstDayUserId);
                     pushAutoConfig.setFile(file.getAbsolutePath());
+                    pushAutoConfig.setBatchSize(generatorConfig.getGenerateRequestBatchSize());
 
                     executor.submit(new Runnable() {
                         @Override
@@ -72,27 +95,25 @@ public class PushAuto {
                     });
                 }
             }
+            try {
+                executor.shutdown();
+                executor.awaitTermination(generatorConfig.getSecondsToWaitThreadPoolShutDownTimeout(), TimeUnit.SECONDS);
+                log.info("DONE one task : " + task.getTable());
+            } catch (InterruptedException e) {
+                log.info("shut down the thread pool failed with exception " + ExceptionUtils.getFullStackTrace(e));
+            }
         } finally {
             latestPushIndex.markAsNoneUsing();
         }
-        try {
-            executor.shutdown();
-            executor.awaitTermination(generatorConfig.getSecondsToWaitThreadPoolShutDownTimeout(), TimeUnit.SECONDS);
-            log.info("DONE one task : " + task.getTable());
-        } catch (InterruptedException e) {
-            log.info("shut down the thread pool failed with exception " + ExceptionUtils.getFullStackTrace(e));
-        }
-
     }
 
     private static void processPushAllWithFile(PushAutoConfig config) throws IOException, SQLException {
-
         String table = config.getTask().getTable();
         BufferedReader bufferedReader = null;
         try {
             long firstDayUserId = config.getTodayFirstUserId();
             long lastUserId = -1;
-            int localTime = DateTime.now().getMinuteOfDay();
+            int localTime = new DateTime(DateTimeZone.UTC).getSecondOfDay();
             int startTime = config.getTask().getStartTime();
             int endTime = config.getTask().getEndTime();
             boolean isIPhone = Platform.isIPhone(table);
@@ -110,6 +131,8 @@ public class PushAuto {
             for (int i = 0; i < redisLength; i++) {
                 pushRecordList.add(new HashMap<String, PushRecord>(config.getBatchSize()));
             }
+            log.info("local time : " + localTime + "; push auto config : " + GsonFactory.getNonPrettyGson().toJson(config));
+            log.info("userIdChannelMapXXX size: " +  (null == userIdChannelMapping ? "null" : userIdChannelMapping.size()));
 
             bufferedReader = new BufferedReader(new FileReader(config.getFile()));
             String line;
@@ -128,25 +151,34 @@ public class PushAuto {
                 String newsChannel = null;
 
                 if (null == userIdChannelMapping || !userIdChannelMapping.containsKey(curUserId)) {
+                    //Long packedLong = curUserId;
+                    //log.info("filtered by userIdChannelMapping: " + curUserId + " # " + userIdChannelMapping.containsKey(packedLong));
                     continue;
                 } else {
                     newsChannel = userIdChannelMapping.get(curUserId);
                 }
                 if (enable == 1 && firstDayUserId != -1 && curUserId > firstDayUserId) {
+                    log.info("filter by fistDayuserid, line :"  + line);
                     continue;
                 }
                 if (enable > 1 && (enable & intPushType) != intPushType) {
+                    log.info("filter by enable, line :"  + line);
                     continue;
                 }
                 if (config.getBucketIds() != null && !config.getBucketIds().contains(bucketId)) {
+                    log.info("filter by bucketid, line :"  + line);
                     continue;
                 }
                 if (null == validAppIdSet || !validAppIdSet.contains(appId)) {
+                    log.info("filter by appid, line :"  + line);
                     continue;
                 }
 
-                int userLocalTime = (localTime + timezone + 1440) % 1440;
-                if (userLocalTime < startTime || userLocalTime > endTime) {
+                // to minute : timezone is in seconds
+                // 1h has 86400(24 * 60 * 60) seconds
+                int userLocalTime = ((localTime + timezone + 86400) % 86400) / 60;
+                if (userLocalTime < startTime ||  endTime < userLocalTime) {
+                    log.info("filter by user local time, line :"  + line);
                     continue;
                 }
                 String tokenLevel = new StringBuilder(token).append(PushRecord.TOKEN_ITEM_SEPARATOR).append(pushLevel).toString();

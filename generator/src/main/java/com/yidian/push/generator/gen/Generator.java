@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,6 +45,8 @@ public class Generator {
         }
     }
 
+
+
     public static Task genTask(RequestContent requestContent) throws IOException {
         Task task = null;
         GeneratorConfig config = Config.getInstance().getGeneratorConfig();
@@ -51,11 +54,16 @@ public class Generator {
         if (StringUtils.isNotEmpty(head) && head.length() > config.getValidMaxHeadLength()) {
             head = "";
         }
+        List<String> channels = null;
+        if (StringUtils.isNotEmpty(requestContent.getNewsChannel())) {
+            channels = Arrays.asList(StringUtils.split(requestContent.getNewsChannel(), ","));
+        }
         task = new Task.Builder()
                 .setPushTitle(requestContent.getTitle())
                 .setPushHead(head)
                 .setPushDocId(requestContent.getDocId())
                 .setPushDate(requestContent.getDate())
+                .setPushChannel(channels)
                 .setStartTime(config.getStartTime())
                 .setEndTime(config.getEndTime()).build();
         return task;
@@ -89,6 +97,7 @@ public class Generator {
             task.setProtectMinutes(protectMinutes);
 
             if ("auto".equals(uid)|| "auto_break".equals(uid)) {
+                task.setAppIdInclude(config.getAPPID_YIDIAN());
                 PushAuto.processTaskWithFile(task);
             }
             else if ("all_yddk".equals(uid)) {
@@ -116,7 +125,43 @@ public class Generator {
                 //PushAll.processTask(task);
                 PushAll.processTaskWithFile(task);
             }
+            else if ("all_inactivity".equals(uid)) {
+                task.setPushType(PushType.BREAK);
+                List<Long> users = GetInactiveUsers.getInactiveUsers(config.getInactiveUserFilePath(),
+                        config.getInactiveUserFilePrefix(),
+                        config.getInactiveUserLookBackDays());
+                pushToUsers(task, users);
+            }
+            else {
+                task.setPushType(PushType.BREAK);
+                List<Long> users = stringListToLongList(requestContent.getUserIds());
+                pushToUsers(task, users);
+            }
         }
         RequestManager.getInstance().markAsProcessed(request);
+    }
+
+    private static List<Long> stringListToLongList(List<String> list) {
+        if (null == list || list.size() == 0) {
+            return new ArrayList<>();
+        }
+        List<Long> res = new ArrayList<>(list.size());
+        for (String str : list) {
+            long uid = -1;
+            try {
+                uid = Long.parseLong(str);
+            } catch (Exception e) {
+                uid = -1;
+            }
+            if (uid > 0) {
+                res.add(uid);
+            }
+        }
+        return res;
+    }
+
+    public static void pushToUsers(Task task, List<Long> uidList) throws IOException {
+        //PushUsers.processTask(task, uidList);
+        PushUsers.processTaskWithFile(task, uidList);
     }
 }

@@ -18,7 +18,7 @@ import java.util.Set;
 public class PushAutoConfig {
     Task task;
     HostPortDB hostPortDB;
-    Map<Long, String> userIdChannelMapping = null;
+    transient Map<Long, String> userIdChannelMapping = null;
     Set<Integer> bucketIds = null;
     Range userRange = null;
     int batchSize = 10000;

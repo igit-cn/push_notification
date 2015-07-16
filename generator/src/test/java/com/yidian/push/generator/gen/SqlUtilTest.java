@@ -16,4 +16,10 @@ public class SqlUtilTest {
         List<String> list = Arrays.asList("1", "2", "3");
         System.out.println(SqlUtil.genQuotedStringList(list));
     }
+
+    @Test
+    public void testGenQuotedLongList() {
+        List<Long> list = Arrays.asList(1L, 2L, 3L);
+        System.out.println(SqlUtil.genQuotedLongList(list));
+    }
 }

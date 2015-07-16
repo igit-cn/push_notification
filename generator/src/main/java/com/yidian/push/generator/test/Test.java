@@ -14,9 +14,13 @@ public class Test {
     public static void main(String[] args) throws InterruptedException {
         DateTime dateTime = new DateTime();
         System.out.println(dateTime);
+        System.out.println(dateTime.getSecondOfDay());
+        System.out.println(dateTime.getSecondOfDay()/60);
+        System.out.println( DateTime.now().getMinuteOfDay());
         System.out.println(dateTime.getHourOfDay());
         System.out.println(dateTime.getMinuteOfHour());
         System.out.println(dateTime.getMinuteOfDay());
+
         System.out.println(DateUtil.getMinOfDay(dateTime));
         System.out.println(dateTime.toString("yyyy-MM-dd HH:mm:ss"));
         System.out.println(dateTime.toString("yyyyMMddHHmmss"));

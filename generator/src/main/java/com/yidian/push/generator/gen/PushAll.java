@@ -11,6 +11,7 @@ import com.yidian.push.utils.GsonFactory;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -56,6 +57,7 @@ public class PushAll {
                     pushAllConfig.setTask(task);
                     pushAllConfig.setTodayFirstUserId(firstDayUserId);
                     pushAllConfig.setFile(file.getAbsolutePath());
+                    pushAllConfig.setBatchSize(generatorConfig.getGenerateRequestBatchSize());
 
                     executor.submit(new Runnable() {
                         @Override
@@ -70,20 +72,18 @@ public class PushAll {
                     });
                 }
             }
-
-
+            try {
+                executor.shutdown();
+                executor.awaitTermination(generatorConfig.getSecondsToWaitThreadPoolShutDownTimeout(), TimeUnit.SECONDS);
+                log.info("DONE one task" + task.getTable());
+            } catch (InterruptedException e) {
+                log.info("shut down the thread pool failed with exception " + ExceptionUtils.getFullStackTrace(e));
+            }
         } finally {
             latestPushIndex.markAsNoneUsing();
         }
-        try {
-            executor.shutdown();
-            executor.awaitTermination(generatorConfig.getSecondsToWaitThreadPoolShutDownTimeout(), TimeUnit.SECONDS);
-            log.info("DONE one task" + task.getTable());
-        } catch (InterruptedException e) {
-            log.info("shut down the thread pool failed with exception " + ExceptionUtils.getFullStackTrace(e));
-        }
-
     }
+
     private static void processPushAllWithFile(PushAllConfig config) throws IOException, SQLException {
 
         String table = config.getTask().getTable();
@@ -91,7 +91,7 @@ public class PushAll {
         try {
             long firstDayUserId = config.getTodayFirstUserId();
             long lastUserId = -1;
-            int localTime = DateTime.now().getMinuteOfDay();
+            int localTime = new DateTime(DateTimeZone.UTC).getSecondOfDay();;
             int startTime = config.getTask().getStartTime();
             int endTime = config.getTask().getEndTime();
             boolean isIPhone = Platform.isIPhone(table);
@@ -138,7 +138,9 @@ public class PushAll {
                     continue;
                 }
 
-                int userLocalTime = (localTime + timezone + 1440) % 1440;
+                // to minute : timezone is in seconds
+                // 1h has 86400(24 * 60 * 60) seconds
+                int userLocalTime = ((localTime + timezone + 86400) % 86400) / 60;
                 if (userLocalTime < startTime || userLocalTime > endTime) {
                     continue;
                 }
@@ -233,6 +235,7 @@ public class PushAll {
                 pushAllConfig.setHostPortDB(hostPortDB);
                 pushAllConfig.setTask(task);
                 pushAllConfig.setTodayFirstUserId(firstDayUserId);
+                pushAllConfig.setBatchSize(generatorConfig.getGenerateRequestBatchSize());
                 index -= rangeSize;
 
                 executor.submit(new Runnable() {
@@ -270,7 +273,7 @@ public class PushAll {
             rs = st.executeQuery(sql);
             long firstDayUserId = config.getTodayFirstUserId();
             long lastUserId = -1;
-            int localTime = DateTime.now().getMinuteOfDay();
+            int localTime = new DateTime(DateTimeZone.UTC).getSecondOfDay();;
             int startTime = config.getTask().getStartTime();
             int endTime = config.getTask().getEndTime();
             boolean isIPhone = Platform.isIPhone(table);
@@ -307,7 +310,9 @@ public class PushAll {
                 if (config.getBucketIds() != null && !config.getBucketIds().contains(bucketId)) {
                     continue;
                 }
-                int userLocalTime = (localTime + timezone + 1440) % 1440;
+                // to minute : timezone is in seconds
+                // 1h has 86400(24 * 60 * 60) seconds
+                int userLocalTime = ((localTime + timezone + 86400) % 86400) / 60;
                 if (userLocalTime < startTime || userLocalTime > endTime) {
                     continue;
                 }
