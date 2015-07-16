@@ -158,15 +158,15 @@ public class PushAuto {
                     newsChannel = userIdChannelMapping.get(curUserId);
                 }
                 if (enable == 1 && firstDayUserId != -1 && curUserId > firstDayUserId) {
-                    log.info("filter by fistDayuserid, line :"  + line);
+                    log.debug("filter by fistDayuserid, line :"  + line);
                     continue;
                 }
                 if (enable > 1 && (enable & intPushType) != intPushType) {
-                    log.info("filter by enable, line :"  + line);
+                    log.debug("filter by enable, line :"  + line);
                     continue;
                 }
                 if (config.getBucketIds() != null && !config.getBucketIds().contains(bucketId)) {
-                    log.info("filter by bucketid, line :"  + line);
+                    log.debug("filter by bucketid, line :"  + line);
                     continue;
                 }
                 if (null == validAppIdSet || !validAppIdSet.contains(appId)) {
@@ -178,7 +178,7 @@ public class PushAuto {
                 // 1h has 86400(24 * 60 * 60) seconds
                 int userLocalTime = ((localTime + timezone + 86400) % 86400) / 60;
                 if (userLocalTime < startTime ||  endTime < userLocalTime) {
-                    log.info("filter by user local time, line :"  + line);
+                    log.debug("filter by user local time, line :"  + line);
                     continue;
                 }
                 String tokenLevel = new StringBuilder(token).append(PushRecord.TOKEN_ITEM_SEPARATOR).append(pushLevel).toString();

@@ -1,16 +1,23 @@
 package com.yidian.push.generator.services;
 
 import com.yidian.push.config.Config;
+import com.yidian.push.config.GeneratorConfig;
 import com.yidian.push.generator.gen.MySqlConnectionPool;
 import com.yidian.push.generator.gen.RedisConnectionPool;
 import com.yidian.push.generator.gen.Generator;
+import com.yidian.push.generator.gen.RefreshTokens;
 import com.yidian.push.utils.FileLock;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by yidianadmin on 15-3-5.
@@ -21,6 +28,12 @@ public class Service implements Runnable {
 
     @Override
     public void run() {
+        GeneratorConfig generatorConfig = null;
+        try {
+            generatorConfig = Config.getInstance().getGeneratorConfig();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         try {
             MySqlConnectionPool.init();
             RedisConnectionPool.init();
@@ -47,14 +60,20 @@ public class Service implements Runnable {
                 }
             }
         });
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+        executor.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    RefreshTokens.getInstance().refresh();
+                } catch (Exception e) {
+                    log.error("refresh tokens failed with exception : " + ExceptionUtils.getFullStackTrace(e));
+                }
+            }
+        }, 0, generatorConfig.getRefreshTokenFrequencyInSeconds(), TimeUnit.SECONDS);
 
-        int sleepTime = 0;
-        try {
-            sleepTime = Config.getInstance().getGeneratorConfig().getRequestScanIntervalInSeconds() * 1000;
-        } catch (IOException e) {
-            log.error("get the sleep time failed. just use the default: 3s ");
-            sleepTime = 3 * 1000;
-        }
+        int sleepTime = generatorConfig.getRequestScanIntervalInSeconds() * 1000;
+
         while(keepRunning) {
             Generator.process();
             try {

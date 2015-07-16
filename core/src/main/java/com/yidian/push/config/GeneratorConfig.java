@@ -63,6 +63,8 @@ public class GeneratorConfig {
     private String inactiveUserFilePath = "/home/services/push_notification/cache/recommend_push_users";
     private String inactiveUserFilePrefix = "inactive_users";
     private int inactiveUserLookBackDays = 4;
+    // refresh frequency
+    private int refreshTokenFrequencyInSeconds = 6000;
 
 
 

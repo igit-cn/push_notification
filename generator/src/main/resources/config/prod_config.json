@@ -73,7 +73,8 @@
         "maxCacheIndex" : 3,
         "inactiveUserFilePath" : "/home/services/push_notification/cache/recommend_push_users",
         "inactiveUserFilePrefix" : "inactive_users",
-        "inactiveUserLookBackDays" : 4
+        "inactiveUserLookBackDays" : 4,
+        "refreshTokenFrequencyInSeconds" : 600
 
     }
 }

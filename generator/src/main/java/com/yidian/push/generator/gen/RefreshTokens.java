@@ -150,6 +150,7 @@ public class RefreshTokens {
         FileUtils.forceMkdir(new File(nextPath));
         ExecutorService executorService = Executors.newFixedThreadPool(config.getAndroidThreadPoolSize() + config.getIPhoneThreadPoolSize());
         long startTime = System.currentTimeMillis();
+        log.info("start to dump data from DB ");
 
 
         for (final HostPortDB hostPortDB : config.getMYSQL_HOSTS()) {
@@ -171,7 +172,7 @@ public class RefreshTokens {
                                     .append(" where enable > 0 and appid in ").append(SqlUtil.genQuotedStringList(config.getAPPID_YIDIAN()))
                                     .append(" and userid >= ").append(range.getStart()).append(" and userid < ").append(range.getEnd())
                                     .append(" order by userid ASC ");
-                            System.out.println(sql);
+                            //System.out.println(sql);
                             Connection connection = null;
                             Statement st = null;
                             ResultSet rs = null;
