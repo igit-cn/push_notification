@@ -199,7 +199,7 @@ public class PushAll {
                                 table, redisId, config.getTask().getPushType().getString(),
                                 collection, config.getBatchSize(), config.getTask().getProtectMinutes());
                     } catch (IOException e) {
-                        log.info("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
+                        log.error("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
                     }
                     map.clear();
                 }
@@ -215,7 +215,6 @@ public class PushAll {
     }
 
     public static void processTask(Task task) throws IOException {
-
         GeneratorConfig generatorConfig = Config.getInstance().getGeneratorConfig();
 
         int rangeSize = 0;
@@ -230,6 +229,7 @@ public class PushAll {
         int maxUserId = generatorConfig.getMaxUserId();
         int index = maxUserId;
         ExecutorService executor = Executors.newFixedThreadPool(poolSize);
+        List<Future<Long>> resultList = new ArrayList<>(10000);
         while (index > 0) {
             for (HostPortDB hostPortDB : generatorConfig.getMYSQL_HOSTS()) {
                 long firstDayUserId = GetFirstUserId.getTodayFirstUserId(generatorConfig.getMinUserFilePath(),
@@ -245,18 +245,25 @@ public class PushAll {
                 pushAllConfig.setBatchSize(generatorConfig.getGenerateRequestBatchSize());
                 index -= rangeSize;
 
-                executor.submit(new Runnable() {
+                Future<Long> future = executor.submit(new Callable<Long>() {
                     @Override
-                    public void run() {
-                        try {
-                            processPushAll(pushAllConfig);
-                        } catch (Exception e) {
-                            log.error("push all[" + GsonFactory.getNonPrettyGson().toJson(pushAllConfig)
-                                    + "] failed with exception : " + ExceptionUtils.getFullStackTrace(e));
-                        }
+                    public Long call() throws Exception {
+                        return processPushAll(pushAllConfig);
                     }
                 });
+                resultList.add(future);
             }
+            int totalPushUsers = 0;
+            for (Future<Long> future : resultList) {
+                try {
+                    if (future.isDone()) {
+                        totalPushUsers += future.get(1, TimeUnit.SECONDS);
+                    }
+                } catch (Exception e) {
+                    log.error("get the push number failed.");
+                }
+            }
+            task.setTotalPushUsers(totalPushUsers);
         }
         try {
             executor.shutdown();
@@ -267,7 +274,8 @@ public class PushAll {
         }
     }
 
-    private static void processPushAll(PushAllConfig config) throws IOException, SQLException {
+    private static long processPushAll(PushAllConfig config) throws IOException, SQLException {
+        long totalPushUsers = 0;
         Connection connection = MySqlConnectionPool.getConnection(config.getHostPortDB());
         log.info("got the connection " + config.getTask().getTable() + ":" + config.getUserRange());
         Statement st = null;
@@ -351,7 +359,7 @@ public class PushAll {
                     if (map.size() >= batchSize) {
                         Collection<PushRecord> collection = map.values();
                         try {
-                            GenerateRequestFile.generateRequestFile(config.getHostPortDB().getHost(), config.getHostPortDB().getPort(),
+                            totalPushUsers += GenerateRequestFile.generateRequestFile(config.getHostPortDB().getHost(), config.getHostPortDB().getPort(),
                                     table, redisId, config.getTask().getPushType().getString(),
                                     collection, config.getBatchSize(), config.getTask().getProtectMinutes());
                         } catch (IOException e) {
@@ -369,7 +377,7 @@ public class PushAll {
                 if (map.size() > 0) {
                     Collection<PushRecord> collection = map.values();
                     try {
-                        GenerateRequestFile.generateRequestFile(config.getHostPortDB().getHost(), config.getHostPortDB().getPort(),
+                        totalPushUsers += GenerateRequestFile.generateRequestFile(config.getHostPortDB().getHost(), config.getHostPortDB().getPort(),
                                 table, redisId, config.getTask().getPushType().getString(),
                                 collection, config.getBatchSize(), config.getTask().getProtectMinutes());
                     } catch (IOException e) {
@@ -398,6 +406,7 @@ public class PushAll {
                 }
             }
         }
+        return totalPushUsers;
     }
 
 

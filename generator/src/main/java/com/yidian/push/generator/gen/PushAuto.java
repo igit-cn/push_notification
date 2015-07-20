@@ -65,7 +65,7 @@ public class PushAuto {
                         task.getTable());
                 String path = RefreshTokens.getPathForHostTable(latestPushDataPath, hostPortDB, task.getTable());
                 Map<Long, String> userIdChannelMap = new ConcurrentHashMap<>(CacheUtil.getUserIdChannelMapping(task.getTable(), task.getPushChannel()));
-                log.info(task.getPushChannel() + " has " + userIdChannelMap.size() + " users ");
+                log.debug(task.getPushChannel() + " has " + userIdChannelMap.size() + " users ");
                 log.info(task.getTable() + " today first userid : " + firstDayUserId);
                 File[] files = new File(path).listFiles();
                 if (null == files || files.length == 0) {
@@ -137,8 +137,8 @@ public class PushAuto {
             for (int i = 0; i < redisLength; i++) {
                 pushRecordList.add(new HashMap<String, PushRecord>(config.getBatchSize()));
             }
-            log.info("local time : " + localTime + "; push auto config : " + GsonFactory.getNonPrettyGson().toJson(config));
-            log.info("userIdChannelMapXXX size: " +  (null == userIdChannelMapping ? "null" : userIdChannelMapping.size()));
+            log.debug("local time : " + localTime + "; push auto config : " + GsonFactory.getNonPrettyGson().toJson(config));
+            log.debug("userIdChannelMapXXX size: " +  (null == userIdChannelMapping ? "null" : userIdChannelMapping.size()));
 
             bufferedReader = new BufferedReader(new FileReader(config.getFile()));
             String line;
@@ -176,7 +176,7 @@ public class PushAuto {
                     continue;
                 }
                 if (null == validAppIdSet || !validAppIdSet.contains(appId)) {
-                    log.info("filter by appid, line :"  + line);
+                    log.debug("filter by appid, line :"  + line);
                     continue;
                 }
 
@@ -220,7 +220,7 @@ public class PushAuto {
                                     table, redisId, config.getTask().getPushType().getString(),
                                     collection, config.getBatchSize(), config.getTask().getProtectMinutes());
                         } catch (IOException e) {
-                            log.info("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
+                            log.error("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
                         }
                         map.clear();
                     }
@@ -238,7 +238,7 @@ public class PushAuto {
                                 table, redisId, config.getTask().getPushType().getString(),
                                 collection, config.getBatchSize(), config.getTask().getProtectMinutes());
                     } catch (IOException e) {
-                        log.info("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
+                        log.error("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
                     }
                     map.clear();
                 }

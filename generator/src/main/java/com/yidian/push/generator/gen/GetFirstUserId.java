@@ -33,7 +33,7 @@ public class GetFirstUserId {
     public static long getTodayFirstUserId(String path, String prefix, String host, int port, String table) throws IOException {
         List<HostPortTableUserId> list = null;
         try {
-            getTodayFirstUserId(path, prefix);
+            list = getTodayFirstUserId(path, prefix);
             if (null != list) {
                 for (HostPortTableUserId item : list) {
                     if (item.host.equals(host) && item.port == port && item.table.equals(table)) {
