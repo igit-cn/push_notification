@@ -169,7 +169,8 @@ public class RefreshTokens {
                         public void run() {
                             StringBuffer sql = new StringBuffer("select ").append(config.getPushAllSqlFields())
                                     .append(" from ").append(table)
-                                    .append(" where enable > 0 and appid in ").append(SqlUtil.genQuotedStringList(config.getAPPID_YIDIAN()))
+                                    //.append(" where enable > 0 and appid in ").append(SqlUtil.genQuotedStringList(config.getAPPID_YIDIAN()))
+                                    .append(" where enable > 0 ")
                                     .append(" and userid >= ").append(range.getStart()).append(" and userid < ").append(range.getEnd())
                                     .append(" order by userid ASC ");
                             //System.out.println(sql);

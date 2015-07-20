@@ -96,30 +96,37 @@ public class Generator {
             String uid = uids.get(0);
             int protectMinutes = ProtectMinutes.getProtectMinute(uid);
             task.setProtectMinutes(protectMinutes);
+            String description = "";
 
             if ("auto".equals(uid)|| "auto_break".equals(uid)) {
                 task.setAppIdInclude(config.getAPPID_YIDIAN());
                 PushAuto.processTaskWithFile(task);
+                description = "个性化";
             }
             else if ("all_yddk".equals(uid)) {
                 task.setPushType(PushType.BREAK);
                 task.setAppIdInclude(Arrays.asList("yddk"));
                 PushAll.processTaskWithFile(task);
+                description = "一点鼎开";
             }
             else if ("all".equals(uid)) {
                 String title = requestContent.getTitle();
                 PushType pushType = PushType.BREAK;
                 if (title.startsWith("[早报]")) {
                     pushType = PushType.MORNING;
+                    description = "早报";
                 }
                 else if (title.startsWith("[娱乐播报]'") || title.startsWith("[娱报]") || title.startsWith("[娱味]")) {
                     pushType = PushType.NOON;
+                    description = "午报";
                 }
                 else if (title.startsWith("[晚报]")) {
                     pushType = PushType.EVENING;
+                    description = "晚报";
                 }
                 else if (title.startsWith("[夜咖]")) {
                     pushType = PushType.NIGHT;
+                    description = "夜读";
                 }
                 task.setPushType(pushType);
                 task.setAppIdInclude(config.getAPPID_YIDIAN());
@@ -132,12 +139,15 @@ public class Generator {
                         config.getInactiveUserFilePrefix(),
                         config.getInactiveUserLookBackDays());
                 pushToUsers(task, users);
+                description = "不活跃用户";
             }
             else {
                 task.setPushType(PushType.BREAK);
                 List<Long> users = stringListToLongList(requestContent.getUserIds());
                 pushToUsers(task, users);
+                description = "突发事件";
             }
+            log.info("push " + task.getTotalPushUsers() + " to " + table + " users");
         }
         RequestManager.getInstance().markAsProcessed(request);
     }

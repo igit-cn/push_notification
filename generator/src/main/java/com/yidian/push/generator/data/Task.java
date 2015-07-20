@@ -25,6 +25,7 @@ public class Task {
     private int protectMinutes = 0;
     private int startTime = 6 * 60;
     private int endTime = 24 * 60 - 1;
+    private long totalPushUsers = 0;
 
     public Task(String pushTitle, String pushDocId, String pushHash,
                 PushType pushType, String pushDate,

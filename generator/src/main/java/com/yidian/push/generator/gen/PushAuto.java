@@ -21,10 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created by tianyuzhi on 15/6/18.
@@ -36,6 +33,7 @@ public class PushAuto {
         GeneratorConfig generatorConfig = Config.getInstance().getGeneratorConfig();
         int poolSize = generatorConfig.getPoolSize(task.getTable());
         ExecutorService executor = Executors.newFixedThreadPool(poolSize);
+        List<Future<Long>> resultList = new ArrayList<>(10000);
         PushIndex latestPushIndex = RefreshTokens.getInstance().getLatestIndex();
         String latestPushDataPath = latestPushIndex.getDataPath();
         PushType pushType = PushType.BREAK;
@@ -82,17 +80,13 @@ public class PushAuto {
                     pushAutoConfig.setFile(file.getAbsolutePath());
                     pushAutoConfig.setBatchSize(generatorConfig.getGenerateRequestBatchSize());
 
-                    executor.submit(new Runnable() {
+                    Future<Long> future = executor.submit(new Callable<Long>() {
                         @Override
-                        public void run() {
-                            try {
-                                processPushAllWithFile(pushAutoConfig);
-                            } catch (Exception e) {
-                                log.error("push all[" + GsonFactory.getNonPrettyGson().toJson(pushAutoConfig)
-                                        + "] failed with exception : " + ExceptionUtils.getFullStackTrace(e));
-                            }
+                        public Long call() throws Exception {
+                            return processWithFile(pushAutoConfig);
                         }
                     });
+                    resultList.add(future);
                 }
             }
             try {
@@ -102,12 +96,24 @@ public class PushAuto {
             } catch (InterruptedException e) {
                 log.info("shut down the thread pool failed with exception " + ExceptionUtils.getFullStackTrace(e));
             }
+            int totalPushUsers = 0;
+            for (Future<Long> future : resultList) {
+                try {
+                    if (future.isDone()) {
+                        totalPushUsers += future.get(1, TimeUnit.SECONDS);
+                    }
+                } catch (Exception e) {
+                    log.error("get the push number failed.");
+                }
+            }
+            task.setTotalPushUsers(totalPushUsers);
         } finally {
             latestPushIndex.markAsNoneUsing();
         }
     }
 
-    private static void processPushAllWithFile(PushAutoConfig config) throws IOException, SQLException {
+    private static long processWithFile(PushAutoConfig config) throws IOException, SQLException {
+        long totalPushUsers = 0;
         String table = config.getTask().getTable();
         BufferedReader bufferedReader = null;
         try {
@@ -210,7 +216,7 @@ public class PushAuto {
                     if (map.size() >= batchSize) {
                         Collection<PushRecord> collection = map.values();
                         try {
-                            GenerateRequestFile.generateRequestFile(config.getHostPortDB().getHost(), config.getHostPortDB().getPort(),
+                            totalPushUsers += GenerateRequestFile.generateRequestFile(config.getHostPortDB().getHost(), config.getHostPortDB().getPort(),
                                     table, redisId, config.getTask().getPushType().getString(),
                                     collection, config.getBatchSize(), config.getTask().getProtectMinutes());
                         } catch (IOException e) {
@@ -228,7 +234,7 @@ public class PushAuto {
                 if (map.size() > 0) {
                     Collection<PushRecord> collection = map.values();
                     try {
-                        GenerateRequestFile.generateRequestFile(config.getHostPortDB().getHost(), config.getHostPortDB().getPort(),
+                        totalPushUsers += GenerateRequestFile.generateRequestFile(config.getHostPortDB().getHost(), config.getHostPortDB().getPort(),
                                 table, redisId, config.getTask().getPushType().getString(),
                                 collection, config.getBatchSize(), config.getTask().getProtectMinutes());
                     } catch (IOException e) {
@@ -244,6 +250,7 @@ public class PushAuto {
                 } catch (IOException e) {}
             }
         }
+        return totalPushUsers;
     }
 
 }

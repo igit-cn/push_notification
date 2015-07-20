@@ -19,7 +19,8 @@ public class PushRequestRedisUtilTest {
 
     @BeforeClass
     public void before() throws IOException {
-        Config.setCONFIG_FILE("generator/src/main/resources/config/config.json");
+        String projectDir = System.getProperty("user.dir");
+        Config.setCONFIG_FILE(projectDir + "/src/main/resources/config/config.json");
         RedisConnectionPool.init();
     }
 
@@ -70,7 +71,7 @@ public class PushRequestRedisUtilTest {
     public void testGetNidAndLastPushTime() throws Exception {
         PushRecord pushRecord = new PushRecord.Builder().setUid(77).setAppId("yidian").build();
         PushRecord pushRecord2 = new PushRecord.Builder().setUid(65).setAppId("yidian").build();
-        int redisId = 1;
+        int redisId = 0;
         String table = Platform.IPHONE.getTable();
         List<PushRecord> pushRecordList = Arrays.asList(pushRecord, pushRecord2);
 
@@ -82,7 +83,7 @@ public class PushRequestRedisUtilTest {
     public void testGetPushChannel() throws Exception {
         PushRecord pushRecord = new PushRecord.Builder().setUid(77).setAppId("yidian").build();
         PushRecord pushRecord2 = new PushRecord.Builder().setUid(65).setAppId("yidian").build();
-        int redisId = 1;
+        int redisId = 0;
         String table = Platform.IPHONE.getTable();
         List<PushRecord> pushRecordList = Arrays.asList(pushRecord, pushRecord2);
 
