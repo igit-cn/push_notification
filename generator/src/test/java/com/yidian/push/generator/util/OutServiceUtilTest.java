@@ -17,4 +17,9 @@ public class OutServiceUtilTest {
         List<String> docIdList = OutServiceUtil.getRelatedChannels(docId);
         System.out.println("docid [" + docId + "] has related channels : " + docIdList);
     }
+
+    @Test
+    public void testSendPushEventToDataTeam() {
+        assert OutServiceUtil.sendPushEventToDataTeam(0, "test...");
+    }
 }

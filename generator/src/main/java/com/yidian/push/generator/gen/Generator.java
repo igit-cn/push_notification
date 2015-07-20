@@ -10,6 +10,7 @@ import com.yidian.push.generator.request.Request;
 import com.yidian.push.generator.request.RequestContent;
 import com.yidian.push.generator.request.RequestManager;
 import com.yidian.push.generator.request.RequestStatus;
+import com.yidian.push.generator.util.OutServiceUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -161,7 +162,14 @@ public class Generator {
     }
 
     public static void pushToUsers(Task task, List<Long> uidList) throws IOException {
-        //PushUsers.processTask(task, uidList);
-        PushUsers.processTaskWithFile(task, uidList);
+        PushUsers.processTask(task, uidList);
+        //PushUsers.processTaskWithFile(task, uidList);
+    }
+
+    public static boolean sendNotificationToDataTeam(Task task, int pushNum, String desc) {
+        if (Platform.isAndroid(task.getTable())) {
+            OutServiceUtil.sendPushEventToDataTeam(pushNum, desc);
+        }
+        return true;
     }
 }
