@@ -1,9 +1,9 @@
 {
     "lockFile" : "/tmp/push_notification_request_generator.lck",
-    "pushRequestBaseDir" : "/home/services/tianzy/test_generator/requests",
-    "requestBaseDir" : "/home/services/tianzy/test_generator/task",
+    "pushRequestBaseDir" : "/ssd/data/push_notification/request",
+    "requestBaseDir" : "/home/services/push_notification/task",
     "generatorConfig" : {
-        "lockFile" : "/tmp/push_notification_generator.lck",
+        "lockFile" : "/tmp/push_notification_request_generator.lck",
         "basePath" : "",
         "environment" : "production",
         "APPID_YIDIAN" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw"],
