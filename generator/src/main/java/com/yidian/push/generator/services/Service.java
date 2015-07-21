@@ -7,6 +7,7 @@ import com.yidian.push.generator.gen.RedisConnectionPool;
 import com.yidian.push.generator.gen.Generator;
 import com.yidian.push.generator.gen.RefreshTokens;
 import com.yidian.push.utils.FileLock;
+import com.yidian.push.utils.GsonFactory;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
@@ -31,6 +32,7 @@ public class Service implements Runnable {
         GeneratorConfig generatorConfig = null;
         try {
             generatorConfig = Config.getInstance().getGeneratorConfig();
+            log.info("generatorConfig is " + GsonFactory.getPrettyGson().toJson(generatorConfig));
         } catch (IOException e) {
             e.printStackTrace();
         }

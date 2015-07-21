@@ -5,7 +5,7 @@
     "generatorConfig" : {
         "lockFile" : "/tmp/push_notification_generator.lck",
         "basePath" : "",
-        "environment" : "",
+        "environment" : "production",
         "APPID_YIDIAN" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw"],
         "APPID_XIAOMI" : ["xiaomi","zxpad"],
         "MYSQL_USER" : "",
@@ -75,6 +75,5 @@
         "inactiveUserFilePrefix" : "inactive_users",
         "inactiveUserLookBackDays" : 4,
         "refreshTokenFrequencyInSeconds" : 600
-
     }
 }

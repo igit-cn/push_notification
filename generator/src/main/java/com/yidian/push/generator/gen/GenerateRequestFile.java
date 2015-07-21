@@ -1,5 +1,7 @@
 package com.yidian.push.generator.gen;
 
+import com.yidian.push.config.Config;
+import com.yidian.push.data.Environment;
 import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushChannel;
 import com.yidian.push.generator.data.AppId;
@@ -146,8 +148,10 @@ public class GenerateRequestFile {
                 }
             }
         }
-        // TODO : enable this in production
-        PushRequestRedisUtil.updateRedis(redisId, redisUpdateMap);
+        Environment environment = Config.getInstance().getGeneratorConfig().getEnvironment();
+        if (null != environment && environment == Environment.RRODUCTION) {
+            PushRequestRedisUtil.updateRedis(redisId, redisUpdateMap);
+        }
         return totalPushUsers;
     }
 }
