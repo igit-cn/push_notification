@@ -57,7 +57,7 @@
         "iPhoneThreadPoolSize" : 10,
         "androidThreadPoolSize" : 40,
         "secondsToWaitThreadPoolShutDownTimeout" : 300,
-        "pushAllSqlFields" : "userid, token, push_level, appid, enable, time_zone, version",
+        "pushAllSqlFields" : "userid, token, push_level, appid, enable, time_zone, version, sound",
         "pushAllIndexFile" : "/ssd/data/push_notification/push_db_dump/push_all_index",
         "pushAllBaseDir" : "/ssd/data/push_notification/push_db_dump",
         "pushAllThreadPoolSize" : 50,

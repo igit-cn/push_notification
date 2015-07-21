@@ -147,7 +147,7 @@ public class Generator {
                 pushToUsers(task, users);
                 description = "突发事件";
             }
-            log.info("push " + task.getTotalPushUsers() + " to " + table + " users");
+            log.info("push to " + task.getTotalPushUsers() + " " + table + " users");
         }
         RequestManager.getInstance().markAsProcessed(request);
     }

@@ -40,6 +40,7 @@ public class PushAuto {
 
         if (null == task.getPushChannel() || task.getPushChannel().size() == 0) {
             List<String> pushChannels = OutServiceUtil.getRelatedChannels(task.getPushDocId());
+            log.info("no channels selected, use the default channels : " + GsonFactory.getNonPrettyGson().toJson(pushChannels));
             if (pushChannels.size() == 0) {
                 log.error("has no related channels for task : " + GsonFactory.getNonPrettyGson().toJson(task));
                 return;
@@ -138,7 +139,7 @@ public class PushAuto {
                 pushRecordList.add(new HashMap<String, PushRecord>(config.getBatchSize()));
             }
             log.debug("local time : " + localTime + "; push auto config : " + GsonFactory.getNonPrettyGson().toJson(config));
-            log.debug("userIdChannelMapXXX size: " +  (null == userIdChannelMapping ? "null" : userIdChannelMapping.size()));
+            log.debug("userIdChannelMapXXX size: " + (null == userIdChannelMapping ? "null" : userIdChannelMapping.size()));
 
             bufferedReader = new BufferedReader(new FileReader(config.getFile()));
             String line;
@@ -164,7 +165,7 @@ public class PushAuto {
                     newsChannel = userIdChannelMapping.get(curUserId);
                 }
                 if (enable == 1 && firstDayUserId != -1 && curUserId > firstDayUserId) {
-                    log.debug("filter by fistDayuserid, line :"  + line);
+                    log.debug("filter by fistDayuserid, line :" + line);
                     continue;
                 }
                 if (enable > 1 && (enable & intPushType) != intPushType) {
@@ -176,7 +177,7 @@ public class PushAuto {
                     continue;
                 }
                 if (null == validAppIdSet || !validAppIdSet.contains(appId)) {
-                    log.debug("filter by appid, line :"  + line);
+                    log.debug("filter by appid, line :" + line);
                     continue;
                 }
 

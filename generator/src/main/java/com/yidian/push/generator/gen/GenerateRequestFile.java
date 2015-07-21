@@ -147,7 +147,7 @@ public class GenerateRequestFile {
             }
         }
         // TODO : enable this in production
-        //PushRequestRedisUtil.updateRedis(redisId, redisUpdateMap);
+        PushRequestRedisUtil.updateRedis(redisId, redisUpdateMap);
         return totalPushUsers;
     }
 }
