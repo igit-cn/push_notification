@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class CacheUtilTest {
 
-    @Test
+    //@Test
     public void testGetUserSInFile() throws Exception {
         String file = "/Users/tianyuzhi/u539";
         long startTime = System.currentTimeMillis();
@@ -31,7 +31,7 @@ public class CacheUtilTest {
         }
     }
 
-    @Test
+    //@Test
     public void testGetUserSInFile2() throws Exception {
         String file = "/Users/tianyuzhi/t973";
         long startTime = System.currentTimeMillis();
