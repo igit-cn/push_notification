@@ -111,7 +111,7 @@ public class PushUsers {
         ResultSet rs = null;
         String sql = config.genSql();
         String table = config.getTask().getTable();
-        System.out.println(sql);
+       // System.out.println(sql);
         try {
             st = connection.createStatement();
             rs = st.executeQuery(sql);
@@ -146,15 +146,18 @@ public class PushUsers {
                 int bucketId = Bucket.getBucketId(curUserId);
 
                 if (enable == 1 && firstDayUserId != -1 && curUserId > firstDayUserId) {
+                    log.debug("filter by first day userId : " + curUserId);
                     continue;
                 }
                 if (config.getBucketIds() != null && !config.getBucketIds().contains(bucketId)) {
+                    log.debug("filter by bucket id ");
                     continue;
                 }
                 // to minute : timezone is in seconds
                 // 1h has 86400(24 * 60 * 60) seconds
                 int userLocalTime = ((localTime + timezone + 86400) % 86400) / 60;
                 if (userLocalTime < startTime || userLocalTime > endTime) {
+                    log.debug("filter by user local time ");
                     continue;
                 }
                 String tokenLevel = new StringBuilder(token).append(PushRecord.TOKEN_ITEM_SEPARATOR).append(pushLevel).toString();

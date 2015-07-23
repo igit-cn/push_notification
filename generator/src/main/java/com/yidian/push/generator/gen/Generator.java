@@ -75,6 +75,7 @@ public class Generator {
         GeneratorConfig config = Config.getInstance().getGeneratorConfig();
         RequestManager.getInstance().markAsProcessing(request);
         RequestContent requestContent= null;
+        boolean shouldSendOutNotify = true;
         try {
             requestContent = RequestContent.buildRequestContentFromFile(request.getFileName());
         } catch (IOException e) {
@@ -129,6 +130,9 @@ public class Generator {
                     pushType = PushType.BREAK;
                     description = "夜读";
                 }
+                else {
+                    description = "突发事件";
+                }
                 task.setPushType(pushType);
                 task.setAppIdInclude(config.getAPPID_YIDIAN());
                 //PushAll.processTask(task);
@@ -146,10 +150,11 @@ public class Generator {
                 task.setPushType(PushType.BREAK);
                 List<Long> users = stringListToLongList(requestContent.getUserIds());
                 pushToUsers(task, users, false);
-                description = "突发事件";
+                shouldSendOutNotify = false;
+                //description = "突发事件";
             }
             log.info("push to " + task.getTotalPushUsers() + " " + table + " users");
-            if (config.isNeedSendNotification()) {
+            if (shouldSendOutNotify && config.isNeedSendNotification()) {
                 sendNotificationToDataTeam(task, description);
             }
         }

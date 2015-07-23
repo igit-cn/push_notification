@@ -43,9 +43,9 @@ public class PushUsersConfig {
             priority.append(" and userid in ").append(SqlUtil.genQuotedLongList(users));
         }
 
-        if (todayFirstUserId > 0) {
-            priority.append(" and userid < ").append(todayFirstUserId);
-        }
+//        if (todayFirstUserId > 0) {
+//            priority.append(" and userid < ").append(todayFirstUserId);
+//        }
         String table = task.getTable();
         if (Platform.isIPhone(table)) {
             //select userid, token, push_level, appid, enable, time_zone, version from %s where (enable = 1 or enable & %d) %s order by userid desc, version desc
