@@ -65,6 +65,7 @@ public class GeneratorConfig {
     private int inactiveUserLookBackDays = 4;
     // refresh frequency
     private int refreshTokenFrequencyInSeconds = 6000;
+    private boolean needSendNotification = false;
 
 
 

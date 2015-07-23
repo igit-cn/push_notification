@@ -18,7 +18,7 @@
         "tomcatDBCPProperties" : {
             "driverClassName" : "com.mysql.jdbc.Driver",
             "username" : "account",
-            "password" : "`c2#^@j1T)oX:_",
+            "password" : "&t8DFylw3(r",
             "jmxEnabled" : true,
             "testWhileIdle" : false,
             "testOnBorrow" : true,
@@ -71,6 +71,7 @@
         "inactiveUserFilePath" : "/home/services/push_notification/cache/recommend_push_users",
         "inactiveUserFilePrefix" : "inactive_users",
         "inactiveUserLookBackDays" : 4,
-        "refreshTokenFrequencyInSeconds" : 600
+        "refreshTokenFrequencyInSeconds" : 600,
+        "needSendNotification" : false
     }
 }

@@ -189,7 +189,7 @@ public class PushUsers {
                                     table, redisId, config.getTask().getPushType().getString(),
                                     collection, config.getBatchSize(), config.getTask().getProtectMinutes());
                         } catch (IOException e) {
-                            log.info("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
+                            log.error("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
                         }
                         map.clear();
                     }
@@ -326,7 +326,7 @@ public class PushUsers {
             for (int i = 0; i < redisLength; i++) {
                 pushRecordList.add(new HashMap<String, PushRecord>(config.getBatchSize()));
             }
-            log.info("local time : " + localTime + "; push auto config : " + GsonFactory.getNonPrettyGson().toJson(config));
+           // log.info("local time : " + localTime + "; push users config : " + GsonFactory.getNonPrettyGson().toJson(config));
 
             bufferedReader = new BufferedReader(new FileReader(config.getFile()));
             String line;
@@ -349,15 +349,15 @@ public class PushUsers {
                     continue;
                 }
                 if (enable == 1 && firstDayUserId != -1 && curUserId > firstDayUserId) {
-                    log.info("filter by fistDayuserid, line :" + line);
+                    log.debug("filter by firstDayUserId, line :" + line);
                     continue;
                 }
                 if (enable > 1 && (enable & intPushType) != intPushType) {
-                    log.info("filter by enable, line :" + line);
+                    log.debug("filter by enable, line :" + line);
                     continue;
                 }
                 if (config.getBucketIds() != null && !config.getBucketIds().contains(bucketId)) {
-                    log.info("filter by bucketid, line :" + line);
+                    log.debug("filter by bucketid, line :" + line);
                     continue;
                 }
 //                if (null == validAppIdSet || !validAppIdSet.contains(appId)) {
@@ -369,7 +369,7 @@ public class PushUsers {
                 // 1h has 86400(24 * 60 * 60) seconds
                 int userLocalTime = ((localTime + timezone + 86400) % 86400) / 60;
                 if (userLocalTime < startTime || endTime < userLocalTime) {
-                    log.info("filter by user local time, line :" + line);
+                    log.debug("filter by user local time, line :" + line);
                     continue;
                 }
                 String tokenLevel = new StringBuilder(token).append(PushRecord.TOKEN_ITEM_SEPARATOR).append(pushLevel).toString();
@@ -405,7 +405,7 @@ public class PushUsers {
                                     table, redisId, config.getTask().getPushType().getString(),
                                     collection, config.getBatchSize(), config.getTask().getProtectMinutes());
                         } catch (IOException e) {
-                            log.info("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
+                            log.error("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
                         }
                         map.clear();
                     }
@@ -423,7 +423,7 @@ public class PushUsers {
                                 table, redisId, config.getTask().getPushType().getString(),
                                 collection, config.getBatchSize(), config.getTask().getProtectMinutes());
                     } catch (IOException e) {
-                        log.info("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
+                        log.error("gen request file failed with exception : " + ExceptionUtils.getFullStackTrace(e));
                     }
                     map.clear();
                 }

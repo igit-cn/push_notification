@@ -51,7 +51,7 @@ public class OutServiceUtil {
         return channels;
     }
 
-    public static boolean sendPushEventToDataTeam(int pushNum, String desc) {
+    public static boolean sendPushEventToDataTeam(long pushNum, String desc) {
         Map<String, String> data = new HashMap<>(4);
         long seconds = System.currentTimeMillis() / 1000;
         data.put("timestamp", seconds + "");

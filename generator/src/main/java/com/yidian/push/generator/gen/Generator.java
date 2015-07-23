@@ -125,7 +125,8 @@ public class Generator {
                     description = "晚报";
                 }
                 else if (title.startsWith("[夜咖]")) {
-                    pushType = PushType.NIGHT;
+                    //pushType = PushType.NIGHT;
+                    pushType = PushType.BREAK;
                     description = "夜读";
                 }
                 task.setPushType(pushType);
@@ -138,16 +139,19 @@ public class Generator {
                 List<Long> users = GetInactiveUsers.getInactiveUsers(config.getInactiveUserFilePath(),
                         config.getInactiveUserFilePrefix(),
                         config.getInactiveUserLookBackDays());
-                pushToUsers(task, users);
+                pushToUsers(task, users, true);
                 description = "不活跃用户";
             }
             else {
                 task.setPushType(PushType.BREAK);
                 List<Long> users = stringListToLongList(requestContent.getUserIds());
-                pushToUsers(task, users);
+                pushToUsers(task, users, false);
                 description = "突发事件";
             }
             log.info("push to " + task.getTotalPushUsers() + " " + table + " users");
+            if (config.isNeedSendNotification()) {
+                sendNotificationToDataTeam(task, description);
+            }
         }
         RequestManager.getInstance().markAsProcessed(request);
     }
@@ -171,14 +175,18 @@ public class Generator {
         return res;
     }
 
-    public static void pushToUsers(Task task, List<Long> uidList) throws IOException {
-        PushUsers.processTask(task, uidList);
-        //PushUsers.processTaskWithFile(task, uidList);
+    public static void pushToUsers(Task task, List<Long> uidList, boolean useFile) throws IOException {
+        if (useFile) {
+            PushUsers.processTaskWithFile(task, uidList);
+        }
+        else {
+            PushUsers.processTask(task, uidList);
+        }
     }
 
-    public static boolean sendNotificationToDataTeam(Task task, int pushNum, String desc) {
+    public static boolean sendNotificationToDataTeam(Task task, String desc) {
         if (Platform.isAndroid(task.getTable())) {
-            OutServiceUtil.sendPushEventToDataTeam(pushNum, desc);
+            OutServiceUtil.sendPushEventToDataTeam(task.getTotalPushUsers(), desc);
         }
         return true;
     }

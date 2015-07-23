@@ -18,7 +18,7 @@ import java.util.Set;
 public class PushUsersConfig {
     Task task;
     HostPortDB hostPortDB;
-    List<Long> users = null;
+    transient List<Long> users = null;
     Set<Integer> bucketIds = null;
     int batchSize = 10000;
     long todayFirstUserId = 0;

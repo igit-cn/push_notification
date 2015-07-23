@@ -74,6 +74,7 @@
         "inactiveUserFilePath" : "/home/services/push_notification/cache/recommend_push_users",
         "inactiveUserFilePrefix" : "inactive_users",
         "inactiveUserLookBackDays" : 4,
-        "refreshTokenFrequencyInSeconds" : 600
+        "refreshTokenFrequencyInSeconds" : 600,
+        "needSendNotification" : true
     }
 }
