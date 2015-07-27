@@ -6,7 +6,7 @@
         "lockFile" : "/tmp/push_notification_request_generator.lck",
         "basePath" : "",
         "environment" : "production",
-        "APPID_YIDIAN" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw"],
+        "APPID_YIDIAN" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
         "APPID_XIAOMI" : ["xiaomi","zxpad"],
         "MYSQL_USER" : "",
         "MYSQL_PASSWORD" : "",
