@@ -1,5 +1,7 @@
 package com.yidian.push.utils;
 
+import com.yidian.push.config.Config;
+import com.yidian.push.config.ProcessorConfig;
 import lombok.extern.log4j.Log4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -30,7 +32,7 @@ import java.util.Map;
  * Created by yidianadmin on 15-4-29.
  */
 @Log4j
-public class HttpClientUtils {
+public class HttpConnectionUtils {
     private static PoolingHttpClientConnectionManager cm  = null;
     static {
         cm = new PoolingHttpClientConnectionManager();
@@ -45,6 +47,17 @@ public class HttpClientUtils {
         return HttpClients.custom().setConnectionManager(cm).build();
     }
 
+    public static void init() throws IOException {
+        release();
+        ProcessorConfig config = Config.getInstance().getProcessorConfig();
+        cm = new PoolingHttpClientConnectionManager();
+        int maxTotal = config.getHttpConnectionMaxTotal();
+        cm.setMaxTotal(maxTotal);
+        // 每条通道的并发连接数设置（连接池）
+        int defaultMaxConnection = config.getHttpConnectionDefaultMaxPerRoute();
+        cm.setDefaultMaxPerRoute(defaultMaxConnection);
+
+    }
     public static void release() {
         if (cm != null) {
             cm.shutdown();
@@ -76,14 +89,10 @@ public class HttpClientUtils {
         return EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8.toString());
     }
 
-    public static String getPostResult(String url, Map<String, String> params, Map<String, String> headers) throws IOException {
+    public static String getPostResult(String url, Map<String, String> params, Map<String, String> headers, RequestConfig config) throws IOException {
         HttpPost httpPost = new HttpPost(url);
         try {
-            int timeout = 5;
-            RequestConfig config = RequestConfig.custom()
-                    .setConnectTimeout(timeout * 1000)
-                    .setConnectionRequestTimeout(timeout * 1000)
-                    .setSocketTimeout(timeout * 1000).build();
+
             CloseableHttpClient client =  HttpClients.custom().setConnectionManager(cm).setDefaultRequestConfig(config).build();
             List<NameValuePair> nameValuePairList = new ArrayList<>();
             for (String key : params.keySet()) {
@@ -119,29 +128,20 @@ public class HttpClientUtils {
         }
     }
 
+    public static String getPostResult(String url, Map<String, String> params, RequestConfig config) throws IOException {
+        return getPostResult(url, params, null, config);
+    }
+
     public static String getPostResult(String url, Map<String, String> params) throws IOException {
-        return getPostResult(url, params, null);
+        int timeout = 5;
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(timeout * 1000)
+                .setConnectionRequestTimeout(timeout * 1000)
+                .setSocketTimeout(timeout * 1000).build();
+        return getPostResult(url, params, config);
     }
 
     public static String getPostContent(String url, Map<String, String> params) throws IOException {
         return getPostResult(url, params);
-//        HttpResponse httpResponse = doPost(url, params);
-//        return getResponseContent(httpResponse);
     }
-
-//    public static HttpResponse doGet(String url, Map<String, String> params) throws IOException {
-//        HttpGet httpGet = new HttpGet(url);
-//        try {
-//            HttpClient client = getHttpClient();
-//            HttpParams httpParams = new BasicHttpParams();
-//            for (String key : params.keySet()) {
-//                httpParams.setParameter(key, params.get(key));
-//            }
-//            httpGet.setParams(httpParams);
-//            HttpResponse response = client.execute(httpGet);
-//            return response;
-//        } finally {
-//            httpGet.releaseConnection();
-//        }
-//    }
 }

@@ -8,7 +8,8 @@ import java.util.HashMap;
 public enum PushChannel {
     IOS(0, "0", "IOS"),
     XIAOMI(1, "1", "xiaomi"),
-    UMENG(2, "2", "umeng")
+    UMENG(2, "2", "umeng"),
+    GETUI(3, "3", "getui")
     ;
 
     private static HashMap<Integer, PushChannel> intToChannel = new HashMap<>();

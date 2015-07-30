@@ -2,9 +2,11 @@ package com.yidian.push;
 
 import com.yidian.push.config.Config;
 import com.yidian.push.config.ProcessorConfig;
+import com.yidian.push.data.Platform;
 import com.yidian.push.push_request.PushRequest;
 import com.yidian.push.push_request.PushRequestManager;
 import com.yidian.push.push_request.PushRequestStatus;
+import com.yidian.push.utils.HttpConnectionUtils;
 import lombok.extern.log4j.Log4j;
 
 import java.io.IOException;
@@ -23,6 +25,7 @@ public class ProcessService implements Runnable {
         ProcessorConfig processorConfig = null;
         try {
             processorConfig = Config.getInstance().getProcessorConfig();
+            HttpConnectionUtils.init();
         } catch (IOException e) {
             e.printStackTrace();
             log.error("get processor config failed...");
@@ -37,6 +40,7 @@ public class ProcessService implements Runnable {
                 System.out.println("receive kill signal ...");
                 try {
                     currentThread.join();
+                    HttpConnectionUtils.release();
                     System.out.println("shutdown the thread pools");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -52,11 +56,14 @@ public class ProcessService implements Runnable {
                 pushRequests = PushRequestManager.getInstance().getRequests(PushRequestStatus.PREPARING);
                 for (PushRequest pushRequest : pushRequests) {
                     String table = pushRequest.getTable();
-                    if ("PUSH".equals(table)) {
+                    if (Platform.isIPhone(table)) {
                        // iPhonePool.submit();
                     }
-                    else if ("PUSH_FOR_ANDROID".equals(table)) {
+                    else if (Platform.isAndroid(table)) {
 
+                    }
+                    else {
+                        log.error("ignore bad request :" + pushRequest.getFileName());
                     }
                 }
             } catch (IOException e) {

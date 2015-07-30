@@ -543,15 +543,15 @@ get_numeric_dev() {
 ) 2>/dev/null
 }
 
-# find the working name for a running dm device with the same table as one
+# find the working strVal for a running dm device with the same table as one
 # that dmraid would create
 resolve_dm_name() {
 (
-    name="$1"
+    strVal="$1"
 
     line=$(/sbin/dmraid -ay -t --ignorelocking | \
         egrep -iv "no block devices found|No RAID disks" | \
-        awk -F ':' "{ if (\$1 ~ /^$name$/) { print \$2; }}")
+        awk -F ':' "{ if (\$1 ~ /^$strVal$/) { print \$2; }}")
     for x in $line ; do
         if [[ "$x" =~ "^/dev/" ]] ; then
             majmin=$(get_numeric_dev dec $x)

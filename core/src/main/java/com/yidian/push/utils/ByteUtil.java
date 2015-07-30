@@ -77,6 +77,16 @@ public class ByteUtil {
         return (byte) mHexStr.indexOf(c);
     }
 
+    public static byte[] intToByteArray(int i) {
+        byte[] result = new byte[4];
+        //from high to low
+        result[0] = (byte)((i >> 24) & 0xFF);
+        result[1] = (byte)((i >> 16) & 0xFF);
+        result[2] = (byte)((i >> 8) & 0xFF);
+        result[3] = (byte)(i & 0xFF);
+        return result;
+    }
+
     public static void main(String[] args) {
         String str = "01111111";
         Byte b = Byte.valueOf(str, 2);

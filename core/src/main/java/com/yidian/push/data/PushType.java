@@ -21,15 +21,24 @@ public enum PushType {
     UNKNOWN(0, "0");
 
     private static Map<Integer, PushType> INT_TO_PUSH_TYPE = new HashMap<>(20);
+    private static Map<String, PushType> STRING_TO_PUSH_TYPE = new HashMap<>(20);
     static {
         for (PushType pushType : PushType.values()) {
             INT_TO_PUSH_TYPE.put(pushType.getInt(), pushType);
+            STRING_TO_PUSH_TYPE.put(pushType.getString(), pushType);
         }
     }
 
     public static PushType getPushType(int key) {
         if (INT_TO_PUSH_TYPE.containsKey(key)) {
             return INT_TO_PUSH_TYPE.get(key);
+        }
+        return UNKNOWN;
+    }
+
+    public static PushType getPushType(String  key) {
+        if (STRING_TO_PUSH_TYPE.containsKey(key)) {
+            return STRING_TO_PUSH_TYPE.get(key);
         }
         return UNKNOWN;
     }
@@ -45,6 +54,16 @@ public enum PushType {
     }
     public String getString() {
         return strValue;
+    }
+
+    public static boolean isRecommendPush(String pushType) {
+        PushType pt = getPushType(pushType);
+        if (pt == RECOMMEND || pt == RECOMMEND_1 || pt == RECOMMEND_2 || pt == RECOMMEND_3) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 

@@ -1,0 +1,14 @@
+{
+    "lockFile" : "/tmp/push_notification_request_generator.lck",
+    "pushRequestBaseDir" : "/home/services/tianzy/test_generator/requests",
+    "requestBaseDir" : "/home/services/tianzy/test_generator/task",
+    "processorConfig" :{
+        "iPhonePoolSize" : 20,
+        "androidPoolSize" : 200,
+        "iPhoneLogger" : {"host":"localhost", "port":8888},
+        "androidLogger" : {"host":"localhost", "port":9999},
+        "socketConnectTimeout" : 10,
+        "socketReadTimeout" : 3,
+        "APPID_XIAOMI" : ["xiaomi","zxpad"]
+    }
+}

@@ -4,6 +4,7 @@ import com.yidian.push.utils.ByteUtil;
 import com.yidian.push.utils.GsonFactory;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -249,19 +250,100 @@ public class PushLog {
         return list;
     }
 
-    public static void main(String[] args) throws IOException {
-        if (args.length < 4) {
-            System.out.println("usage: <logBaseDir> <platform> <day> <uid>");
-            return;
+//    public static void main(String[] args) throws IOException {
+//        if (args.length < 4) {
+//            System.out.println("usage: <logBaseDir> <platform> <day> <uid>");
+//            return;
+//        }
+//        String logBaseDir = args[0];
+//        String platform = args[1];
+//        String day = args[2];
+//        int uid = Integer.parseInt(args[3]);
+//
+//        System.out.println(6);
+//        List<PushLog> list = getLog(logBaseDir, platform, day, uid);
+//        System.out.println(GsonFactory.getPrettyGson().toJson(list));
+//
+//    }
+//    else if (len == 30) {
+//        int channelId = Integer.valueOf(ByteUtil.byte2HexStr(bytes, index + 26 + 1, index + 30), 16);
+//        if (channelId < 10000 && bytes[index + 26] == 's') {
+//            channel = "sc" + channelId;
+//        } else {
+//            channel = (char) bytes[index + 26] + String.valueOf(channelId);
+//        }
+//    }
+
+    public static byte[] encodeChannel(String channel) {
+        channel.replaceAll("sc", "c");
+        byte[] bytes = ByteUtil.intToByteArray(Integer.parseInt(channel.substring(1)));
+        bytes[0] = (byte)channel.charAt(0);
+        return bytes;
+    }
+
+    public static class LogItem {
+        private long pushTime;
+        private long uid;
+        private String docId;
+        private String channel;
+        private int pushType;
+        public LogItem(long pushTime, long uid, String docId, String channel, int pushType) {
+            this.pushTime = pushTime;
+            this.uid = uid;
+            this.channel = channel;
+            this.docId = docId;
+            this.pushType = pushType;
         }
-        String logBaseDir = args[0];
-        String platform = args[1];
-        String day = args[2];
-        int uid = Integer.parseInt(args[3]);
+    }
 
-        System.out.println(6);
-        List<PushLog> list = getLog(logBaseDir, platform, day, uid);
-        System.out.println(GsonFactory.getPrettyGson().toJson(list));
+    public static byte[] encodeLogItem(LogItem logItem) {
+        byte[] bytes = null;
+        int length = 0;
+        if (StringUtils.isEmpty(logItem.channel)) {
+            bytes = new byte[26];
+            length = 26;
+        }
+        else {
+            bytes = new byte[30];
+            length = 30;
+        }
+        int index = 0;
+        bytes[index++] = (byte)length;
+        byte[] iBytes = ByteUtil.intToByteArray(logItem.pushType);
+        System.arraycopy(iBytes, 3, bytes, index, 1);
+        index += 1;
+        iBytes = ByteUtil.intToByteArray((int)(logItem.pushTime/1000));
+        System.arraycopy(iBytes, 0, bytes, index, 4);
+        index += 4;
+        iBytes = ByteUtil.intToByteArray((int)logItem.uid);
+        System.arraycopy(iBytes, 0, bytes, index, 4);
+        index += 4;
+        System.out.println(new String(encodeDocId(logItem.docId)));
+        iBytes = encodeDocId(logItem.docId);
+        System.arraycopy(iBytes, 0, bytes, index, DOC_ID_DATA_LENGTH);
+        index += DOC_ID_DATA_LENGTH;
+        if (StringUtils.isNotEmpty(logItem.channel)) {
+            iBytes = encodeChannel(logItem.channel);
+            System.arraycopy(iBytes, 0, bytes, index, 4);
+            index += 4;
+        }
+        return bytes;
+    }
 
+    public static void main(String[] args) {
+        //1438082292,  1, "0A7oktXa", "u539", 2
+        //long pushTime, long uid, String docId, String channel, int pushType
+        PushLog.LogItem item = new PushLog.LogItem(
+                1438082292297L,
+                1L,
+                "0A7oktXa",
+                "u539",
+                2
+
+        );
+        byte[] arr = PushLog.encodeLogItem(item);
+        for (int i = 0; i < arr.length; i ++) {
+            System.out.println(i + " " + (int)arr[i]);
+        }
     }
 }

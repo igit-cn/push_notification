@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,17 +18,17 @@ public class PushRecord {
     public static final String FILED_SEPARATOR = "\u0001";
     public static final String TOKEN_SEPARATOR = "\u0002";
     public static final String TOKEN_ITEM_SEPARATOR = "\u0003";
-    private long uid;
-    private List<String> tokens;
-    private String appId;
-    private String docId;
-    private String title;
-    private String description;
-    private int newsType;
-    private String newsChannel;
-    private int sound;
+    private long uid = -1;
+    private List<String> tokens = null;
+    private String appId = null;
+    private String docId = null;
+    private String title = null;
+    private String description = null;
+    private int newsType = -1;
+    private String newsChannel = null;
+    private int sound = -1;
     private int nid = 0; // xiaomi notify id [0,4]
-    private PushChannel pushChannel;
+    private PushChannel pushChannel = null;
 
 
     public PushRecord(long uid, List<String> tokens, String appId,
@@ -44,6 +45,32 @@ public class PushRecord {
         this.nid = nid;
         this.pushChannel = pushChannel;
         this.sound = sound;
+    }
+
+    public PushRecord(String recordLine) {
+        String[] arr = recordLine.split(FILED_SEPARATOR);
+        if (arr.length != 11)  {
+            return;
+        }
+        int index = 0;
+        this.uid = Long.parseLong(arr[index++]);
+        this.tokens = Arrays.asList(StringUtils.split(arr[index++], TOKEN_ITEM_SEPARATOR));
+        this.appId = arr[index++];
+        this.docId = arr[index++];
+        this.title = arr[index++];
+        this.newsType = Integer.parseInt(arr[index++]);
+        this.newsChannel = arr[index++];
+        this.nid = Integer.parseInt(arr[index++]);
+        this.pushChannel = PushChannel.findChannel(arr[index++]);
+        this.description = arr[index++];
+        this.sound = Integer.parseInt(arr[index]);
+    }
+
+    public boolean isValid() {
+        return StringUtils.isNotEmpty(appId)
+                && (null != tokens && tokens.size() > 0)
+                && StringUtils.isNotEmpty(docId)
+                && StringUtils.isNotEmpty(title);
     }
 
     public String getKey() {

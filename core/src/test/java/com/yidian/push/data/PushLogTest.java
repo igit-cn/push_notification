@@ -3,6 +3,9 @@ package com.yidian.push.data;
 import com.yidian.push.utils.DateUtil;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class PushLogTest {
 
     @Test
@@ -76,6 +79,32 @@ public class PushLogTest {
     @Test
     public void testGenAppend() throws Exception {
 
+    }
+
+    @Test
+    public void testEncodeChannel() {
+        List<String> channelList = Arrays.asList("t9432", "c11", "u641");
+        for (String channel : channelList) {
+            System.out.println(channel + " " + String.valueOf(PushLog.encodeChannel(channel)));
+        }
+    }
+
+    @Test
+    public void testEncodeLogItem() {
+        //1438082292,  1, "0A7oktXa", "u539", 2
+        //long pushTime, long uid, String docId, String channel, int pushType
+        PushLog.LogItem item = new PushLog.LogItem(
+                1438082292297L,
+                1L,
+                "0A7oktXa",
+                "u539",
+                2
+
+        );
+        byte[] arr = PushLog.encodeLogItem(item);
+        for (int i = 0; i < arr.length; i ++) {
+            System.out.println(i + " " + (int)arr[i]);
+        }
     }
 
 

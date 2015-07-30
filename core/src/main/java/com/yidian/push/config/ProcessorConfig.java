@@ -1,7 +1,14 @@
 package com.yidian.push.config;
 
+import com.yidian.push.data.HostPort;
+import com.yidian.push.data.Platform;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.http.client.config.RequestConfig;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yidianadmin on 15-2-2.
@@ -11,4 +18,53 @@ import lombok.Setter;
 public class ProcessorConfig {
     private int iPhonePoolSize = 20;
     private int androidPoolSize = 200;
+    private HostPort iPhoneLogger;
+    private HostPort androidLogger;
+    private int socketConnectTimeout = 10;
+    private int socketReadTimeout = 3;
+    private List<String> APPID_XIAOMI;
+
+    private int retryTimes = 3;
+    private int iosPushBatch = 100;
+    private String iosPushBatchUrl = "http://10.111.0.57:5266/push_service/apns_multiple/";
+    private String iosPushSingleUrl = "http://10.111.0.57:5266/push_service/apns_single/";
+
+    // http connection settings
+    private int httpConnectionDefaultMaxPerRoute = 200;
+    private int httpConnectionMaxTotal = 2000;
+    // umeng push appid to app name
+    private Map<String, String> UMENG_APPID_NAME_MAPPING = new HashMap<>();
+    //
+    private int messageExpireTime = 3 * 60 * 60; // 3 hours
+
+
+    public RequestConfig getRequestConfig() {
+        return RequestConfig.custom()
+                .setConnectTimeout(socketConnectTimeout * 1000)
+                .setConnectionRequestTimeout(socketConnectTimeout * 1000)
+                .setSocketTimeout(socketReadTimeout * 1000).build();
+    }
+    public boolean isXiaomi(String appId) {
+        if (null == APPID_XIAOMI || APPID_XIAOMI.size() == 0) {
+            return false;
+        }
+        for (String item : APPID_XIAOMI) {
+            if (item.equals(appId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public HostPort getLogger(Platform platform) {
+        if (platform == Platform.IPHONE) {
+            return iPhoneLogger;
+        }
+        else {
+            return androidLogger;
+        }
+    }
+
+
+
 }
