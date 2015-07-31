@@ -1,11 +1,15 @@
 package com.yidian.push.utils;
 
+import com.yidian.push.config.Config;
+import com.yidian.push.config.ProcessorConfig;
 import com.yidian.push.data.MessageType;
 import com.yidian.push.data.ResourceType;
 import com.yidian.push.data.UmengMessage;
 import org.apache.http.client.config.RequestConfig;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,10 +18,16 @@ import java.util.List;
  * Created by tianyuzhi on 15/7/30.
  */
 public class UmengPushTest {
-
+    private ProcessorConfig processorConfig;
+    @BeforeClass
+    public void before() throws IOException {
+        String projectDir = System.getProperty("user.dir");
+        Config.setCONFIG_FILE(projectDir + "/src/main/resources/config/config.json");
+        processorConfig = Config.getInstance().getProcessorConfig();
+    }
     @Test
     public void testPush() {
-        String url = "http://localhost:6266/push_service/upns_multiple/";
+        String url = processorConfig.getUmengPushBatchUrl();
         int batch = 2;
         int retry = 2;
         int timeout = 5;

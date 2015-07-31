@@ -29,6 +29,7 @@ public class XiaomiSingleMessage {
         this.appId = appId;
         this.description = description;
         this.badge = badge;
+        this.sound = sound;
         this.title = title;
         this.docId = docId;
         this.resourceType = resourceType;
@@ -99,7 +100,7 @@ public class XiaomiSingleMessage {
             this.pushType = pushType;
             return this;
         }
-        public Build withNofityId(int notifyId) {
+        public Build withNotifyId(int notifyId) {
             this.notifyId = notifyId;
             return this;
         }

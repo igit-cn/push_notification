@@ -1,10 +1,14 @@
 package com.yidian.push.utils;
 
+import com.yidian.push.config.Config;
+import com.yidian.push.config.ProcessorConfig;
 import com.yidian.push.data.APNSMessage;
 import com.yidian.push.utils.APNS;
 import org.apache.http.client.config.RequestConfig;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,6 +16,14 @@ import java.util.List;
  * Created by tianyuzhi on 15/7/29.
  */
 public class APNSPushTest {
+    private ProcessorConfig processorConfig;
+    @BeforeClass
+    public void before() throws IOException {
+        String projectDir = System.getProperty("user.dir");
+        Config.setCONFIG_FILE(projectDir + "/src/main/resources/config/config.json");
+        processorConfig = Config.getInstance().getProcessorConfig();
+    }
+
 
     @Test
     public void testPush() throws Exception {
@@ -22,7 +34,7 @@ public class APNSPushTest {
                 new APNSMessage.Build().withParam("rid", "0A8uHitj").withParam("rtype", "news").withAppId("new-yidian").withAlert("test 2 ios push").withBadge(1).withSound("1.caf").withToken(token).build(),
                 new APNSMessage.Build().withParam("rid", "0A8uHitj").withParam("rtype", "news").withAppId("new-yidian").withAlert("test 3 ios push").withBadge(1).withSound(null).withToken(token).build()
         );
-        String url = "http://10.111.0.57:5266/push_service/apns_multiple/";
+        String url =  processorConfig.getIosPushBatchUrl();
         int batch = 2;
         int retry = 2;
         int timeout = 5;

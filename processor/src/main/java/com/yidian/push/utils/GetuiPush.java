@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.client.config.RequestConfig;
 
 import java.io.File;
@@ -135,7 +136,7 @@ public class GetuiPush {
                         timesToRetry --;
                     }
                 } catch (IOException e) {
-                    log.error("Upns config failed");
+                    log.error("getui push failed with exception : " + ExceptionUtils.getFullStackTrace(e));
                     timesToRetry --;
                 }
             }

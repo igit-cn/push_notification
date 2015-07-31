@@ -6,6 +6,7 @@ import com.yidian.push.config.Config;
 import com.yidian.push.config.ProcessorConfig;
 import com.yidian.push.data.APNSMessage;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.client.config.RequestConfig;
 
 import java.io.IOException;
@@ -56,7 +57,7 @@ public class APNS {
                         timesToRetry --;
                     }
                 } catch (IOException e) {
-                    log.error("APNS config failed");
+                    log.error("APNS push failed with exception: " + ExceptionUtils.getFullStackTrace(e));
                     timesToRetry --;
                 }
             }

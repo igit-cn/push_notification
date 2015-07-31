@@ -276,7 +276,7 @@ public class AndroidPush implements Push {
                 .withDocId(docId)
                 .withResourceType(resourceType)
                 .withPushType(pushType + "")
-                .withNofityId(notifyId)
+                .withNotifyId(notifyId)
                 .withNotifyType(notifyType)
                 .withTokens(tokens)
                 .withMessageType(messageType)

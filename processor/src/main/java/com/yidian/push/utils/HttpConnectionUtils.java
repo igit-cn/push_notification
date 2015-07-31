@@ -105,6 +105,9 @@ public class HttpConnectionUtils {
                         nameValuePairList.add(new BasicNameValuePair(key, (String)item));
                     }
                 }
+                else {
+                    nameValuePairList.add(new BasicNameValuePair(key, String.valueOf(object)));
+                }
             }
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairList, StandardCharsets.UTF_8.toString()));
             if (null != headers && headers.size() > 0) {

@@ -10,6 +10,7 @@ import com.yidian.push.data.UmengMessage;
 import com.yidian.push.push_request.PushRecord;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.client.config.RequestConfig;
 
 import java.io.IOException;
@@ -94,7 +95,7 @@ public class UmengPush {
                         timesToRetry --;
                     }
                 } catch (IOException e) {
-                    log.error("Upns config failed");
+                    log.error("Upns push failed with Exception: " + ExceptionUtils.getFullStackTrace(e));
                     timesToRetry --;
                 }
             }

@@ -139,7 +139,7 @@ public class XiaomiPush {
             aps.put("alert", xiaomiMessage.getDescription());
             aps.put("badge", xiaomiMessage.getBadge());
             aps.put("sound", xiaomiMessage.getSound());
-            payload.put("payload", payload);
+            payload.put("aps", aps);
             payload.put("rid", xiaomiMessage.getDocId());
             payload.put("rtype", xiaomiMessage.getResourceType().toString());
             payload.put("PT", xiaomiMessage.getPushType());
@@ -160,11 +160,11 @@ public class XiaomiPush {
             image.put("image", "hipu_push");
 
             JSONObject dataToPush = new JSONObject();
-            dataToPush.put("taget", xiaomiMessage.getToken());
+            dataToPush.put("target", xiaomiMessage.getToken());
             JSONObject message = new JSONObject();
             JSONObject extra = new JSONObject();
             dataToPush.put("message", message);
-            dataToPush.put("extra", extra);
+            message.put("extra", extra);
             message.put("title", showTitle);
             message.put("description", xiaomiMessage.getDescription());
             message.put("restricted_package_name", xiaomiData.getPackageName());
@@ -179,6 +179,8 @@ public class XiaomiPush {
             pushDataList.add(dataToPush);
         }
 
+        Map<String, String> headers = new HashMap<>(3);
+        headers.put("Authorization", "key=" + xiaomiData.getSecret());
         int length = pushDataList.size();
         int index = 0;
         while (index < length) {
@@ -192,7 +194,7 @@ public class XiaomiPush {
             int timesToRetry = retry;
             while (timesToRetry > 0) {
                 try {
-                    String response = HttpConnectionUtils.getPostResult(url, params, requestConfig);
+                    String response = HttpConnectionUtils.getPostResult(url, params, headers, requestConfig);
                     JSONObject json = JSON.parseObject(response);
                     if (null != json && "0".equals(json.getString("code"))) {
                         break;
@@ -239,7 +241,7 @@ public class XiaomiPush {
         aps.put("alert", xiaomiMessage.getDescription());
         aps.put("badge", xiaomiMessage.getBadge());
         aps.put("sound", xiaomiMessage.getSound());
-        payload.put("payload", payload);
+        payload.put("aps", aps);
         payload.put("rid", xiaomiMessage.getDocId());
         payload.put("rtype", xiaomiMessage.getResourceType().toString());
         payload.put("PT", xiaomiMessage.getPushType());
@@ -280,6 +282,7 @@ public class XiaomiPush {
             index += batch;
             List<String> subTokens = tokens.subList(start, end);
             params.put("alias", subTokens);
+            System.out.println(GsonFactory.getNonPrettyGson().toJson(params));
             int timesToRetry = retry;
             while (timesToRetry > 0) {
                 try {
