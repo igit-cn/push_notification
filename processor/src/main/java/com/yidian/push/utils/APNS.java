@@ -43,7 +43,7 @@ public class APNS {
             index += batch;
             List<APNSMessage> subList = payloads.subList(start, end);
             String messageToSend = GsonFactory.getNonPrettyGson().toJson(subList);
-            Map<String, String> params = new HashMap<>();
+            Map<String, Object> params = new HashMap<>();
             params.put("messages", messageToSend);
             int timesToRetry = retry;
             while (timesToRetry > 0) {

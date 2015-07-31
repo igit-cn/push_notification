@@ -37,7 +37,7 @@ public class UmengMessage {
 
     public static class PolicyBuilder {
         private int expireTimeInSeconds = 0;
-        public PolicyBuilder withExpireTimeInMinutes(int expireTimeInSeconds) {
+        public PolicyBuilder withExpireTimeInSeconds(int expireTimeInSeconds) {
             this.expireTimeInSeconds = expireTimeInSeconds;
             return this;
         }
@@ -97,7 +97,7 @@ public class UmengMessage {
         }
         public String build() {
             String playSound = "true";
-            if (StringUtils.isEmpty(sound)) {
+            if (StringUtils.isNotEmpty(sound)) {
                 playSound = "false";
             }
             String ticker = new StringBuilder(appName).append(":").append(description).toString();

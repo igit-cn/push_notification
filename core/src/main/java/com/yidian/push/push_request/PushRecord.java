@@ -57,12 +57,12 @@ public class PushRecord {
         this.tokens = Arrays.asList(StringUtils.split(arr[index++], TOKEN_ITEM_SEPARATOR));
         this.appId = arr[index++];
         this.docId = arr[index++];
-        this.title = arr[index++];
+        this.description = arr[index++];
         this.newsType = Integer.parseInt(arr[index++]);
         this.newsChannel = arr[index++];
         this.nid = Integer.parseInt(arr[index++]);
         this.pushChannel = PushChannel.findChannel(arr[index++]);
-        this.description = arr[index++];
+        this.title = arr[index++];
         this.sound = Integer.parseInt(arr[index]);
     }
 

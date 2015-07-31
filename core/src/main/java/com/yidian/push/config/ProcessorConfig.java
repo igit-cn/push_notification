@@ -24,18 +24,32 @@ public class ProcessorConfig {
     private int socketReadTimeout = 3;
     private List<String> APPID_XIAOMI;
 
+    // http connection settings
+    private int httpConnectionDefaultMaxPerRoute = 200;
+    private int httpConnectionMaxTotal = 2000;
     private int retryTimes = 3;
+    private int messageExpireTimeInSeconds = 3 * 60 * 60; // 3 hours
+
     private int iosPushBatch = 100;
     private String iosPushBatchUrl = "http://10.111.0.57:5266/push_service/apns_multiple/";
     private String iosPushSingleUrl = "http://10.111.0.57:5266/push_service/apns_single/";
 
-    // http connection settings
-    private int httpConnectionDefaultMaxPerRoute = 200;
-    private int httpConnectionMaxTotal = 2000;
-    // umeng push appid to app name
+    private int umengPushBatch = 100;
     private Map<String, String> UMENG_APPID_NAME_MAPPING = new HashMap<>();
-    //
-    private int messageExpireTime = 3 * 60 * 60; // 3 hours
+    private String umengPushBatchUrl = "http://10.111.0.57:5266/push_service/upns_multiple/";
+    private String umengPushSingleUrl = "http://10.111.0.57:5266/push_service/upns_single/";
+
+    private int getuiPushBatch = 100;
+    private String getuiPemBase = "/home/services/push_notification/data/getui/";
+    private String getuiPemPattern = "*.getui";
+    private String getuiPushBatchUrl = "http://10.111.0.57:5266/push_service/getui_multiple/";
+    private String getuiPushSinglUrl = "http://10.111.0.57:5266/push_service/getui_single/";
+
+    private int xiaomiPushBatch = 1000;
+    private String xiaomiPemBase = "/home/services/push_notification/data/xiaomi/";
+    private String xiaomiPemPattern = "*.mmpp";
+    private String xiaomiPushMultipleMessagesUrl = "https://api.xmpush.xiaomi.com/v2/multi_messages/aliases";
+    private String xiaomiPushSingleMessageUrl = "https://api.xmpush.xiaomi.com/v2/message/alias";
 
 
     public RequestConfig getRequestConfig() {

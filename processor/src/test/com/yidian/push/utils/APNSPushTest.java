@@ -1,4 +1,4 @@
-package com.yidian.push;
+package com.yidian.push.utils;
 
 import com.yidian.push.data.APNSMessage;
 import com.yidian.push.utils.APNS;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by tianyuzhi on 15/7/29.
  */
-public class IOSPushTest {
+public class APNSPushTest {
 
     @Test
     public void testPush() throws Exception {

@@ -58,7 +58,7 @@ public class IOSPush implements Push{
                     }
                     APNSMessage payload = new APNSMessage.Build()
                             .withAppId(pushRecord.getAppId())
-                            .withAlert(pushRecord.getTitle())
+                            .withAlert(pushRecord.getDescription())
                             .withBadge(BADGE)
                             .withSound(sound)
                             .withToken(tokenPassThrough.getToken())

@@ -89,14 +89,22 @@ public class HttpConnectionUtils {
         return EntityUtils.toString(httpResponse.getEntity(), StandardCharsets.UTF_8.toString());
     }
 
-    public static String getPostResult(String url, Map<String, String> params, Map<String, String> headers, RequestConfig config) throws IOException {
+    public static String getPostResult(String url, Map<String, Object> params, Map<String, String> headers, RequestConfig config) throws IOException {
         HttpPost httpPost = new HttpPost(url);
         try {
 
             CloseableHttpClient client =  HttpClients.custom().setConnectionManager(cm).setDefaultRequestConfig(config).build();
             List<NameValuePair> nameValuePairList = new ArrayList<>();
             for (String key : params.keySet()) {
-                nameValuePairList.add(new BasicNameValuePair(key, params.get(key)));
+                Object object = params.get(key);
+                if (object instanceof String) {
+                    nameValuePairList.add(new BasicNameValuePair(key, (String)object));
+                }
+                else if (object instanceof List) {
+                    for (Object item : (List)object) {
+                        nameValuePairList.add(new BasicNameValuePair(key, (String)item));
+                    }
+                }
             }
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairList, StandardCharsets.UTF_8.toString()));
             if (null != headers && headers.size() > 0) {
@@ -128,11 +136,11 @@ public class HttpConnectionUtils {
         }
     }
 
-    public static String getPostResult(String url, Map<String, String> params, RequestConfig config) throws IOException {
+    public static String getPostResult(String url, Map<String, Object> params, RequestConfig config) throws IOException {
         return getPostResult(url, params, null, config);
     }
 
-    public static String getPostResult(String url, Map<String, String> params) throws IOException {
+    public static String getPostResult(String url, Map<String, Object> params) throws IOException {
         int timeout = 5;
         RequestConfig config = RequestConfig.custom()
                 .setConnectTimeout(timeout * 1000)
@@ -141,7 +149,7 @@ public class HttpConnectionUtils {
         return getPostResult(url, params, config);
     }
 
-    public static String getPostContent(String url, Map<String, String> params) throws IOException {
+    public static String getPostContent(String url, Map<String, Object> params) throws IOException {
         return getPostResult(url, params);
     }
 }
