@@ -24,8 +24,10 @@ public class RequestContent {
     private String hash;
     @SerializedName("docid")
     private String docId;
-    private String title;
-    private String head = "";
+    @SerializedName("title")
+    private String description;
+    @SerializedName("head")
+    private String title = "";
     private String date;
     @SerializedName("channel")
     private String newsChannel;

@@ -51,17 +51,17 @@ public class Generator {
     public static Task genTask(RequestContent requestContent) throws IOException {
         Task task = null;
         GeneratorConfig config = Config.getInstance().getGeneratorConfig();
-        String head = requestContent.getHead();
-        if (StringUtils.isNotEmpty(head) && head.length() > config.getValidMaxHeadLength()) {
-            head = "";
+        String title = requestContent.getTitle();
+        if (StringUtils.isNotEmpty(title) && title.length() > config.getValidMaxTitleLength()) {
+            title = "";
         }
         List<String> channels = null;
         if (StringUtils.isNotEmpty(requestContent.getNewsChannel())) {
             channels = Arrays.asList(StringUtils.split(requestContent.getNewsChannel(), ","));
         }
         task = new Task.Builder()
-                .setPushTitle(requestContent.getTitle())
-                .setPushHead(head)
+                .setPushTitle(title)
+                .setPushDescription(requestContent.getDescription())
                 .setPushDocId(requestContent.getDocId())
                 .setPushDate(requestContent.getDate())
                 .setPushChannel(channels)
@@ -111,7 +111,7 @@ public class Generator {
                 description = "一点鼎开";
             }
             else if ("all".equals(uid)) {
-                String title = requestContent.getTitle();
+                String title = requestContent.getDescription();
                 PushType pushType = PushType.BREAK;
                 if (title.startsWith("[早报]")) {
                     pushType = PushType.MORNING;

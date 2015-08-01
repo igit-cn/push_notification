@@ -18,7 +18,7 @@ public class Task {
     private PushType pushType;
     private String pushDate;
     private List<String> pushChannel;
-    private String pushHead = "";
+    private String pushDescription = "";
     private String table = "";
     private List<String> appIdInclude = null;
     private List<String> appIdExclude = null;
@@ -29,7 +29,7 @@ public class Task {
 
     public Task(String pushTitle, String pushDocId, String pushHash,
                 PushType pushType, String pushDate,
-                List<String> pushChannel, String pushHead, String table,
+                List<String> pushChannel, String pushDescription, String table,
                 List<String> appIdInclude, List<String> appIdExclude,
                 int protectMinutes, int startTime, int endTime) {
         this.pushTitle = pushTitle;
@@ -38,7 +38,7 @@ public class Task {
         this.pushType = pushType;
         this.pushDate = pushDate;
         this.pushChannel = pushChannel;
-        this.pushHead = pushHead;
+        this.pushDescription = pushDescription;
         this.table = table;
         this.appIdExclude = appIdInclude;
         this.appIdExclude = appIdExclude;
@@ -54,7 +54,7 @@ public class Task {
         private PushType pushType;
         private String pushDate;
         private List<String> pushChannel;
-        private String pushHead = "";
+        private String pushDescription = "";
         private String table = "";
         private List<String> appIdInclude = null;
         private List<String> appIdExclude = null;
@@ -93,8 +93,8 @@ public class Task {
             return this;
         }
 
-        public Builder setPushHead(String pushHead) {
-            this.pushHead = pushHead;
+        public Builder setPushDescription(String pushDescription) {
+            this.pushDescription = pushDescription;
             return this;
         }
 
@@ -131,7 +131,7 @@ public class Task {
         public Task build() {
             return new Task(pushTitle, pushDocId, pushHash,
                     pushType, pushDate,
-                    pushChannel, pushHead, table,
+                    pushChannel, pushDescription, table,
                     appIdInclude, appIdExclude,
                     protectMinutes, startTime, endTime);
         }

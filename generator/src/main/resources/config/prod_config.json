@@ -48,7 +48,7 @@
             "testWhileIdle" : true
         },
         "maxUserId" : 120000000,
-        "validMaxHeadLength" : 15,
+        "validMaxTitleLength" : 15,
         "iPhoneRangeSize" : 2000000,
         "androidRangeSize" : 300000,
         "startTime" : 360,

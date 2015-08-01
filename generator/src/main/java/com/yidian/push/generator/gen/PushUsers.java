@@ -5,11 +5,8 @@ import com.yidian.push.config.GeneratorConfig;
 import com.yidian.push.data.HostPortDB;
 import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushType;
-import com.yidian.push.generator.cache.CacheUtil;
 import com.yidian.push.generator.data.*;
-import com.yidian.push.generator.util.OutServiceUtil;
 import com.yidian.push.push_request.PushRecord;
-import com.yidian.push.utils.GsonFactory;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
@@ -126,7 +123,7 @@ public class PushUsers {
 
             String pushDocId = config.getTask().getPushDocId();
             String pushTitle = config.getTask().getPushTitle();
-            String pushHead = config.getTask().getPushHead();
+            String pushDescription = config.getTask().getPushDescription();
             String pushChannel = "";
             PushType pushType = config.getTask().getPushType();
             int redisLength = Config.getInstance().getGeneratorConfig().getREDIS_HOSTS().size();
@@ -166,13 +163,13 @@ public class PushUsers {
                 if (isIPhone) {
                     int version = rs.getInt(7);
                     pushRecord = new PushRecord.Builder().setUid(curUserId).setAppId(appId)
-                            .setDocId(pushDocId).setTitle(pushTitle)
+                            .setDocId(pushDocId).setDescription(pushDescription)
                             .setNewsType(pushType.getInt()).addToken(tokenLevel)
                             .setNid(version).build();
                 } else {
                     pushRecord = new PushRecord.Builder().setUid(curUserId).setAppId(appId)
                             .setDocId(pushDocId).setTitle(pushTitle)
-                            .setHead(pushHead)
+                            .setDescription(pushDescription)
                             .setNewsType(pushType.getInt()).addToken(tokenLevel).build();
                 }
                 int redisId = (int) (curUserId % redisLength);
@@ -315,7 +312,7 @@ public class PushUsers {
 
             String pushDocId = config.getTask().getPushDocId();
             String pushTitle = config.getTask().getPushTitle();
-            String pushHead = config.getTask().getPushHead();
+            String pushDescription = config.getTask().getPushDescription();
             Set<Long> usersToPush = new HashSet<>(config.getUsers());
             Set<String> validAppIdSet = new HashSet<>();
             if (config.getTask().getAppIdInclude() != null) {
@@ -380,14 +377,14 @@ public class PushUsers {
                 PushRecord pushRecord;
                 if (isIPhone) {
                     pushRecord = new PushRecord.Builder().setUid(curUserId).setAppId(appId)
-                            .setDocId(pushDocId).setTitle(pushTitle)
+                            .setDocId(pushDocId).setDescription(pushDescription)
                             .setNewsChannel(newsChannel)
                             .setNewsType(pushType.getInt()).addToken(tokenLevel)
                             .setNid(version).build();
                 } else {
                     pushRecord = new PushRecord.Builder().setUid(curUserId).setAppId(appId)
                             .setDocId(pushDocId).setTitle(pushTitle)
-                            .setHead(pushHead)
+                            .setDescription(pushDescription)
                             .setNewsChannel(newsChannel)
                             .setNewsType(pushType.getInt()).addToken(tokenLevel).build();
                 }

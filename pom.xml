@@ -8,7 +8,7 @@
     <artifactId>com.yidian.push</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <strVal>parent pom for the push notification</strVal>
+    <description>parent pom for the push notification</description>
 
     <modules>
         <module>core</module>

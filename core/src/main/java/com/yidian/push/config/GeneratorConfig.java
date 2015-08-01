@@ -30,7 +30,7 @@ public class GeneratorConfig {
     private PoolProperties tomcatDBCPProperties;
     private JedisPoolConfig jedisPoolConfig;
     private int maxUserId = 0;
-    private int validMaxHeadLength = 15;
+    private int validMaxTitleLength = 15;
     private int iPhoneRangeSize = 20000000;
     private int androidRangeSize = 300000;
     private int startTime = 6 * 60;

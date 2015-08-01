@@ -70,7 +70,7 @@ public class PushRecord {
         return StringUtils.isNotEmpty(appId)
                 && (null != tokens && tokens.size() > 0)
                 && StringUtils.isNotEmpty(docId)
-                && StringUtils.isNotEmpty(title);
+                && StringUtils.isNotEmpty(description);
     }
 
     public String getKey() {
@@ -91,12 +91,12 @@ public class PushRecord {
                 .append(tokens == null ? "" : StringUtils.join(tokens, TOKEN_SEPARATOR))
                 .append(FILED_SEPARATOR).append(appId == null ? "" : appId)
                 .append(FILED_SEPARATOR).append(docId == null ? "" : docId)
-                .append(FILED_SEPARATOR).append(title == null ? "" : title)
+                .append(FILED_SEPARATOR).append(description == null ? "" : description)
                 .append(FILED_SEPARATOR).append(newsType)
                 .append(FILED_SEPARATOR).append(newsChannel == null ? "" : newsChannel)
                 .append(FILED_SEPARATOR).append(nid)
                 .append(FILED_SEPARATOR).append(pushChannel == null ? "" : pushChannel.getId())
-                .append(FILED_SEPARATOR).append(description == null ? "" : description)
+                .append(FILED_SEPARATOR).append(title == null ? "" : title)
                 .append(FILED_SEPARATOR).append(sound);
         return sb.toString();
     }
@@ -107,7 +107,7 @@ public class PushRecord {
         private String appId;
         private String docId;
         private String title;
-        private String head;
+        private String description;
         private int newsType;
         private String newsChannel;
         private int nid = 0; // xiaomi notify id [0,1] only leave two in the notification center
@@ -142,8 +142,8 @@ public class PushRecord {
             return this;
         }
 
-        public Builder setHead(String head) {
-            this.head = head;
+        public Builder setDescription(String description) {
+            this.description = description;
             return this;
         }
 
@@ -173,7 +173,7 @@ public class PushRecord {
         }
 
         public PushRecord build() {
-            return new PushRecord(uid, tokens, appId, docId, title, head, newsType, newsChannel, nid, pushChannel, sound);
+            return new PushRecord(uid, tokens, appId, docId, title, description, newsType, newsChannel, nid, pushChannel, sound);
         }
     }
 }

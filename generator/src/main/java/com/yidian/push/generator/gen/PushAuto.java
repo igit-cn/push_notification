@@ -128,7 +128,7 @@ public class PushAuto {
 
             String pushDocId = config.getTask().getPushDocId();
             String pushTitle = config.getTask().getPushTitle();
-            String pushHead = config.getTask().getPushHead();
+            String pushDescription = config.getTask().getPushDescription();
             Map<Long, String> userIdChannelMapping = config.getUserIdChannelMapping();
             Set<String> validAppIdSet = new HashSet<>(config.getTask().getAppIdInclude());
             PushType pushType = config.getTask().getPushType();
@@ -193,14 +193,14 @@ public class PushAuto {
                 PushRecord pushRecord;
                 if (isIPhone) {
                     pushRecord = new PushRecord.Builder().setUid(curUserId).setAppId(appId)
-                            .setDocId(pushDocId).setTitle(pushTitle)
+                            .setDocId(pushDocId).setDescription(pushDescription)
                             .setNewsChannel(newsChannel)
                             .setNewsType(pushType.getInt()).addToken(tokenLevel)
                             .setNid(version).build();
                 } else {
                     pushRecord = new PushRecord.Builder().setUid(curUserId).setAppId(appId)
                             .setDocId(pushDocId).setTitle(pushTitle)
-                            .setHead(pushHead)
+                            .setDescription(pushDescription)
                             .setNewsChannel(newsChannel)
                             .setNewsType(pushType.getInt()).addToken(tokenLevel).build();
                 }
