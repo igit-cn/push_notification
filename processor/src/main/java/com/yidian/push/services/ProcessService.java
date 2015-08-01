@@ -7,11 +7,11 @@ import com.yidian.push.processor.Processor;
 import com.yidian.push.push_request.PushRequest;
 import com.yidian.push.push_request.PushRequestManager;
 import com.yidian.push.push_request.PushRequestStatus;
-import com.yidian.push.utils.GetuiPush;
-import com.yidian.push.utils.HttpConnectionUtils;
-import com.yidian.push.utils.UmengPush;
-import com.yidian.push.utils.XiaomiPush;
+import com.yidian.push.utils.*;
 import lombok.extern.log4j.Log4j;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import java.io.IOException;
 import java.util.List;
@@ -70,14 +70,25 @@ public class ProcessService implements Runnable {
         System.out.println("try to shutdown the thread pools");
     }
 
-    public static void main(String[] args) {
-        if (args.length < 1) {
-            System.out.println("Usage: Processor <config.json>");
-            return;
+    public static void main(String[] args) throws IOException {
+        System.out.println(args.length);
+        if (args.length >= 1) {
+            String configFile = args[0];
+            System.out.println("User specified config file " + configFile);
+            Config.setCONFIG_FILE(configFile);
+        } else {
+            // Config.setCONFIG_FILE("generator/src/main/resources/config/prod_config.json");
+            Config.setCONFIG_FILE("generator/src/main/resources/config/config2.json");
+            System.setProperty("log4j.configuration", "src/main/resources/config/log4j_debug.properties");
+            PropertyConfigurator.configure("generator/src/main/resources/config/log4j_debug.properties");
+            Logger.getRootLogger().setLevel(Level.DEBUG);
         }
-        String configFile = args[0];
-        Config.setCONFIG_FILE(configFile);
-        ProcessService processor = new ProcessService();
-        processor.run();
+        String lockFile = Config.getInstance().getGeneratorConfig().getLockFile();
+        if (!FileLock.lockInstance(lockFile)) {
+            System.out.println("One instance is already running, just quit.");
+            System.exit(1);
+        }
+        ProcessService service = new ProcessService();
+        service.run();
     }
 }
