@@ -15,9 +15,11 @@ import java.util.List;
 @Getter
 @Setter
 public class PushRecord {
-    public static final String FILED_SEPARATOR = "\u0001";
+    public static final String FIELD_SEPARATOR = "\u0001";
     public static final String TOKEN_SEPARATOR = "\u0002";
     public static final String TOKEN_ITEM_SEPARATOR = "\u0003";
+    public static final int FIELD_NUMBER = 11;
+    public static final int MIN_FIELD_NUMBER = FIELD_NUMBER - 1;
     private long uid = -1;
     private List<String> tokens = null;
     private String appId = null;
@@ -48,13 +50,13 @@ public class PushRecord {
     }
 
     public PushRecord(String recordLine) {
-        String[] arr = recordLine.split(FILED_SEPARATOR);
-        if (arr.length != 11)  {
+        String[] arr = recordLine.split(FIELD_SEPARATOR, 11);
+        if (arr.length < MIN_FIELD_NUMBER)  {
             return;
         }
         int index = 0;
         this.uid = Long.parseLong(arr[index++]);
-        this.tokens = Arrays.asList(StringUtils.split(arr[index++], TOKEN_ITEM_SEPARATOR));
+        this.tokens = Arrays.asList(StringUtils.split(arr[index++], TOKEN_SEPARATOR));
         this.appId = arr[index++];
         this.docId = arr[index++];
         this.description = arr[index++];
@@ -63,7 +65,9 @@ public class PushRecord {
         this.nid = Integer.parseInt(arr[index++]);
         this.pushChannel = PushChannel.findChannel(arr[index++]);
         this.title = arr[index++];
-        this.sound = Integer.parseInt(arr[index]);
+        if (arr.length >= FIELD_NUMBER) {
+            this.sound = Integer.parseInt(arr[index]);
+        }
     }
 
     public boolean isValid() {
@@ -87,17 +91,17 @@ public class PushRecord {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(uid).append(FILED_SEPARATOR)
+        sb.append(uid).append(FIELD_SEPARATOR)
                 .append(tokens == null ? "" : StringUtils.join(tokens, TOKEN_SEPARATOR))
-                .append(FILED_SEPARATOR).append(appId == null ? "" : appId)
-                .append(FILED_SEPARATOR).append(docId == null ? "" : docId)
-                .append(FILED_SEPARATOR).append(description == null ? "" : description)
-                .append(FILED_SEPARATOR).append(newsType)
-                .append(FILED_SEPARATOR).append(newsChannel == null ? "" : newsChannel)
-                .append(FILED_SEPARATOR).append(nid)
-                .append(FILED_SEPARATOR).append(pushChannel == null ? "" : pushChannel.getId())
-                .append(FILED_SEPARATOR).append(title == null ? "" : title)
-                .append(FILED_SEPARATOR).append(sound);
+                .append(FIELD_SEPARATOR).append(appId == null ? "" : appId)
+                .append(FIELD_SEPARATOR).append(docId == null ? "" : docId)
+                .append(FIELD_SEPARATOR).append(description == null ? "" : description)
+                .append(FIELD_SEPARATOR).append(newsType)
+                .append(FIELD_SEPARATOR).append(newsChannel == null ? "" : newsChannel)
+                .append(FIELD_SEPARATOR).append(nid)
+                .append(FIELD_SEPARATOR).append(pushChannel == null ? "" : pushChannel.getId())
+                .append(FIELD_SEPARATOR).append(title == null ? "" : title)
+                .append(FIELD_SEPARATOR).append(sound);
         return sb.toString();
     }
 

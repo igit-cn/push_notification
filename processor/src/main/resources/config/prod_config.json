@@ -3,7 +3,7 @@
     "pushRequestBaseDir" : "/home/services/tianzy/test_generator/requests",
     "requestBaseDir" : "/home/services/tianzy/test_generator/task",
     "processorConfig" :{
-        "lockFile" : "/tmp/push_notification_request_generator.lck",
+        "lockFile" : "/tmp/push_notification_request_processor.lck",
         "iPhonePoolSize" : 20,
         "androidPoolSize" : 200,
         "iPhoneLogger" : {"host":"localhost", "port":8888},

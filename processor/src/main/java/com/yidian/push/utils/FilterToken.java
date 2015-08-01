@@ -84,7 +84,10 @@ public class FilterToken {
     }
 
     public static List<TokenPushChannelMessageType> filterTokens(PushRecord pushRecord, PushChannel pushChannel, boolean doFilter) throws IOException {
-        List<String> tokens = pushRecord.getTokens();
+        return filterTokens(pushRecord.getTokens(), pushRecord.getAppId(), pushChannel, doFilter);
+    }
+
+    public static List<TokenPushChannelMessageType> filterTokens(List<String> tokens, String appId, PushChannel pushChannel, boolean doFilter) throws IOException {
         if (null == tokens || tokens.size() == 0) {
             return new ArrayList<>(0);
         }
@@ -112,17 +115,18 @@ public class FilterToken {
             Level_Support_Number level_support_number = null;
             if (!macInfo.containsKey(mac)) {
                 level_support_number =  new Level_Support_Number();
+                macInfo.put(mac, level_support_number);
             }
             else {
                 level_support_number = macInfo.get(mac);
             }
             level_support_number.level |= item.pushLevel;
             int support = TOKEN_PREFIX_INFO_MAPPING.containsKey(tokenInfo) ? TOKEN_PREFIX_INFO_MAPPING.get(tokenInfo) : 0;
-            level_support_number.support = support;
+            level_support_number.support |= support;
             level_support_number.number ++;
         }
 
-        if (Config.getInstance().getProcessorConfig().isXiaomi(pushRecord.getAppId())) {
+        if (Config.getInstance().getProcessorConfig().isXiaomi(appId)) {
             MessageType messageType = MessageType.NOTIFICATION;
             for (String mac : macInfo.keySet()) {
                 Level_Support_Number level_support_number = macInfo.get(mac);
@@ -130,6 +134,8 @@ public class FilterToken {
                     res.add(new TokenPushChannelMessageType(XIAOMI_TOKEN_PREFIX + mac, PushChannel.XIAOMI, messageType));
                 }
             }
+            // TODO : currently the xiaomi doesn't support multiple push channel
+            // if it supported, changes should be here .
         }
         else {
             for (String mac : macInfo.keySet()) {
@@ -155,11 +161,10 @@ public class FilterToken {
                     for (int tokenInfo : TOKEN_INFOS) {
                         if ((level_support_number.support & tokenInfo) != 0) {
                             res.add(new TokenPushChannelMessageType(TOKEN_INFO_PREFIX_MAPPING.get(tokenInfo)+mac, TOKEN_INFO_PUSH_CHANNEL_MAPPING.get(tokenInfo), messageType));
+                            break;
                         }
                     }
                 }
-
-
             }
         }
         return res;

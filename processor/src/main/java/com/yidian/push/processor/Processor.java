@@ -6,6 +6,7 @@ import com.yidian.push.data.Platform;
 import com.yidian.push.push_request.PushRequest;
 import com.yidian.push.push_request.PushRequestManager;
 import com.yidian.push.push_request.PushRequestStatus;
+import com.yidian.push.utils.GsonFactory;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -48,40 +49,56 @@ public class Processor {
     public static void process() {
         List<PushRequest> pushRequests;
         try {
-            pushRequests = PushRequestManager.getInstance().getRequests(PushRequestStatus.PREPARING);
+            pushRequests = PushRequestManager.getInstance().getRequests(PushRequestStatus.READY);
 
             for (final PushRequest pushRequest : pushRequests) {
-                String table = pushRequest.getTable();
-                if (Platform.isIPhone(table)) {
-                    iPhonePool.submit(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                IOSProcessor.pushFile(pushRequest);
-                            } catch (IOException e) {
-                                log.error("got error when processing request: " + pushRequest.getFileName()
-                                        + "\n with exception: " + ExceptionUtils.getFullStackTrace(e));
-                            }
-                        }
-                    });
-                } else if (Platform.isAndroid(table)) {
-                    androidPool.submit(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                AndroidProcessor.pushFile(pushRequest);
-                            } catch (IOException e) {
-                                log.error("got error when processing request: " + pushRequest.getFileName()
-                                        + "\n with exception: " + ExceptionUtils.getFullStackTrace(e));                            }
-                        }
-                    });
+                try {
+                    long startTime = System.currentTimeMillis();
+                    log.info("start to process request:" + pushRequest.getFileName());
+                    PushRequestManager.getInstance().markAsProcessing(pushRequest);
+                    processOneRequest(pushRequest);
+                    long endTime = System.currentTimeMillis();
+                    log.info("end of processing request:" + pushRequest.getFileName() + ", cost time (seconds) : " + (endTime - startTime)/1000.0  );
 
-                } else {
-                    log.error("ignore bad request :" + pushRequest.getFileName());
+                } catch (IOException e) {
+                    log.error("failed to processing request : " + pushRequest.getFileName()
+                            + " \n with exception " + ExceptionUtils.getFullStackTrace(e));
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void processOneRequest(final PushRequest pushRequest) throws IOException {
+        String table = pushRequest.getTable();
+        log.info("pushRequest : " + GsonFactory.getNonPrettyGson().toJson(pushRequest));
+        if (Platform.isIPhone(table)) {
+            iPhonePool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        IOSProcessor.processOne(pushRequest);
+                    } catch (IOException e) {
+                        log.error("got error when processing request: " + pushRequest.getFileName()
+                                + "\n with exception: " + ExceptionUtils.getFullStackTrace(e));
+                    }
+                }
+            });
+        } else if (Platform.isAndroid(table)) {
+            androidPool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        AndroidProcessor.processOne(pushRequest);
+                    } catch (IOException e) {
+                        log.error("got error when processing request: " + pushRequest.getFileName()
+                                + "\n with exception: " + ExceptionUtils.getFullStackTrace(e));                            }
+                }
+            });
+
+        } else {
+            log.error("ignore bad request :" + pushRequest.getFileName());
         }
     }
 

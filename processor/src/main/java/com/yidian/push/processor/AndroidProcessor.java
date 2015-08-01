@@ -3,8 +3,10 @@ package com.yidian.push.processor;
 import com.yidian.push.data.*;
 import com.yidian.push.push_request.PushRecord;
 import com.yidian.push.push_request.PushRequest;
+import com.yidian.push.push_request.PushRequestManager;
 import com.yidian.push.utils.*;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
@@ -26,20 +28,26 @@ import java.util.Map;
 public class AndroidProcessor {
     private static final int BATCH_SIZE = 100;
     private static final int XIAOMI_BATCH_SIZE = 1000;
-    public static void pushFile(PushRequest request) throws IOException {
-        String pushType = request.getPushType();
-        if (PushType.isRecommendPush(pushType)) {
-            processRecommend(request);
-        }
-        else {
-            processNormal(request);
-        }
 
+    public static void processOne(PushRequest pushRequest) throws IOException {
+        try {
+            String pushType = pushRequest.getPushType();
+            if (PushType.isRecommendPush(pushType)) {
+                processRecommend(pushRequest.getFileName());
+            }
+            else {
+                processNormal(pushRequest.getFileName());
+            }
+            PushRequestManager.getInstance().markAsProcessed(pushRequest);
+        } catch (IOException e) {
+            PushRequestManager.getInstance().markAsBad(pushRequest);
+            log.info("marked as bad due to exception : " + ExceptionUtils.getFullStackTrace(e));
+        }
     }
 
-    public static void processRecommend(PushRequest request) throws IOException {
+    public static void processRecommend(String file) throws IOException {
         Charset UTF_8 = StandardCharsets.UTF_8;
-        Path filePath = new File(request.getFileName()).toPath();
+        Path filePath = new File(file).toPath();
         BufferedReader reader = null;
         List<PushLog.LogItem> logs = new ArrayList<>(BATCH_SIZE);
         List<UmengMessage> umengMessages = new ArrayList<>(BATCH_SIZE);
@@ -88,6 +96,7 @@ public class AndroidProcessor {
                         }
                         else {
                             xiaomiMessages = new ArrayList<>(XIAOMI_BATCH_SIZE);
+                            appIdXiaomiMessageMapping.put(appId, xiaomiMessages);
                         }
                         xiaomiMessages.add(XiaomiPush.buildMessage(pushRecord, token, messageType));
                         if (xiaomiMessages.size() >= XIAOMI_BATCH_SIZE) {
@@ -125,7 +134,7 @@ public class AndroidProcessor {
             }
             WritePushLog.writeLogIgnoreException(Platform.ANDROID, logs);
             logs.clear();
-            log.info("total push " + totalPushCount + " users for file " + request.getFileName());
+            log.info("total push " + totalPushCount + " users for file " + file);
         } finally {
             if (null != reader) {try {reader.close();} catch (Exception ignore){}}
         }
@@ -135,9 +144,9 @@ public class AndroidProcessor {
      * this kind of request are pushing the same record.
 
      */
-    public static void processNormal(PushRequest request) throws IOException {
+    public static void processNormal(String file) throws IOException {
         Charset UTF_8 = StandardCharsets.UTF_8;
-        Path filePath = new File(request.getFileName()).toPath();
+        Path filePath = new File(file).toPath();
         BufferedReader reader = null;
         List<PushLog.LogItem> logs = new ArrayList<>(BATCH_SIZE);
         List<UmengMessage> umengMessages = new ArrayList<>(BATCH_SIZE);
@@ -205,6 +214,7 @@ public class AndroidProcessor {
                         }
                         else {
                             tokenList = new ArrayList<>(XIAOMI_BATCH_SIZE);
+                            appId_PassThough_NotifyId_NotifyType_Tokens_Mapping.put(appId_PassThough_NotifyId_NotifyType, tokenList);
                         }
                         tokenList.add(token);
                         if (tokenList.size() >= XIAOMI_BATCH_SIZE) {
@@ -242,7 +252,7 @@ public class AndroidProcessor {
             }
             WritePushLog.writeLogIgnoreException(Platform.ANDROID, logs);
             logs.clear();
-            log.info("total push " + totalPushCount + " users for file " + request.getFileName());
+            log.info("total push " + totalPushCount + " users for file " + file);
         } finally {
             if (null != reader) {try {reader.close();} catch (Exception ignore){}}
         }

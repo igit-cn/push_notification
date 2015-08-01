@@ -33,6 +33,7 @@ public class ProcessService implements Runnable {
             GetuiPush.init();
             XiaomiPush.init();
             Processor.init();
+            keepRunning = true;
         } catch (IOException e) {
             e.printStackTrace();
             log.error("get processor config failed...");
@@ -59,7 +60,10 @@ public class ProcessService implements Runnable {
 
         int sleepTime = processorConfig.getRequestScanIntervalInSeconds() * 1000;
 
+        log.info("start to process the requests");
         while (keepRunning) {
+
+
             Processor.process();
             try {
                 Thread.sleep(sleepTime);
@@ -67,7 +71,7 @@ public class ProcessService implements Runnable {
                 log.error("sleep failed...");
             }
         }
-        System.out.println("try to shutdown the thread pools");
+        log.info("done...");
     }
 
     public static void main(String[] args) throws IOException {
@@ -78,12 +82,12 @@ public class ProcessService implements Runnable {
             Config.setCONFIG_FILE(configFile);
         } else {
             // Config.setCONFIG_FILE("generator/src/main/resources/config/prod_config.json");
-            Config.setCONFIG_FILE("generator/src/main/resources/config/config2.json");
+            Config.setCONFIG_FILE("processor/src/main/resources/config/config.json");
             System.setProperty("log4j.configuration", "src/main/resources/config/log4j_debug.properties");
             PropertyConfigurator.configure("generator/src/main/resources/config/log4j_debug.properties");
             Logger.getRootLogger().setLevel(Level.DEBUG);
         }
-        String lockFile = Config.getInstance().getGeneratorConfig().getLockFile();
+        String lockFile = Config.getInstance().getProcessorConfig().getLockFile();
         if (!FileLock.lockInstance(lockFile)) {
             System.out.println("One instance is already running, just quit.");
             System.exit(1);

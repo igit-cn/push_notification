@@ -1,13 +1,13 @@
 {
     "lockFile" : "/tmp/push_notification_request_generator.lck",
-    "pushRequestBaseDir" : "/home/services/tianzy/test_generator/requests",
+    "pushRequestBaseDir" : "/Users/tianyuzhi/test/requests",
     "requestBaseDir" : "/home/services/tianzy/test_generator/task",
     "processorConfig" :{
-        "lockFile" : "/tmp/push_notification_request_generator.lck",
+        "lockFile" : "/tmp/push_notification_request_processor.lck",
         "iPhonePoolSize" : 20,
         "androidPoolSize" : 200,
-        "iPhoneLogger" : {"host":"localhost", "port":8888},
-        "androidLogger" : {"host":"localhost", "port":9999},
+        "iPhoneLogger" : {"host":"10.111.0.57", "port":18888},
+        "androidLogger" : {"host":"10.111.0.57", "port":19999},
         "socketConnectTimeout" : 10,
         "socketReadTimeout" : 3,
         "APPID_XIAOMI" : ["xiaomi","zxpad"],

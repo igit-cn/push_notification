@@ -3,11 +3,13 @@ package com.yidian.push.processor;
 import com.yidian.push.data.*;
 import com.yidian.push.push_request.PushRecord;
 import com.yidian.push.push_request.PushRequest;
+import com.yidian.push.push_request.PushRequestManager;
 import com.yidian.push.utils.APNS;
 import com.yidian.push.utils.FilterToken;
 import com.yidian.push.utils.Sound;
 import com.yidian.push.utils.WritePushLog;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
@@ -29,9 +31,19 @@ public class IOSProcessor {
     private static final int BATCH_SIZE = 5000;
     private static final int NEW_APP_VERSION = 10907;
 
-    public static void pushFile(PushRequest request) throws IOException {
+    public static void processOne(PushRequest pushRequest) throws IOException {
+        try {
+            pushFile(pushRequest.getFileName());
+            PushRequestManager.getInstance().markAsProcessed(pushRequest);
+        } catch (IOException e) {
+            PushRequestManager.getInstance().markAsBad(pushRequest);
+            log.info("marked as bad due to exception : " + ExceptionUtils.getFullStackTrace(e));
+        }
+    }
+
+    public static void pushFile(String file) throws IOException {
         Charset UTF_8 = StandardCharsets.UTF_8;
-        Path filePath = new File(request.getFileName()).toPath();
+        Path filePath = new File(file).toPath();
         BufferedReader reader = null;
         List<PushLog.LogItem> logs = new ArrayList<>(BATCH_SIZE);
         List<APNSMessage> payloadList = new ArrayList<>(BATCH_SIZE);
@@ -90,7 +102,7 @@ public class IOSProcessor {
             }
             WritePushLog.writeLogIgnoreException(Platform.IPHONE, logs);
             logs.clear();
-            log.info("total push " + totalPushCount + " users for file " + request.getFileName());
+            log.info("total push " + totalPushCount + " users for file " + file);
         } finally {
             if (null != reader) {try {reader.close();} catch (Exception ignore){}}
         }

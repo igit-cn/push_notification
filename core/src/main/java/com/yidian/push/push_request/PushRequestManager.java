@@ -1,6 +1,7 @@
 package com.yidian.push.push_request;
 
 import com.yidian.push.config.Config;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.util.List;
 /**
  * Created by yidianadmin on 15-1-12.
  */
+@Log4j
 public class PushRequestManager {
     private static PushRequestManager pushRequestManager = null;
     private PushRequestManager() {}
@@ -70,19 +72,24 @@ public class PushRequestManager {
         return new StringBuilder(Config.getInstance().getPushRequestBaseDir()).append('/').append(pushRequestStatus.toString()).toString();
     }
 
-    private boolean changeRequestStatus(PushRequest pushRequest, PushRequestStatus newPushRequestStatus) throws IOException {
-        String[] filePath = pushRequest.getFileName().split("/");
+    private boolean changeRequestStatus(PushRequest request, PushRequestStatus newStatus) throws IOException {
+        String[] filePath = request.getFileName().split("/");
         String file = filePath[filePath.length-1];
-        String newStatusDirPath = getRequestStatusDir(newPushRequestStatus);
+        String newStatusDirPath = getRequestStatusDir(newStatus);
         File newStatusDir = new File(newStatusDirPath);
         synchronized (PushRequestManager.class) {
             if (!newStatusDir.isDirectory()) {
                 newStatusDir.mkdirs();
             }
         }
-        String newFile = new StringBuilder(newStatusDirPath).append('/').append(file).toString();
-        FileUtils.moveFileToDirectory(new File(pushRequest.getFileName()), newStatusDir, true);
-        pushRequest.setFileName(newFile);
+        String newFileStr = new StringBuilder(newStatusDirPath).append('/').append(file).toString();
+        File newFile = new File(newFileStr);
+        if (newFile.exists()) {
+            log.info(newFile + " already exists...");
+            FileUtils.forceDelete(newFile);
+        }
+        FileUtils.moveFileToDirectory(new File(request.getFileName()), newStatusDir, true);
+        request.setFileName(newFileStr);
         return true;
     }
 }

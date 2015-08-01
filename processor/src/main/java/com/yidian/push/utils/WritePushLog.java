@@ -44,9 +44,11 @@ public class WritePushLog {
 
        Socket client = new Socket();
        try {
+           log.info("start to write # logs : " + logItemList.size());
+
            client.setTcpNoDelay(true);
            client.setSoTimeout(readTimeout * 1000);
-           client.connect(new InetSocketAddress(hostPort.getHost(), hostPort.getPort()), connectionTimeout);
+           client.connect(new InetSocketAddress(hostPort.getHost(), hostPort.getPort()), connectionTimeout * 1000);
            InputStream in = client.getInputStream();
            DataOutputStream out = new DataOutputStream(client.getOutputStream());
            for (PushLog.LogItem logItem : logItemList) {
@@ -55,6 +57,7 @@ public class WritePushLog {
            }
            out.write(new byte[1], 0, 1);
            in.read();
+           log.info("write # logs : " + logItemList.size());
        } finally {
            if (null != client) { try {client.close();} catch (IOException ignore){}}
        }

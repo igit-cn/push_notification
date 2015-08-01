@@ -35,14 +35,16 @@ public class PushRequest {
         return null;
     }
 
-    public void parseFileName(String name) {
-        //#20141121163251-10_111_0_70-PUSH_FOR_ANDROID-16.fb402db4_7158_11e4_900c_d4ae52a6cc47.offset.0.job
+    public void parseFileName(String fileName) {
+        ///ssd/data/push_notification/test_request/ready/20150801171524-10_111_0_70-3306-PUSH-16.0a563ae1_0f28_4bbf_a63e_611f00be515e.offset.0.job
+        String[] tmp = fileName.split("/");
+        String name = tmp[tmp.length-1];
         String prefix = name.split("\\.")[0];
         String[] arr = prefix.split("-");
-        if (arr.length >= 4) {
-            this.pushType = arr[3];
+        if (arr.length >= 5) {
+            this.pushType = arr[4];
         }
-        this.table = arr[2];
+        this.table = arr[3];
         this.pushRequestStatus = getStatus();
     }
 }
