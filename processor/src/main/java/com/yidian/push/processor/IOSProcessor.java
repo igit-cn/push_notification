@@ -1,4 +1,4 @@
-package com.yidian.push;
+package com.yidian.push.processor;
 
 import com.yidian.push.data.*;
 import com.yidian.push.push_request.PushRecord;
@@ -24,13 +24,12 @@ import java.util.List;
  * Created by yidianadmin on 15-2-9.
  */
 @Log4j
-public class IOSPush implements Push{
+public class IOSProcessor {
     private static final int BADGE = 1;
     private static final int BATCH_SIZE = 5000;
     private static final int NEW_APP_VERSION = 10907;
 
-    @Override
-    public void pushFile(PushRequest request) throws IOException {
+    public static void pushFile(PushRequest request) throws IOException {
         Charset UTF_8 = StandardCharsets.UTF_8;
         Path filePath = new File(request.getFileName()).toPath();
         BufferedReader reader = null;

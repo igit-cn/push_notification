@@ -1,4 +1,4 @@
-package com.yidian.push;
+package com.yidian.push.processor;
 
 import com.yidian.push.push_request.PushRequest;
 

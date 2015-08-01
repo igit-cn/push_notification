@@ -1,4 +1,4 @@
-package com.yidian.push;
+package com.yidian.push.processor;
 
 import com.yidian.push.data.*;
 import com.yidian.push.push_request.PushRecord;
@@ -23,11 +23,10 @@ import java.util.Map;
  * Created by yidianadmin on 15-2-9.
  */
 @Log4j
-public class AndroidPush implements Push {
+public class AndroidProcessor {
     private static final int BATCH_SIZE = 100;
     private static final int XIAOMI_BATCH_SIZE = 1000;
-    @Override
-    public void pushFile(PushRequest request) throws IOException {
+    public static void pushFile(PushRequest request) throws IOException {
         String pushType = request.getPushType();
         if (PushType.isRecommendPush(pushType)) {
             processRecommend(request);
@@ -38,7 +37,7 @@ public class AndroidPush implements Push {
 
     }
 
-    public void processRecommend(PushRequest request) throws IOException {
+    public static void processRecommend(PushRequest request) throws IOException {
         Charset UTF_8 = StandardCharsets.UTF_8;
         Path filePath = new File(request.getFileName()).toPath();
         BufferedReader reader = null;
@@ -136,7 +135,7 @@ public class AndroidPush implements Push {
      * this kind of request are pushing the same record.
 
      */
-    public void processNormal(PushRequest request) throws IOException {
+    public static void processNormal(PushRequest request) throws IOException {
         Charset UTF_8 = StandardCharsets.UTF_8;
         Path filePath = new File(request.getFileName()).toPath();
         BufferedReader reader = null;
@@ -249,7 +248,7 @@ public class AndroidPush implements Push {
         }
     }
 
-    private void pushXiaomi(String appId_PassThough_NotifyId_NotifyType, String title,
+    private static void pushXiaomi(String appId_PassThough_NotifyId_NotifyType, String title,
                             String description, String docId,
                             int pushType, List<String> tokens) throws IOException {
         if (null == tokens || tokens.size() == 0) {

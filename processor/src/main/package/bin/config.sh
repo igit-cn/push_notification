@@ -18,10 +18,35 @@ PROGNAME=$(basename ${PROG})
 PROGBASE=${PROGNAME%%.*}
 
 #######################
+#get all jars under lib
+function get_all_jars()
+{
+    local path=$1
+    local res=""
+    for file in $(ls ${path}/*.jar)
+    do
+        if [ "${res}"x == ""x ]; then
+            res=${file}
+        else
+            res="${res}:${file}"
+        fi
+    done
+    echo ${res}
+    return 0
+}
+#
 # runtime options
 LIB_DIR=${TBASEDIR}/lib
 CONFIG_DIR=${TBASEDIR}/conf
-OPTS="-Xmx4G -Xms1G -server -XX:+UseCompressedOops -XX:+UseParNewGC -cp .:${LIB_DIR}:${CONFIG_DIR}:${LIB_DIR}/push-service-1.0-SNAPSHOT-jar-with-dependencies.jar com.yidian.push.server.Service ${CONFIG_DIR}/prod_config.json"
+LIB_DIR_JARS=$(get_all_jars ${LIB_DIR})
+#JAVA_FLAGS="-Dhttp.proxyHost=proxy1.yidian.com -Dhttp.proxyPort=3128"
+JAVA_FLAGS="\
+-Dcom.sun.management.jmxremote=true \
+-Dcom.sun.management.jmxremote.port=9091 \
+-Dcom.sun.management.jmxremote.ssl=false \
+-Dcom.sun.management.jmxremote.authenticate=false \
+"
+OPTS="${JAVA_FLAGS} -Xmx8G -Xms3G -server -XX:+UseCompressedOops -XX:+UseParNewGC -cp .:${LIB_DIR}:${CONFIG_DIR}:${LIB_DIR_JARS} com.yidian.push.services.ProcessService ${CONFIG_DIR}/prod_config.json"
 KILLPROC_OPTS=""
 
 #######################

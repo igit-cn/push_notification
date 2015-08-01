@@ -17,6 +17,7 @@ import java.util.Map;
 @Setter
 public class ProcessorConfig {
     private String lockFile;
+    private int requestScanIntervalInSeconds = 2;
     private int iPhonePoolSize = 20;
     private int androidPoolSize = 200;
     private HostPort iPhoneLogger;
@@ -79,7 +80,4 @@ public class ProcessorConfig {
             return androidLogger;
         }
     }
-
-
-
 }

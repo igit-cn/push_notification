@@ -1,12 +1,16 @@
-package com.yidian.push;
+package com.yidian.push.services;
 
 import com.yidian.push.config.Config;
 import com.yidian.push.config.ProcessorConfig;
 import com.yidian.push.data.Platform;
+import com.yidian.push.processor.Processor;
 import com.yidian.push.push_request.PushRequest;
 import com.yidian.push.push_request.PushRequestManager;
 import com.yidian.push.push_request.PushRequestStatus;
+import com.yidian.push.utils.GetuiPush;
 import com.yidian.push.utils.HttpConnectionUtils;
+import com.yidian.push.utils.UmengPush;
+import com.yidian.push.utils.XiaomiPush;
 import lombok.extern.log4j.Log4j;
 
 import java.io.IOException;
@@ -26,6 +30,9 @@ public class ProcessService implements Runnable {
         try {
             processorConfig = Config.getInstance().getProcessorConfig();
             HttpConnectionUtils.init();
+            GetuiPush.init();
+            XiaomiPush.init();
+            Processor.init();
         } catch (IOException e) {
             e.printStackTrace();
             log.error("get processor config failed...");
@@ -39,8 +46,9 @@ public class ProcessService implements Runnable {
                 keepRunning = false;
                 System.out.println("receive kill signal ...");
                 try {
-                    currentThread.join();
+                    Processor.destroy();
                     HttpConnectionUtils.release();
+                    currentThread.join();
                     System.out.println("shutdown the thread pools");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -48,33 +56,18 @@ public class ProcessService implements Runnable {
             }
         });
 
-        ExecutorService iPhonePool = Executors.newFixedThreadPool(processorConfig.getIPhonePoolSize());
-        ExecutorService androidPool = Executors.newFixedThreadPool(processorConfig.getAndroidPoolSize());
+
+        int sleepTime = processorConfig.getRequestScanIntervalInSeconds() * 1000;
+
         while (keepRunning) {
-            List<PushRequest> pushRequests;
+            Processor.process();
             try {
-                pushRequests = PushRequestManager.getInstance().getRequests(PushRequestStatus.PREPARING);
-                for (PushRequest pushRequest : pushRequests) {
-                    String table = pushRequest.getTable();
-                    if (Platform.isIPhone(table)) {
-                       // iPhonePool.submit();
-                    }
-                    else if (Platform.isAndroid(table)) {
-
-                    }
-                    else {
-                        log.error("ignore bad request :" + pushRequest.getFileName());
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                break;
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                log.error("sleep failed...");
             }
-
         }
         System.out.println("try to shutdown the thread pools");
-        iPhonePool.shutdown();
-        androidPool.shutdown();
     }
 
     public static void main(String[] args) {
