@@ -318,7 +318,7 @@ public class PushLog {
         iBytes = ByteUtil.intToByteArray((int)logItem.uid);
         System.arraycopy(iBytes, 0, bytes, index, 4);
         index += 4;
-        System.out.println(new String(encodeDocId(logItem.docId)));
+        //System.out.println(new String(encodeDocId(logItem.docId)));
         iBytes = encodeDocId(logItem.docId);
         System.arraycopy(iBytes, 0, bytes, index, DOC_ID_DATA_LENGTH);
         index += DOC_ID_DATA_LENGTH;

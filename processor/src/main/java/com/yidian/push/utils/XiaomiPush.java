@@ -282,7 +282,7 @@ public class XiaomiPush {
             index += batch;
             List<String> subTokens = tokens.subList(start, end);
             params.put("alias", subTokens);
-            System.out.println(GsonFactory.getNonPrettyGson().toJson(params));
+            //System.out.println(GsonFactory.getNonPrettyGson().toJson(params));
             int timesToRetry = retry;
             while (timesToRetry > 0) {
                 try {
