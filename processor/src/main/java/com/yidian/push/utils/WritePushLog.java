@@ -44,7 +44,7 @@ public class WritePushLog {
 
        Socket client = new Socket();
        try {
-           log.info("start to write # logs : " + logItemList.size());
+           log.debug("start to write # logs : " + logItemList.size());
 
            client.setTcpNoDelay(true);
            client.setSoTimeout(readTimeout * 1000);
@@ -57,7 +57,7 @@ public class WritePushLog {
            }
            out.write(new byte[1], 0, 1);
            in.read();
-           log.info("write # logs : " + logItemList.size());
+           log.debug("write # logs : " + logItemList.size());
        } finally {
            if (null != client) { try {client.close();} catch (IOException ignore){}}
        }

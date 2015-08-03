@@ -42,6 +42,7 @@ public class Processor {
             androidPool.shutdown();
             iPhonePool.awaitTermination(20, TimeUnit.SECONDS);
             androidPool.awaitTermination(20, TimeUnit.SECONDS);
+            log.info("stop the processor: shutdown the thread pools");
         }
 
     }
@@ -72,7 +73,7 @@ public class Processor {
 
     private static void processOneRequest(final PushRequest pushRequest) throws IOException {
         String table = pushRequest.getTable();
-        log.info("pushRequest : " + GsonFactory.getNonPrettyGson().toJson(pushRequest));
+        log.debug("pushRequest : " + GsonFactory.getNonPrettyGson().toJson(pushRequest));
         if (Platform.isIPhone(table)) {
             iPhonePool.submit(new Runnable() {
                 @Override
