@@ -1,7 +1,7 @@
 {
-    "lockFile" : "/tmp/push_notification_request_generator.lck",
-    "pushRequestBaseDir" : "/home/services/tianzy/test_generator/requests",
-    "requestBaseDir" : "/home/services/tianzy/test_generator/task",
+    "lockFile" : "/tmp/push_notification_request.lck",
+    "pushRequestBaseDir" : "/ssd/data/push_notification/request",
+    "requestBaseDir" : "/home/services/push_notification/task",
     "processorConfig" :{
         "lockFile" : "/tmp/push_notification_request_processor.lck",
         "iPhonePoolSize" : 20,
