@@ -145,7 +145,7 @@ public class CacheUtil {
             }
             // System.out.println("cost time is seconds: " + (System.currentTimeMillis() - startTime)/ 1000.0);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (null != fileChannel) {
