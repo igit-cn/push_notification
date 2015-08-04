@@ -22,8 +22,9 @@ public class UmengPushTest {
     @BeforeClass
     public void before() throws IOException {
         String projectDir = System.getProperty("user.dir");
-        Config.setCONFIG_FILE(projectDir + "/src/main/resources/config/config.json");
+        Config.setCONFIG_FILE(projectDir + "/processor/src/main/resources/config/config.json");
         processorConfig = Config.getInstance().getProcessorConfig();
+        UmengPush.init();
     }
     @Test
     public void testPush() {

@@ -18,13 +18,8 @@
         "iosPushBatch" : 100,
         "iosPushBatchUrl" : "http://localhost:6266/push_service/apns_multiple/",
         "iosPushSingleUrl" : "http://localhost:6266/push_service/apns_single/",
-        "UMENG_APPID_NAME_MAPPING" : {
-            "yddk" : "一点资讯",
-            "ydtxz" : "一点资讯",
-            "yidian" : "一点资讯",
-            "lastmile" : "最后一公里"
-        },
         "umengPushBatch" : 100,
+        "supportedUmengPushAppIdNameMapping" :"/Users/tianyuzhi/work/push_notification/trunk/data/umeng/supported_appid_name_mapping",
         "umengPushBatchUrl" : "http://localhost:6266/push_service/upns_multiple/",
         "umengPushSingleUrl" : "http://localhost:6266/push_service/upns_single/",
         "getuiPushBatch" : 100,

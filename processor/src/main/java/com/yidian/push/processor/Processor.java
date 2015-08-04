@@ -54,12 +54,12 @@ public class Processor {
 
             for (final PushRequest pushRequest : pushRequests) {
                 try {
-                    long startTime = System.currentTimeMillis();
-                    log.info("start to process request:" + pushRequest.getFileName());
+                    //long startTime = System.currentTimeMillis();
+                    //log.info("start to process request:" + pushRequest.getFileName());
                     PushRequestManager.getInstance().markAsProcessing(pushRequest);
                     processOneRequest(pushRequest);
-                    long endTime = System.currentTimeMillis();
-                    log.info("end of processing request:" + pushRequest.getFileName() + ", cost time (seconds) : " + (endTime - startTime)/1000.0  );
+                    //long endTime = System.currentTimeMillis();
+                    //log.info("end of processing request:" + pushRequest.getFileName() + ", cost time (seconds) : " + (endTime - startTime)/1000.0  );
 
                 } catch (IOException e) {
                     log.error("failed to processing request : " + pushRequest.getFileName()

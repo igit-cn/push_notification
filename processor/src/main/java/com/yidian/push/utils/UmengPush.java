@@ -9,10 +9,12 @@ import com.yidian.push.data.ResourceType;
 import com.yidian.push.data.UmengMessage;
 import com.yidian.push.push_request.PushRecord;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.client.config.RequestConfig;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -24,9 +26,32 @@ import java.util.Map;
 @Log4j
 public class UmengPush {
     private static final int EXPIRE_TIME = 3 * 60 * 60; // 3 HOURS
-    public static UmengMessage buildMessage(PushRecord pushRecord, String token, MessageType messageType) throws IOException {
+    private static Map<String, String> APPID_NAME_MAPPING = new HashMap();
+    private static boolean isInitialized = false;
+    public static void init() throws IOException {
+        if (isInitialized) return;
         ProcessorConfig config = Config.getInstance().getProcessorConfig();
-        String appName = config.getUMENG_APPID_NAME_MAPPING().get(pushRecord.getAppId());
+        String appIdNameMappingFile = config.getSupportedUmengPushAppIdNameMapping();
+        try {
+            String str = FileUtils.readFileToString(new File(appIdNameMappingFile));
+            for (String line : str.split("\n")) {
+                String[] arr = line.split("\t");
+                if (arr.length >= 2) {
+                    String appId = arr[0];
+                    String name = arr[1];
+                    APPID_NAME_MAPPING.put(appId, name);
+                }
+            }
+        }
+        catch (Exception e) {
+            log.error("error happened while reading umeng appid name mapping file : " + appIdNameMappingFile);
+        }
+        isInitialized = true;
+    }
+    public static UmengMessage buildMessage(PushRecord pushRecord, String token, MessageType messageType) throws IOException {
+        if (!isInitialized) {init();}
+        ProcessorConfig config = Config.getInstance().getProcessorConfig();
+        String appName = APPID_NAME_MAPPING.get(pushRecord.getAppId());
         int expireTime = config.getMessageExpireTimeInSeconds();
         if (StringUtils.isEmpty(appName)) {
             log.error(pushRecord.getAppId() + " not support by umeng ");

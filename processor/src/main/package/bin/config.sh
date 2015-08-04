@@ -42,7 +42,7 @@ LIB_DIR_JARS=$(get_all_jars ${LIB_DIR})
 #JAVA_FLAGS="-Dhttp.proxyHost=proxy1.yidian.com -Dhttp.proxyPort=3128"
 JAVA_FLAGS="\
 -Dcom.sun.management.jmxremote=true \
--Dcom.sun.management.jmxremote.port=9091 \
+-Dcom.sun.management.jmxremote.port=9100 \
 -Dcom.sun.management.jmxremote.ssl=false \
 -Dcom.sun.management.jmxremote.authenticate=false \
 "

@@ -36,8 +36,8 @@ public class ProcessorConfig {
     private String iosPushBatchUrl = "http://10.111.0.57:5266/push_service/apns_multiple/";
     private String iosPushSingleUrl = "http://10.111.0.57:5266/push_service/apns_single/";
 
-    private Map<String, String> UMENG_APPID_NAME_MAPPING = new HashMap<>();
     private int umengPushBatch = 100;
+    private String supportedUmengPushAppIdNameMapping = "/home/services/push_notification/data/umeng/supported_appid_name_mapping";
     private String umengPushBatchUrl = "http://10.111.0.57:5266/push_service/upns_multiple/";
     private String umengPushSingleUrl = "http://10.111.0.57:5266/push_service/upns_single/";
 
