@@ -27,14 +27,16 @@ public class FilterTokenTest {
         return alias + PushRecord.TOKEN_ITEM_SEPARATOR + pushLevel;
     }
 
+    //GTPPFFFFFFFFFFFF863429020022296^C1879048193^BMMPPFFFFFFFFFFFF863429020022296^C1879048193^BUMPPFFFFFFFFFFFF863429020022296^C1879048193
     @Test
     public void test() throws IOException {
         List<String> tokenList = Arrays.asList(
-                genToken("MMPP123", 1), genToken("UMPP123", 0), genToken("GTPP123", 1),
-                genToken("UMPP334", 0), genToken("MMPP334", 0), genToken("GTPP334", 0),
-                genToken("UMPP4567", 0), genToken("GTPP4567", 1),
-                genToken("UMPP6789", 1), genToken("GTPP6789", 1),
-                genToken("UMPP7890", 1)
+               genToken("GTPPFFFFFFFFFFFF863429020022296", 1879048193),genToken("MMPPFFFFFFFFFFFF863429020022296", 1879048193),genToken("UMPPFFFFFFFFFFFF863429020022296", 1879048193)
+//                ,genToken("MMPP123", 1), genToken("UMPP123", 0), genToken("GTPP123", 1)
+//                ,genToken("UMPP334", 0), genToken("MMPP334", 0), genToken("GTPP334", 0)
+//                ,genToken("UMPP4567", 0), genToken("GTPP4567", 1)
+//                ,genToken("UMPP6789", 1), genToken("GTPP6789", 1)
+//                ,genToken("UMPP7890", 1)
         );
         String appId = "yidian";
         System.out.println(

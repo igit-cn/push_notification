@@ -265,14 +265,13 @@ public class XiaomiPush {
         params.put("description", xiaomiMessage.getDescription());
         params.put("restricted_package_name", xiaomiData.getPackageName());
         params.put("notify_type", xiaomiMessage.getNotifyType());
-        params.put("pass_through", String.valueOf(xiaomiMessage.getMessageType()));
+        params.put("pass_through", String.valueOf(xiaomiMessage.getMessageType().getIntVal()));
         params.put("notify_id", xiaomiMessage.getNotifyId());
         params.put("time_to_live", ttl);
         params.put("payload", payloadStr);
         params.put("extra.layout_name", "push_notification_item");
         params.put("extra.layout_value", layoutDataStr);
-
-
+        
         int index = 0;
         int length = xiaomiMessage.getPushNumber();
         List<String> tokens = xiaomiMessage.getTokens();

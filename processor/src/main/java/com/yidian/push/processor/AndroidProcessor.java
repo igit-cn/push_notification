@@ -290,6 +290,7 @@ public class AndroidProcessor {
                 .withTokens(tokens)
                 .withMessageType(messageType)
                 .build();
+
         XiaomiPush.pushSingleMessage(xiaomiSingleMessage);
 
     }
