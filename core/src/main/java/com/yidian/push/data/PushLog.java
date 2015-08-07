@@ -275,8 +275,14 @@ public class PushLog {
 //    }
 
     public static byte[] encodeChannel(String channel) {
-        channel.replaceAll("sc", "c");
-        byte[] bytes = ByteUtil.intToByteArray(Integer.parseInt(channel.substring(1)));
+        channel = channel.replaceAll("sc", "c");
+        int tmp = 0;
+        try {
+            tmp = Integer.parseInt(channel.substring(1));
+        } catch (Exception e) {
+            tmp = 0;
+        }
+        byte[] bytes = ByteUtil.intToByteArray(tmp);
         bytes[0] = (byte)channel.charAt(0);
         return bytes;
     }

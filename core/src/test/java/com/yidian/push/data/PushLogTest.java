@@ -9,6 +9,12 @@ import java.util.List;
 public class PushLogTest {
 
     @Test
+    public void testEncodeChannelId() {
+        String channel = "sc70";
+        System.out.println("out:" + PushLog.encodeChannel(channel));
+    }
+
+    @Test
     public void testGetUidSegmentSize() throws Exception {
         assert PushLog.UID_SEGMENT == PushLog.getUidSegmentSize("2014-09-04");
 

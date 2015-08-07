@@ -36,6 +36,7 @@ public class Generator {
                     processOneRequest(request);
                 } catch (Exception e) {
                     log.info("request failed with exception : " + ExceptionUtils.getFullStackTrace(e));
+                    RequestManager.getInstance().markAsBad(request);
                 }
                 long endTime = System.currentTimeMillis();
                 log.info("end of processing request:" + request.getFileName() + ", cost time (seconds) : " + (endTime - startTime)/1000.0  );

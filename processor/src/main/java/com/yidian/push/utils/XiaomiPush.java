@@ -29,6 +29,7 @@ import java.util.Map;
  */
 @Log4j
 public class XiaomiPush {
+    private static final int MAX_XIAOMI_BATCH = 1000 - 1;
     @Getter
     public static class XiaomiData {
         private String appName;
@@ -271,7 +272,7 @@ public class XiaomiPush {
         params.put("payload", payloadStr);
         params.put("extra.layout_name", "push_notification_item");
         params.put("extra.layout_value", layoutDataStr);
-        
+
         int index = 0;
         int length = xiaomiMessage.getPushNumber();
         List<String> tokens = xiaomiMessage.getTokens();

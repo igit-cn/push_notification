@@ -72,7 +72,7 @@ public class GetuiPush {
         if (!isInitialized) {init();}
         ProcessorConfig config = Config.getInstance().getProcessorConfig();
         if (!AppIdGetuiDataMapping.containsKey(pushRecord.getAppId())) {
-            log.error(pushRecord.getAppId() + " not support by umeng ");
+            log.error(pushRecord.getAppId() + " not support by getui ");
             return null;
         }
         GetuiData getuiData = AppIdGetuiDataMapping.get(pushRecord.getAppId());

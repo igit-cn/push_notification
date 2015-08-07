@@ -80,7 +80,7 @@ public class PushAll {
                         totalPushUsers += future.get(1, TimeUnit.SECONDS);
                     }
                 } catch (Exception e) {
-                    log.error("get the push number failed.");
+                    log.error("get the push number failed with exception: " + ExceptionUtils.getFullStackTrace(e));
                 }
             }
             task.setTotalPushUsers(totalPushUsers);
