@@ -62,9 +62,9 @@ public class XiaomiPush {
             String[] arr = str.split("\n");
             if (arr.length >= 3) {
                 // appName, packageName, secret
-                String appName = arr[0];
-                String packageName = arr[1];
-                String secret = arr[2];
+                String appName = arr[0].trim();
+                String packageName = arr[1].trim();
+                String secret = arr[2].trim();
                 AppIdXiaomiDataMapping.put(appId, new XiaomiData(appName, packageName, secret));
                 log.info("Xiaomi get the support with file : " + file);
             }

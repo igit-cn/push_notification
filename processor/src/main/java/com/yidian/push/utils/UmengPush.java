@@ -37,8 +37,8 @@ public class UmengPush {
             for (String line : str.split("\n")) {
                 String[] arr = line.split("\t");
                 if (arr.length >= 2) {
-                    String appId = arr[0];
-                    String name = arr[1];
+                    String appId = arr[0].trim();
+                    String name = arr[1].trim();
                     APPID_NAME_MAPPING.put(appId, name);
                 }
             }

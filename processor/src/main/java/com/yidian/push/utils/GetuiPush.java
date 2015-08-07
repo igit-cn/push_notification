@@ -56,10 +56,10 @@ public class GetuiPush {
             String[] arr = str.split("\n");
             if (arr.length >= 4) {
                 // name, app_key, app_id, master_secret
-                String appName = arr[0];
-                String appKey = arr[1];
-                String getTuiAppId = arr[2];
-                String masterSecret = arr[3];
+                String appName = arr[0].trim();
+                String appKey = arr[1].trim();
+                String getTuiAppId = arr[2].trim();
+                String masterSecret = arr[3].trim();
                 AppIdGetuiDataMapping.put(appId, new GetuiData(appName, appKey, getTuiAppId, masterSecret));
                 log.info("Getui get the support with file : " + file);
             }
