@@ -28,6 +28,7 @@ public class GeneratorConfig {
     private List<HostPortDB> MYSQL_HOSTS;
     private List<RedisHostPort> REDIS_HOSTS;
     private PoolProperties tomcatDBCPProperties;
+    private int jedisTimeoutInSeconds = 2;
     private JedisPoolConfig jedisPoolConfig;
     private int maxUserId = 0;
     private int validMaxTitleLength = 15;

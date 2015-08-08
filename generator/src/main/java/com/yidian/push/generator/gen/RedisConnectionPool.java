@@ -25,9 +25,10 @@ public class RedisConnectionPool {
             return;
         }
         GeneratorConfig config = Config.getInstance().getGeneratorConfig();
+        int readTimeout = config.getJedisTimeoutInSeconds() * 1000;
         jedisPoolConfig = config.getJedisPoolConfig();
         for (RedisHostPort redisHostPort : config.getREDIS_HOSTS()) {
-            JedisPool jedisPool = new JedisPool(jedisPoolConfig, redisHostPort.getHost(), redisHostPort.getPort());
+            JedisPool jedisPool = new JedisPool(jedisPoolConfig, redisHostPort.getHost(), redisHostPort.getPort(), readTimeout);
             CachedJedisPool.put(redisHostPort.getId(), jedisPool);
             CachedRedisHostPort.put(redisHostPort.getId(), redisHostPort);
             log.info("init the jedis connection pool " + redisHostPort.toJson());

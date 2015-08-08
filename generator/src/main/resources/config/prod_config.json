@@ -13,10 +13,10 @@
         "MYSQL_DB" : "",
         "MYSQL_HOSTS" : [{"host":"10.111.2.53", "port":3306, "db":"account"}],
         "REDIS_HOSTS" : [
-            {"id":0, "host":"10.111.0.57", "port":16379},
-            {"id":1, "host":"10.111.0.57", "port":26379},
-            {"id":2, "host":"10.111.0.57", "port":36379},
-            {"id":3, "host":"10.111.0.57", "port":46379}
+            {"id":0, "host":"localhost", "port":16379},
+            {"id":1, "host":"localhost", "port":26379},
+            {"id":2, "host":"localhost", "port":36379},
+            {"id":3, "host":"localhost", "port":46379}
         ],
         "tomcatDBCPProperties" : {
             "driverClassName" : "com.mysql.jdbc.Driver",
@@ -39,6 +39,7 @@
             "removeAbandoned" : true,
             "jdbcInterceptors" : "org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer;org.apache.tomcat.jdbc.pool.interceptor.ResetAbandonedTimer"
         },
+        "jedisTimeoutInSeconds" : 2,
         "jedisPoolConfig" : {
             "maxTotal" : 400,
             "maxIdle" : 30,

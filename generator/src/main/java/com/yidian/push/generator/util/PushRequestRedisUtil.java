@@ -72,7 +72,7 @@ public class PushRequestRedisUtil {
                     result.put(key, new NidLastPushTimePair(nid, lastPushTime));
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
            log.error("get nid and last push time failed, just use the random " + ExceptionUtils.getFullStackTrace(e));
         } finally {
             if (jedis != null && jedisPool != null) {
@@ -142,7 +142,7 @@ public class PushRequestRedisUtil {
                     result.put(getUidAppIdKeyFromPushChannelKey(key), pushChannel);
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("get the push channel failed.  " + ExceptionUtils.getFullStackTrace(e));
         } finally {
             if (jedis != null && jedisPool != null) {
@@ -164,7 +164,7 @@ public class PushRequestRedisUtil {
             jedisPool = RedisConnectionPool.getConnectionPool(redisId);
             jedis = jedisPool.getResource();
             RedisUtil.setRedisBatch(jedis, map);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("update the redis failed.  " + ExceptionUtils.getFullStackTrace(e));
         } finally {
             if (null != jedis && null != jedisPool) {

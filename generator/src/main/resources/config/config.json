@@ -36,6 +36,7 @@
             "removeAbandoned" : true,
             "jdbcInterceptors" : "org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer;org.apache.tomcat.jdbc.pool.interceptor.ResetAbandonedTimer"
         },
+        "jedisTimeoutInSeconds" : 2,
         "jedisPoolConfig" : {
             "maxTotal" : 400,
             "maxIdle" : 30,
