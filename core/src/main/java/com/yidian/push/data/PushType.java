@@ -8,17 +8,17 @@ import java.util.Map;
  * Created by tianyuzhi on 15/5/26.
  */
 public enum PushType {
-    MORNING(1<<1, "2"),
-    NOON(1<<2, "4"),
-    EVENING(1<<3, "8"),
-    BREAK(1<<4, "16"),
-    LOCAL(1<<5, "32"),
-    RECOMMEND(1<<6, "64"),
-    RECOMMEND_1(1<<7, "128"),
-    RECOMMEND_2(1<<8, "256"),
-    RECOMMEND_3(1<<9, "512"),
-    NIGHT(1<<10, "1024"),
-    UNKNOWN(0, "0");
+    MORNING(1<<1, "2", 1),
+    NOON(1<<2, "4", 2),
+    EVENING(1<<3, "8", 3),
+    BREAK(1<<4, "16", 4),
+    LOCAL(1<<5, "32", 5),
+    RECOMMEND(1<<6, "64", 6),
+    RECOMMEND_1(1<<7, "128", 7),
+    RECOMMEND_2(1<<8, "256", 8),
+    RECOMMEND_3(1<<9, "512", 9),
+    NIGHT(1<<10, "1024", 10),
+    UNKNOWN(0, "0", 0);
 
     private static Map<Integer, PushType> INT_TO_PUSH_TYPE = new HashMap<>(20);
     private static Map<String, PushType> STRING_TO_PUSH_TYPE = new HashMap<>(20);
@@ -45,15 +45,20 @@ public enum PushType {
 
     private int value;
     private String strValue;
-    PushType(int value, String strValue) {
+    private int logIntVal;
+    PushType(int value, String strValue, int logIntVal) {
         this.value = value;
         this.strValue = strValue;
+        this.logIntVal = logIntVal;
     }
     public int getInt() {
         return value;
     }
     public String getString() {
         return strValue;
+    }
+    public int getLogIntVal() {
+        return logIntVal;
     }
 
     public static boolean isRecommendPush(String pushType) {

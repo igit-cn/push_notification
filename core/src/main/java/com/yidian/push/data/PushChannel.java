@@ -1,6 +1,7 @@
 package com.yidian.push.data;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * For smart push
@@ -12,8 +13,8 @@ public enum PushChannel {
     GETUI(3, "3", "getui")
     ;
 
-    private static HashMap<Integer, PushChannel> intToChannel = new HashMap<>();
-    private static HashMap<String, PushChannel> strToChannel = new HashMap<>();
+    private static Map<Integer, PushChannel> intToChannel = new HashMap<>();
+    private static Map<String, PushChannel> strToChannel = new HashMap<>();
 
     static {
         for (PushChannel pushChannel : PushChannel.values()) {

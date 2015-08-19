@@ -292,7 +292,7 @@ public class XiaomiPush {
                         break;
                     } else {
                         if (null != json) {
-                            log.error("failed with reason " + json.getString("reason"));
+                            log.error("xiaomi failed with reason " + json.getString("reason"));
                         }
                         timesToRetry--;
                     }

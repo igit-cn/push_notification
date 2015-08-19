@@ -315,7 +315,7 @@ public class PushLog {
         }
         int index = 0;
         bytes[index++] = (byte)length;
-        byte[] iBytes = ByteUtil.intToByteArray(logItem.pushType);
+        byte[] iBytes = ByteUtil.intToByteArray(PushType.getPushType(logItem.pushType).getLogIntVal());
         System.arraycopy(iBytes, 3, bytes, index, 1);
         index += 1;
         iBytes = ByteUtil.intToByteArray((int)(logItem.pushTime/1000));

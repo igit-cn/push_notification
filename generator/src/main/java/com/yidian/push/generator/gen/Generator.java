@@ -127,8 +127,8 @@ public class Generator {
                     description = "晚报";
                 }
                 else if (title.startsWith("[夜咖]")) {
-                    //pushType = PushType.NIGHT;
-                    pushType = PushType.BREAK;
+                    pushType = PushType.NIGHT;
+                    //pushType = PushType.BREAK;
                     description = "夜读";
                 }
                 else {
