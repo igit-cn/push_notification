@@ -129,6 +129,10 @@ public class XiaomiPush {
 
         String sendTime = DateTime.now().toString("HH:mm");
         XiaomiData xiaomiData = AppIdXiaomiDataMapping.get(appId);
+        if (null == xiaomiData) {
+            log.error(appId + " not supported ...");
+            return;
+        }
         List<JSONObject> pushDataList = new ArrayList<>(xiaomiMessageList.size());
         for (XiaomiMessage xiaomiMessage : xiaomiMessageList) {
             // for recommend news: we just use the app name as the title
