@@ -48,7 +48,7 @@ public class XiaomiPush {
     public static volatile boolean isInitialized = false;
     public static Map<String, XiaomiData> AppIdXiaomiDataMapping = new HashMap<>(10);
 
-    public static void init() throws IOException {
+    public synchronized static void init() throws IOException {
         if (isInitialized) {
             return;
         }

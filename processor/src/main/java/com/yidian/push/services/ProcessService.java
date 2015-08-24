@@ -9,6 +9,7 @@ import com.yidian.push.push_request.PushRequestManager;
 import com.yidian.push.push_request.PushRequestStatus;
 import com.yidian.push.utils.*;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -32,6 +33,7 @@ public class ProcessService implements Runnable {
             HttpConnectionUtils.init();
             GetuiPush.init();
             XiaomiPush.init();
+            UmengPush.init(); // This must be fist initialized, or you need to use the concurrent hash map.
             Processor.init();
             keepRunning = true;
         } catch (IOException e) {
@@ -62,9 +64,12 @@ public class ProcessService implements Runnable {
 
         log.info("start to process the requests");
         while (keepRunning) {
-
-
-            Processor.process();
+            try {
+                Processor.process();
+            }
+            catch (Exception e) {
+                log.error(" processor failed with exception: " + ExceptionUtils.getFullStackTrace(e));
+            }
             try {
                 Thread.sleep(sleepTime);
             } catch (InterruptedException e) {

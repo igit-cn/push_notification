@@ -44,7 +44,7 @@ public class GetuiPush {
     public static volatile boolean isInitialized = false;
     public static Map<String, GetuiData> AppIdGetuiDataMapping = new HashMap<>(10);
 
-    public static void init() throws IOException {
+    public synchronized static void init() throws IOException {
         if (isInitialized) {return;}
         ProcessorConfig config = Config.getInstance().getProcessorConfig();
         String pemBase = config.getGetuiPemBase();

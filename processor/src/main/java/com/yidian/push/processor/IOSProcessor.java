@@ -35,7 +35,7 @@ public class IOSProcessor {
         try {
             pushFile(pushRequest.getFileName());
             PushRequestManager.getInstance().markAsProcessed(pushRequest);
-        } catch (IOException e) {
+        } catch (Exception e) {
             PushRequestManager.getInstance().markAsBad(pushRequest);
             log.info("marked as bad due to exception : " + ExceptionUtils.getFullStackTrace(e));
         }

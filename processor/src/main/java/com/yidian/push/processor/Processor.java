@@ -80,7 +80,7 @@ public class Processor {
                 public void run() {
                     try {
                         IOSProcessor.processOne(pushRequest);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         log.error("got error when processing request: " + pushRequest.getFileName()
                                 + "\n with exception: " + ExceptionUtils.getFullStackTrace(e));
                     }
@@ -92,7 +92,7 @@ public class Processor {
                 public void run() {
                     try {
                         AndroidProcessor.processOne(pushRequest);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         log.error("got error when processing request: " + pushRequest.getFileName()
                                 + "\n with exception: " + ExceptionUtils.getFullStackTrace(e));                            }
                 }

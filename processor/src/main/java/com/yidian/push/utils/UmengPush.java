@@ -28,7 +28,7 @@ public class UmengPush {
     private static final int EXPIRE_TIME = 3 * 60 * 60; // 3 HOURS
     private static Map<String, String> APPID_NAME_MAPPING = new HashMap();
     private static boolean isInitialized = false;
-    public static void init() throws IOException {
+    public synchronized static void init() throws IOException {
         if (isInitialized) return;
         ProcessorConfig config = Config.getInstance().getProcessorConfig();
         String appIdNameMappingFile = config.getSupportedUmengPushAppIdNameMapping();
@@ -40,6 +40,7 @@ public class UmengPush {
                     String appId = arr[0].trim();
                     String name = arr[1].trim();
                     APPID_NAME_MAPPING.put(appId, name);
+                    log.info("Umeng get the support with file : appId [" + appId + "], appName [" + name + "]");
                 }
             }
         }

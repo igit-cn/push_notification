@@ -48,6 +48,14 @@ public class PushRequestManager {
         return list;
     }
 
+    public boolean markAsLogging(PushRequest pushRequest) throws IOException {
+        return changeRequestStatus(pushRequest, PushRequestStatus.LOGGING);
+    }
+
+    public boolean markAsLogged(PushRequest pushRequest) throws IOException {
+        return changeRequestStatus(pushRequest, PushRequestStatus.LOGGED);
+    }
+
     public boolean markAsProcessed(PushRequest pushRequest) throws IOException {
         return changeRequestStatus(pushRequest, PushRequestStatus.PROCESSED);
     }

@@ -44,7 +44,9 @@ public class PushRequest {
         if (arr.length >= 5) {
             this.pushType = arr[4];
         }
-        this.table = arr[3];
+        if (arr.length >= 4) {
+            this.table = arr[3];
+        }
         this.pushRequestStatus = getStatus();
     }
 }

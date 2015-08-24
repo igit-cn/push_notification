@@ -41,7 +41,7 @@ public class AndroidProcessor {
             PushRequestManager.getInstance().markAsProcessed(pushRequest);
         } catch (Exception e) {
             PushRequestManager.getInstance().markAsBad(pushRequest);
-            log.info("marked as bad due to exception : " + ExceptionUtils.getFullStackTrace(e));
+            log.error("marked as bad due to exception : " + ExceptionUtils.getFullStackTrace(e));
         }
     }
 

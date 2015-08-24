@@ -10,6 +10,8 @@ public enum PushRequestStatus {
     READY("ready"),
     PROCESSING ("processing"),
     PROCESSED ( "processed"),
+    LOGGING("logging"),
+    LOGGED("logged"),
     BAD("bad"),
     UNKNOWN("unknown");
 
