@@ -46,7 +46,7 @@ JAVA_FLAGS="\
 -Dcom.sun.management.jmxremote.ssl=false \
 -Dcom.sun.management.jmxremote.authenticate=false \
 "
-OPTS="${JAVA_FLAGS} -Xmx8G -Xms3G -server -XX:+UseCompressedOops -XX:+UseParNewGC -cp .:${LIB_DIR}:${CONFIG_DIR}:${LIB_DIR_JARS} com.yidian.push.services.ProcessService ${CONFIG_DIR}/prod_config.json"
+OPTS="${JAVA_FLAGS} -Xmx8G -Xms3G -server -XX:+UseCompressedOops -XX:+UseParNewGC -cp .:${LIB_DIR}:${CONFIG_DIR}:${LIB_DIR_JARS} com.yidian.push.logging.services.Service ${CONFIG_DIR}/prod_config.json"
 KILLPROC_OPTS=""
 
 #######################

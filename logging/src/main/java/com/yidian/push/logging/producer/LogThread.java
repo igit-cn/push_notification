@@ -59,7 +59,7 @@ public class LogThread extends Thread {
             if (null == request) {
                 continue;
             }
-            log.info("thread " + threadId + " : " + request.getFileName());
+            log.debug("thread " + threadId + " : " + request.getFileName());
 
             BufferedReader reader = null;
             try {
