@@ -20,6 +20,7 @@ public class Config {
     private String requestBaseDir = "";
     private GeneratorConfig generatorConfig = null;
     private ProcessorConfig processorConfig = null;
+    private LoggingConfig loggingConfig = null;
     //
     private static String CONFIG_FILE = null;
     private static Config config;
