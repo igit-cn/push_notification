@@ -58,6 +58,12 @@ public class LogProducer {
         try {
             List<PushRequest> list =  PushRequestManager.getInstance().getRequests(PushRequestStatus.PROCESSED);
             for (PushRequest pushRequest : list) {
+                try {
+                    PushRequestManager.getInstance().markAsLogging(pushRequest);
+                } catch (IOException e) {
+                    log.error("mark as logging failed...");
+                    continue;
+                }
                 requestQueue.put(pushRequest);
             }
         } catch (IOException e) {

@@ -63,7 +63,6 @@ public class LogThread extends Thread {
 
             BufferedReader reader = null;
             try {
-                PushRequestManager.getInstance().markAsLogging(request);
                 Path filePath = new File(request.getFileName()).toPath();
                 reader = Files.newBufferedReader(filePath, UTF_8);
                 String line = null;
