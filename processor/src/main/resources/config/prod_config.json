@@ -27,7 +27,7 @@
         "getuiPemPattern" : "*.getui",
         "getuiPushBatchUrl" : "http://localhost:5266/push_service/getui_multiple/",
         "getuiPushSinglUrl" : "http://localhost:5266/push_service/getui_single/",
-        "xiaomiPushBatch" : 1000,
+        "xiaomiPushBatch" : 999,
         "xiaomiPemBase" : "/home/services/push_notification/data/xiaomi/",
         "xiaomiPemPattern" : "*.mmpp",
         "xiaomiPushMultipleMessagesUrl" : "https://api.xmpush.xiaomi.com/v2/multi_messages/aliases",
