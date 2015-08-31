@@ -98,6 +98,13 @@ public class LogThread extends Thread {
                     // here we just ignore the failure
                     log.error("mark as logged failed. " + request.getFileName());
                 }
+                if (null != reader) {
+                    try {
+                        reader.close();
+                    } catch (IOException e1) {
+                        //ignore
+                    }
+                }
             }
 
         }
