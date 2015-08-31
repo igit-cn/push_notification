@@ -12,6 +12,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,34 +33,44 @@ public class WritePushLog {
             return;
         }
         ProcessorConfig config = Config.getInstance().getProcessorConfig();
-        HostPort hostPort = config.getLogger(platform);
-        writeLog(logItemList, hostPort, config.getSocketConnectTimeout(), config.getSocketReadTimeout());
+        List<HostPort> hostPortList = config.getLoggerList(platform);
+        writeLog(logItemList, hostPortList, config.getSocketConnectTimeout(), config.getSocketReadTimeout());
     }
 
    public static void writeLog(List<PushLog.LogItem> logItemList,
-                               HostPort hostPort, int connectionTimeout, int readTimeout) throws IOException {
+                               List<HostPort> hostPortList, int connectionTimeout, int readTimeout) throws IOException {
        if (null == logItemList || logItemList.size() == 0) {
            return;
        }
+       List<byte[]> byteList = new ArrayList<>(logItemList.size());
+       for (PushLog.LogItem logItem : logItemList) {
+           byte[] bytes = PushLog.encodeLogItem(logItem);
+           byteList.add(bytes);
+       }
 
-       Socket client = new Socket();
-       try {
-           log.debug("start to write # logs : " + logItemList.size());
-
-           client.setTcpNoDelay(true);
-           client.setSoTimeout(readTimeout * 1000);
-           client.connect(new InetSocketAddress(hostPort.getHost(), hostPort.getPort()), connectionTimeout * 1000);
-           InputStream in = client.getInputStream();
-           DataOutputStream out = new DataOutputStream(client.getOutputStream());
-           for (PushLog.LogItem logItem : logItemList) {
-               byte[] bytes = PushLog.encodeLogItem(logItem);
-               out.write(bytes);
+       for (HostPort hostPort : hostPortList) {
+           Socket client = new Socket();
+           try {
+               log.debug("start to write # logs : " + logItemList.size());
+               client.setTcpNoDelay(true);
+               client.setSoTimeout(readTimeout * 1000);
+               client.connect(new InetSocketAddress(hostPort.getHost(), hostPort.getPort()), connectionTimeout * 1000);
+               InputStream in = client.getInputStream();
+               DataOutputStream out = new DataOutputStream(client.getOutputStream());
+               for (byte[] bytes : byteList) {
+                   out.write(bytes);
+               }
+               out.write(new byte[1], 0, 1);
+               in.read();
+               log.debug("write # logs : " + logItemList.size());
+           } finally {
+               if (null != client) {
+                   try {
+                       client.close();
+                   } catch (IOException ignore) {
+                   }
+               }
            }
-           out.write(new byte[1], 0, 1);
-           in.read();
-           log.debug("write # logs : " + logItemList.size());
-       } finally {
-           if (null != client) { try {client.close();} catch (IOException ignore){}}
        }
    }
 }

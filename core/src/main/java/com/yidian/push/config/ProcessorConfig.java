@@ -20,8 +20,8 @@ public class ProcessorConfig {
     private int requestScanIntervalInSeconds = 2;
     private int iPhonePoolSize = 20;
     private int androidPoolSize = 200;
-    private HostPort iPhoneLogger;
-    private HostPort androidLogger;
+    private List<HostPort> iPhoneLoggerList;
+    private List<HostPort> androidLoggerList;
     private int socketConnectTimeout = 10;
     private int socketReadTimeout = 3;
     private List<String> APPID_XIAOMI;
@@ -72,12 +72,12 @@ public class ProcessorConfig {
         return false;
     }
 
-    public HostPort getLogger(Platform platform) {
+    public List<HostPort> getLoggerList(Platform platform) {
         if (platform == Platform.IPHONE) {
-            return iPhoneLogger;
+            return iPhoneLoggerList;
         }
         else {
-            return androidLogger;
+            return androidLoggerList;
         }
     }
 }
