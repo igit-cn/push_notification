@@ -104,7 +104,8 @@ public class PushLogTest {
                 1L,
                 "0A7oktXa",
                 "u539",
-                2
+                2,
+                "appid"
 
         );
         byte[] arr = PushLog.encodeLogItem(item);

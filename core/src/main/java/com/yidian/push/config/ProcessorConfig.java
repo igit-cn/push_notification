@@ -26,6 +26,11 @@ public class ProcessorConfig {
     private int socketReadTimeout = 3;
     private List<String> APPID_XIAOMI;
 
+    private boolean needWriteLog = true;
+    private boolean needWriteHistory = false;
+    private String pushHistoryUrl = "http://localhost:6266/push_service/add_history";
+    private int pushHistoryBatchSize = 1000;
+
     // http connection settings
     private int httpConnectionDefaultMaxPerRoute = 200;
     private int httpConnectionMaxTotal = 2000;

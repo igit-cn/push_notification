@@ -287,18 +287,21 @@ public class PushLog {
         return bytes;
     }
 
+    @Getter
     public static class LogItem {
         private long pushTime;
         private long uid;
         private String docId;
         private String channel;
         private int pushType;
-        public LogItem(long pushTime, long uid, String docId, String channel, int pushType) {
+        private String appId;
+        public LogItem(long pushTime, long uid, String docId, String channel, int pushType, String appId) {
             this.pushTime = pushTime;
             this.uid = uid;
             this.channel = channel;
             this.docId = docId;
             this.pushType = pushType;
+            this.appId = appId;
         }
     }
 
@@ -344,7 +347,8 @@ public class PushLog {
                 1L,
                 "0A7oktXa",
                 "u539",
-                2
+                2,
+                "appid"
 
         );
         byte[] arr = PushLog.encodeLogItem(item);

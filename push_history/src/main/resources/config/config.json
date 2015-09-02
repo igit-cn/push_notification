@@ -1,0 +1,17 @@
+{
+    "lockFile" : "/tmp/push_notification_request_push_history.lck",
+    "pushHistoryConfig" :{
+        "lockFile" : "/tmp/push_notification_push_history.lck",
+        "yClusterServiceName" : "zion_push_history",
+        "zookeeperAddress" : "hadoop2-13.lg-4-e10.yidian.com:2181,hadoop2-14.lg-4-e10.yidian.com:2181,hadoop2-2.lg-4-e9.yidian.com:2181",
+        "hostPortList" : [
+            {"host": "localhost", "port": 6266}
+        ],
+        "httpsHostPortList" : [],
+        "jettyMinThreads": 10,
+        "jettyMaxThreads": 20,
+        "jettyMaxFormContentSize":20971520,
+        "redisUpdateBatchSize" : 1000,
+        "redisKeepRecordSize" : 50
+    }
+}

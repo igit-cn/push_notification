@@ -111,7 +111,8 @@ public class AndroidProcessor {
                             pushRecord.getUid(),
                             pushRecord.getDocId(),
                             pushRecord.getNewsChannel(),
-                            pushRecord.getNewsType()));
+                            pushRecord.getNewsType(),
+                            pushRecord.getAppId()));
                     if (logs.size() >= BATCH_SIZE) {
                         WritePushLog.writeLogIgnoreException(Platform.ANDROID, logs);
                         logs.clear();
@@ -229,7 +230,8 @@ public class AndroidProcessor {
                             pushRecord.getUid(),
                             pushRecord.getDocId(),
                             pushRecord.getNewsChannel(),
-                            pushRecord.getNewsType()));
+                            pushRecord.getNewsType(),
+                            pushRecord.getAppId()));
                     if (logs.size() >= BATCH_SIZE) {
                         WritePushLog.writeLogIgnoreException(Platform.ANDROID, logs);
                         logs.clear();

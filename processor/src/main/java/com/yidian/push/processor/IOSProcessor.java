@@ -88,7 +88,8 @@ public class IOSProcessor {
                             pushRecord.getUid(),
                             pushRecord.getDocId(),
                             pushRecord.getNewsChannel(),
-                            pushRecord.getNewsType()));
+                            pushRecord.getNewsType(),
+                            pushRecord.getAppId()));
                     if (logs.size() >= BATCH_SIZE) {
                         WritePushLog.writeLogIgnoreException(Platform.IPHONE, logs);
                         logs.clear();

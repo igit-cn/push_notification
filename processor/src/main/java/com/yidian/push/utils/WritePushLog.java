@@ -1,5 +1,7 @@
 package com.yidian.push.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.yidian.push.config.Config;
 import com.yidian.push.config.ProcessorConfig;
 import com.yidian.push.data.HostPort;
@@ -7,19 +9,23 @@ import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushLog;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.http.client.config.RequestConfig;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by tianyuzhi on 15/7/28.
  */
 @Log4j
 public class WritePushLog {
+    private static final String SEPARATOR = "\u0001";
     public static void writeLogIgnoreException(Platform platform, List<PushLog.LogItem> logItemList) {
         try {
             writeLog(platform, logItemList);
@@ -33,8 +39,63 @@ public class WritePushLog {
             return;
         }
         ProcessorConfig config = Config.getInstance().getProcessorConfig();
-        List<HostPort> hostPortList = config.getLoggerList(platform);
-        writeLog(logItemList, hostPortList, config.getSocketConnectTimeout(), config.getSocketReadTimeout());
+        if (config.isNeedWriteLog()) {
+            List<HostPort> hostPortList = config.getLoggerList(platform);
+            try {
+                writeLog(logItemList, hostPortList, config.getSocketConnectTimeout(), config.getSocketReadTimeout());
+            } catch (IOException e) {
+                log.error("write log failed..");
+            }
+        }
+        if (config.isNeedWriteHistory()) {
+            String historyUrl = config.getPushHistoryUrl();
+            int batchSize = config.getPushHistoryBatchSize();
+            int retryTimes = config.getRetryTimes();
+            RequestConfig requestConfig = config.getRequestConfig();
+            writeHistory(platform, logItemList, historyUrl, retryTimes, batchSize, requestConfig);
+        }
+    }
+
+    public static void writeHistory(Platform platform, List<PushLog.LogItem> logItemList, String url, int retryTimes, int batchSize, RequestConfig requestConfig) {
+        if (null == logItemList || logItemList.size() == 0) {
+            return;
+        }
+        List<String> logList = new ArrayList<>(logItemList.size());
+        for (PushLog.LogItem logItem : logItemList) {
+            String str = new StringBuilder().append(logItem.getUid()).append(",").append(platform.getTableId())
+                    .append(SEPARATOR)
+                    .append(GsonFactory.getNonPrettyGson().toJson(logItem)).toString();
+            logList.add(str);
+        }
+
+        int index = 0;
+        int length = logList.size();
+        while (index < length) {
+            int start = index;
+            int end = (index + batchSize) > length ? length : index + batchSize;
+            index += batchSize;
+            List<String> subLogs = logList.subList(start, end);
+            Map<String, Object> params = new HashMap<>(10);
+            params.put("record", subLogs);
+            int timesToRetry = retryTimes;
+            while (timesToRetry > 0) {
+                try {
+                    String response = HttpConnectionUtils.getPostResult(url, params, null, requestConfig);
+                    JSONObject json = JSON.parseObject(response);
+                    if (null != json && "ok".equals(json.getString("result"))) {
+                        break;
+                    } else {
+                        if (null != json) {
+                            log.error("xiaomi failed with reason " + json.getString("reason"));
+                        }
+                        timesToRetry--;
+                    }
+                } catch (IOException e) {
+                    log.error("xiaomi push failed");
+                    timesToRetry--;
+                }
+            }
+        }
     }
 
    public static void writeLog(List<PushLog.LogItem> logItemList,

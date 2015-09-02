@@ -15,6 +15,7 @@
         <module>generator</module>
         <module>processor</module>
         <module>logging</module>
+        <module>push_history</module>
         <module>statistics</module>
     </modules>
     <properties>
@@ -39,7 +40,8 @@
         <httpclient.version>4.5</httpclient.version>
         <httpclient-cache.version>4.5</httpclient-cache.version>
         <httpmime.version>4.2</httpmime.version>
-        <kafka.version>>0.8.2.1</kafka.version>
+        <kafka.version>0.8.2.1</kafka.version>
+        <jetty.version>8.1.14.v20131031</jetty.version>
     </properties>
 
     <build>

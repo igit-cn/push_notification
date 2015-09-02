@@ -77,7 +77,7 @@ public class PushRequestRedisUtil {
         } finally {
             if (jedis != null && jedisPool != null) {
                 try {
-                    jedisPool.returnResourceObject(jedis);
+                    jedis.close();
                 } catch (Exception e) {
                     log.error("jedisPool return jedis connection failed.. with exception " + ExceptionUtils.getFullStackTrace(e));
                 }
@@ -147,7 +147,7 @@ public class PushRequestRedisUtil {
         } finally {
             if (jedis != null && jedisPool != null) {
                 try {
-                    jedisPool.returnResourceObject(jedis);
+                    jedis.close();
                 } catch (Exception e) {
                     log.error("jedisPool return jedis connection failed.. with exception " + ExceptionUtils.getFullStackTrace(e));
                 }
@@ -169,7 +169,7 @@ public class PushRequestRedisUtil {
         } finally {
             if (null != jedis && null != jedisPool) {
                 try {
-                    jedisPool.returnResourceObject(jedis);
+                    jedis.close();
                 } catch (Exception e) {
                     log.error("jedisPool return jedis connection failed.. with exception " + ExceptionUtils.getFullStackTrace(e));
                 }
