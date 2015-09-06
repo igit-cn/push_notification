@@ -14,6 +14,10 @@
     <artifactId>push_history</artifactId>
     <version>1.0.0</version>
 
+    <properties>
+        <theMainClass></theMainClass>
+        <package_dir>${project.build.directory}/package</package_dir>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -49,13 +53,13 @@
         <dependency>
             <groupId>yidian.data</groupId>
             <artifactId>zionpool</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${zionpool.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>yidian.data</groupId>
             <artifactId>zionpool</artifactId>
-            <version>1.0-20150819.114538-1</version>
+            <version>${zionpool.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

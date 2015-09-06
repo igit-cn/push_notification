@@ -3,6 +3,7 @@ package com.yidian.push.config;
 import com.yidian.push.data.HostPort;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,4 +28,5 @@ public class PushHistoryConfig {
 
     private int redisUpdateBatchSize = 1000;
     private int redisKeepRecordSize = 100;
+    private GenericObjectPoolConfig jedisConfig = null;
 }

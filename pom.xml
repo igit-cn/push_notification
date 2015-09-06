@@ -42,6 +42,7 @@
         <httpmime.version>4.2</httpmime.version>
         <kafka.version>0.8.2.1</kafka.version>
         <jetty.version>8.1.14.v20131031</jetty.version>
+        <zionpool.version>1.0-SNAPSHOT</zionpool.version>
     </properties>
 
     <build>

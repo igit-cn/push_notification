@@ -30,7 +30,9 @@ public class AddHistoryServlet extends HttpServlet {
         HttpHelper.setResponseParameters(resp, recordResponse);
 
         try {
-            ZionPoolUtil.addPushHistoryRecords(Arrays.asList(pushRecordArray));
+            if (null != pushRecordArray) {
+                ZionPoolUtil.addPushHistoryRecords(Arrays.asList(pushRecordArray));
+            }
         } catch (Exception e) {
             log.error("write log failed. ");
         }

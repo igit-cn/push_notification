@@ -91,7 +91,7 @@ public class WritePushLog {
                         timesToRetry--;
                     }
                 } catch (IOException e) {
-                    log.error("xiaomi push failed");
+                    log.error("write push log failed");
                     timesToRetry--;
                 }
             }

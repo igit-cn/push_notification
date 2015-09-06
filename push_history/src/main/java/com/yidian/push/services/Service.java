@@ -5,6 +5,7 @@ import com.yidian.push.config.PushHistoryConfig;
 import com.yidian.push.data.HostPort;
 import com.yidian.push.servlets.AddHistoryServlet;
 import com.yidian.push.utils.FileLock;
+import com.yidian.push.utils.ZionPoolUtil;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -66,12 +67,12 @@ public class Service implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // init the connection to the getui servers
-//        try {
-//            //
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        // init the connection to the redis servers
+        try {
+            ZionPoolUtil.init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
@@ -133,7 +134,7 @@ public class Service implements Runnable {
             Config.setCONFIG_FILE(configFile);
         } else {
             // Config.setCONFIG_FILE("generator/src/main/resources/config/prod_config.json");
-            Config.setCONFIG_FILE("processor/src/main/resources/config/config.json");
+            Config.setCONFIG_FILE("push_history/src/main/resources/config/config.json");
             System.setProperty("log4j.configuration", "src/main/resources/config/log4j_debug.properties");
             PropertyConfigurator.configure("generator/src/main/resources/config/log4j_debug.properties");
             Logger.getRootLogger().setLevel(Level.DEBUG);

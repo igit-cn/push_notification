@@ -12,7 +12,7 @@
         "socketReadTimeout" : 3,
         "APPID_XIAOMI" : ["xiaomi","zxpad"],
         "needWriteLog" : true,
-        "needWriteHistory" : false,
+        "needWriteHistory" : true,
         "pushHistoryUrl" : "http://localhost:6266/push_service/add_history",
         "pushHistoryBatchSize" : 1000,
         "httpConnectionDefaultMaxPerRoute" : 200,

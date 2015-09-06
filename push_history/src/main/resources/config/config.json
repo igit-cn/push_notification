@@ -12,6 +12,11 @@
         "jettyMaxThreads": 20,
         "jettyMaxFormContentSize":20971520,
         "redisUpdateBatchSize" : 1000,
-        "redisKeepRecordSize" : 50
+        "redisKeepRecordSize" : 4,
+        "jedisConfig" : {
+            "maxTotal" : 8,
+            "maxIdle" : 8,
+            "minIdle" : 0
+        }
     }
 }
