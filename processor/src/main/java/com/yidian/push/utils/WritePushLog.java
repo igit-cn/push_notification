@@ -82,16 +82,16 @@ public class WritePushLog {
                 try {
                     String response = HttpConnectionUtils.getPostResult(url, params, null, requestConfig);
                     JSONObject json = JSON.parseObject(response);
-                    if (null != json && "ok".equals(json.getString("result"))) {
+                    if (null != json && "success".equals(json.getString("status"))) {
                         break;
                     } else {
                         if (null != json) {
-                            log.error("xiaomi failed with reason " + json.getString("reason"));
+                            log.error("write push log failed with reason " + json.getString("desc"));
                         }
                         timesToRetry--;
                     }
                 } catch (IOException e) {
-                    log.error("write push log failed");
+                    log.error("write push history failed");
                     timesToRetry--;
                 }
             }
