@@ -89,6 +89,7 @@ public class LogThread extends Thread {
                         this.producer = new Producer<>(producerConfig);
                     }
                 }
+                reader.close();
                 PushRequestManager.getInstance().markAsLogged(request);
             } catch (IOException e) {
                 log.error("write log failed with exception: " + ExceptionUtils.getFullStackTrace(e));
