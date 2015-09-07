@@ -18,6 +18,8 @@
             "maxTotal" : 200,
             "maxIdle" : 20,
             "minIdle" : 10
-        }
+        },
+        "producerFetchSize" : 1000,
+        "consumerNum" : 200
     }
 }

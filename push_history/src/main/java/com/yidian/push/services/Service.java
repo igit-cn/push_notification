@@ -79,6 +79,7 @@ public class Service implements Runnable {
             public void run() {
                 try {
                     logger.info("Stopping the service...");
+                    ZionPoolUtil.destroy();
                     server.stop();
                 } catch (Exception e) {
                     logger.error("", e);

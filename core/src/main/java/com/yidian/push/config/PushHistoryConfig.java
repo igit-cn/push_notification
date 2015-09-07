@@ -29,4 +29,6 @@ public class PushHistoryConfig {
     private int redisUpdateBatchSize = 1000;
     private int redisKeepRecordSize = 100;
     private GenericObjectPoolConfig jedisConfig = null;
+    private int producerFetchSize = 1000;
+    private int consumerNum = 20;
 }
