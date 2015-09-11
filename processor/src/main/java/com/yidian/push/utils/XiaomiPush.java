@@ -301,7 +301,7 @@ public class XiaomiPush {
                         timesToRetry--;
                     }
                 } catch (IOException e) {
-                    log.error("xiaomi push failed");
+                    log.error("xiaomi push failed with exception " + ExceptionUtils.getFullStackTrace(e));
                     timesToRetry--;
                 }
             }

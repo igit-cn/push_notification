@@ -80,6 +80,7 @@ public class LogThread extends Thread {
                     jsonObject.put("appid", pushRecord.getAppId());
                     jsonObject.put("docid", pushRecord.getDocId());
                     jsonObject.put("push_type", pushRecord.getNewsType());
+                    jsonObject.put("fromid", pushRecord.getNewsChannel());
                     jsonObject.put("platform", platform);
                     jsonObject.put("push_day", pushDay);
                     try {

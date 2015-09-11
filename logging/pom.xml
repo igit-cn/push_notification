@@ -19,7 +19,6 @@
         <package_dir>${project.build.directory}/package</package_dir>
     </properties>
 
-
     <dependencies>
         <dependency>
             <groupId>com.yidian.push</groupId>
@@ -58,6 +57,7 @@
             <version>${lombok.version}</version>
         </dependency>
     </dependencies>
+
 
     <build>
         <plugins>

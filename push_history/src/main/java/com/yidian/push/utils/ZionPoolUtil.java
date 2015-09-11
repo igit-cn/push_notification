@@ -11,13 +11,9 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by tianyuzhi on 15/9/2.
@@ -26,12 +22,15 @@ import java.util.concurrent.TimeUnit;
 public class ZionPoolUtil {
     @Getter
     public static class ConsumerThread extends Thread {
+        private String threadName;
         private int threadId;
         private BlockingQueue<String> pushLogQueue;
         private int fetchSize = 1000;
         private List<String> recordList;
 
-        public ConsumerThread (int threadId, BlockingQueue<String> pushLogQueue, int fetchSize) {
+        public ConsumerThread(String threadName, int threadId, BlockingQueue<String> pushLogQueue, int fetchSize) {
+            super(threadName);
+            this.threadName = threadName;
             this.threadId = threadId;
             this.pushLogQueue = pushLogQueue;
             this.fetchSize = fetchSize;
@@ -42,23 +41,31 @@ public class ZionPoolUtil {
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
-                if (pushLogQueue.isEmpty()) {
-                    try {
-                        Thread.sleep(1 * 1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                try {
+                    if (pushLogQueue.isEmpty()) {
+                        try {
+                            Thread.sleep(1 * 1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        log.info(threadName + " queue is empty");
+                        continue;
                     }
-                }
-                recordList.clear();
-                int num = pushLogQueue.drainTo(recordList, fetchSize);
-                if (num > 0) {
-                    try {
-                        ZionPoolUtil.addPushHistoryRecords(recordList);
-                    } catch (IOException e) {
-                        log.error("add record failed...");
+                    recordList.clear();
+                    int num = pushLogQueue.drainTo(recordList, fetchSize);
+                    if (num > 0) {
+                        try {
+                            log.info(threadName + " : got # of records to push: " + recordList.size());
+                            ZionPoolUtil.addPushHistoryRecords(recordList);
+                        } catch (Exception e) {
+                            log.error(threadName + " consume record failed..." + ExceptionUtils.getFullStackTrace(e));
+                        }
                     }
+                } catch (Exception e) {
+                    log.error(threadName + " : run method failed withe exception " + ExceptionUtils.getFullStackTrace(e));
                 }
             }
+
         }
     }
 
@@ -84,26 +91,34 @@ public class ZionPoolUtil {
 
                 if (null == jedisConfig) {
                     zionpool = new Zionpool(serviceName, zooKeeperAddress);
-                }
-                else {
+                } else {
                     zionpool = new Zionpool(serviceName, zooKeeperAddress, jedisConfig);
                 }
                 log.info("start the ZionPool");
                 int consumerNum = config.getConsumerNum();
                 threadPool = new ArrayList<>(consumerNum);
-                for (int i = 0; i < consumerNum; i ++) {
-                    ConsumerThread thread = new ConsumerThread(i, blockingQueue, config.getProducerFetchSize());
+                for (int i = 0; i < consumerNum; i++) {
+                    String threadName = "consumer: " + i;
+                    ConsumerThread thread = new ConsumerThread(threadName, i, blockingQueue, config.getProducerFetchSize());
                     threadPool.add(thread);
                     thread.start();
                     log.info("start producer :" + i);
                 }
 
                 isInitialized = true;
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        log.info("queue size : " + blockingQueue.size());
+                    }
+                }, 0, 3000);
+
             }
         }
     }
 
-    public synchronized  static void destroy() throws InterruptedException {
+    public synchronized static void destroy() throws InterruptedException {
         if (!isInitialized) {
             return;
         }
@@ -111,8 +126,7 @@ public class ZionPoolUtil {
             thread.interrupt();
             log.info("interrupt thread num : " + thread.getThreadId());
         }
-        for (ConsumerThread thread : threadPool)
-        {
+        for (ConsumerThread thread : threadPool) {
             thread.join(5000);
             log.info("join thread num : " + thread.getThreadId());
         }
@@ -177,14 +191,14 @@ public class ZionPoolUtil {
             }
         } catch (Exception e) {
             log.error("get push history length with exception: " + ExceptionUtils.getFullStackTrace(e));
-        }
-        finally {
+        } finally {
             if (jedis != null) {
                 try {
+                    log.info("try to return the jedis client in getRecordLength " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
                     jedis.close();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     //ignore
+                    log.error("failed to return the jedis client in getRecordLength " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
                 }
             }
         }
@@ -217,12 +231,12 @@ public class ZionPoolUtil {
 
             // update
             jedis = zionpool.getClient();
-            for (int idx = 0; idx < numKeys; idx ++) {
+            for (int idx = 0; idx < numKeys; idx++) {
                 String key = keyList.get(idx);
                 String value = valueList.get(idx);
 
                 boolean isBatchStart = (idx == 0 || idx % batchQuerySize == 0);
-                boolean isBatchEnd = (idx+1 == numKeys || (idx + 1) % batchQuerySize == 0);
+                boolean isBatchEnd = (idx + 1 == numKeys || (idx + 1) % batchQuerySize == 0);
                 if (isBatchStart) {
                     pipeline = jedis.pipelined();
                 }
@@ -231,23 +245,25 @@ public class ZionPoolUtil {
                 if (curRecordNum > keepRecordSize) {
                     while (curRecordNum > keepRecordSize) {
                         pipeline.rpop(key);
-                        curRecordNum --;
+                        curRecordNum--;
                     }
                 }
                 if (isBatchEnd) {
-                    List<Object> res = pipeline.syncAndReturnAll();
+                    pipeline.syncAndReturnAll();
                     //System.out.println(GsonFactory.getNonPrettyGson().toJson(res));
                 }
             }
         } catch (Exception e) {
             log.error("write push history failed with exception: " + ExceptionUtils.getFullStackTrace(e));
-        }
-        finally {
-            if (pipeline != null) {
-                pipeline.syncAndReturnAll();
-            }
+        } finally {
             if (jedis != null) {
-                jedis.close();
+                try {
+                    log.info("try to return the jedis client in addPushHistoryRecords " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                    jedis.close();
+                } catch (Exception e) {
+                    // ignore
+                    log.error("failed to return the jedis client in addPushHistoryRecords "  + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                }
             }
         }
 
