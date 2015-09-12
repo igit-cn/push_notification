@@ -2,11 +2,7 @@ package com.yidian.push.services;
 
 import com.yidian.push.config.Config;
 import com.yidian.push.config.ProcessorConfig;
-import com.yidian.push.data.Platform;
 import com.yidian.push.processor.Processor;
-import com.yidian.push.push_request.PushRequest;
-import com.yidian.push.push_request.PushRequestManager;
-import com.yidian.push.push_request.PushRequestStatus;
 import com.yidian.push.utils.*;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -15,9 +11,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by yidianadmin on 15-2-2.
@@ -30,7 +23,7 @@ public class ProcessService implements Runnable {
         ProcessorConfig processorConfig = null;
         try {
             processorConfig = Config.getInstance().getProcessorConfig();
-            HttpConnectionUtils.init();
+            HttpConnectionUtils.init(processorConfig.getHttpConnectionMaxTotal(), processorConfig.getHttpConnectionDefaultMaxPerRoute());
             GetuiPush.init();
             XiaomiPush.init();
             UmengPush.init(); // This must be fist initialized, or you need to use the concurrent hash map.

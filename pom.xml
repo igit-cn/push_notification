@@ -17,6 +17,7 @@
         <module>logging</module>
         <module>push_history</module>
         <module>statistics</module>
+        <module>recommend_generator</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

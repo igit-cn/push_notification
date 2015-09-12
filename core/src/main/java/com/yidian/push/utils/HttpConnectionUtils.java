@@ -1,7 +1,5 @@
 package com.yidian.push.utils;
 
-import com.yidian.push.config.Config;
-import com.yidian.push.config.ProcessorConfig;
 import lombok.extern.log4j.Log4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -47,18 +45,15 @@ public class HttpConnectionUtils {
         return HttpClients.custom().setConnectionManager(cm).build();
     }
 
-    public static void init() throws IOException {
+    public static synchronized void init(int maxTotal, int defaultMaxPerRoute) throws IOException {
         release();
-        ProcessorConfig config = Config.getInstance().getProcessorConfig();
         cm = new PoolingHttpClientConnectionManager();
-        int maxTotal = config.getHttpConnectionMaxTotal();
         cm.setMaxTotal(maxTotal);
         // 每条通道的并发连接数设置（连接池）
-        int defaultMaxConnection = config.getHttpConnectionDefaultMaxPerRoute();
-        cm.setDefaultMaxPerRoute(defaultMaxConnection);
+        cm.setDefaultMaxPerRoute(defaultMaxPerRoute);
 
     }
-    public static void release() {
+    public static synchronized void release() {
         if (cm != null) {
             cm.shutdown();
         }
