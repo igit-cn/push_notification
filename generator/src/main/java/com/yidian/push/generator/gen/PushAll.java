@@ -56,6 +56,7 @@ public class PushAll {
                     pushAllConfig.setTodayFirstUserId(firstDayUserId);
                     pushAllConfig.setFile(file.getAbsolutePath());
                     pushAllConfig.setBatchSize(generatorConfig.getGenerateRequestBatchSize());
+                    pushAllConfig.setBucketIds(generatorConfig.getBucketIds());
 
                     Future<Long> future = executor.submit(new Callable<Long>() {
                         @Override

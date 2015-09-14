@@ -80,6 +80,7 @@ public class PushAuto {
                     pushAutoConfig.setTodayFirstUserId(firstDayUserId);
                     pushAutoConfig.setFile(file.getAbsolutePath());
                     pushAutoConfig.setBatchSize(generatorConfig.getGenerateRequestBatchSize());
+                    pushAutoConfig.setBucketIds(generatorConfig.getBucketIds());
 
                     Future<Long> future = executor.submit(new Callable<Long>() {
                         @Override

@@ -10,6 +10,7 @@ import org.apache.tomcat.jdbc.pool.PoolProperties;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by yidianadmin on 15-2-2.
@@ -67,6 +68,7 @@ public class GeneratorConfig {
     // refresh frequency
     private int refreshTokenFrequencyInSeconds = 6000;
     private boolean needSendNotification = false;
+    private Set<Integer> bucketIds = null;
 
 
 

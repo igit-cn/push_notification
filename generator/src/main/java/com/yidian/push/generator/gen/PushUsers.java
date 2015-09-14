@@ -71,6 +71,7 @@ public class PushUsers {
                 pushUsersConfig.setTask(task);
                 pushUsersConfig.setUsers(uids);
                 pushUsersConfig.setTodayFirstUserId(firstDayUserId);
+                pushUsersConfig.setBucketIds(generatorConfig.getBucketIds());
 
                 Future<Long> future = executor.submit(new Callable<Long>() {
                     @Override
