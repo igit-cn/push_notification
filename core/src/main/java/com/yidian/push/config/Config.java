@@ -22,6 +22,7 @@ public class Config {
     private ProcessorConfig processorConfig = null;
     private LoggingConfig loggingConfig = null;
     private PushHistoryConfig pushHistoryConfig = null;
+    private RecommendGeneratorConfig recommendGeneratorConfig = null;
     //
     private static String CONFIG_FILE = null;
     private static Config config;
