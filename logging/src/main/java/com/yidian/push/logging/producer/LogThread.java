@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -67,7 +68,7 @@ public class LogThread extends Thread {
                 reader = Files.newBufferedReader(filePath, UTF_8);
                 String line = null;
                 String platform = Platform.tableToPlatform(request.getTable()).toString();
-                String pushDay = DateTime.now().toString("yyyy-MM-dd");
+                String pushDay = new DateTime(DateTimeZone.UTC).toString("yyyy-MM-dd HH:mm:ss");
 
                 while ((line = reader.readLine()) != null) {
                     PushRecord pushRecord = new PushRecord(line);
@@ -82,7 +83,7 @@ public class LogThread extends Thread {
                     jsonObject.put("push_type", pushRecord.getNewsType());
                     jsonObject.put("fromid", pushRecord.getNewsChannel());
                     jsonObject.put("platform", platform);
-                    jsonObject.put("push_day", pushDay);
+                    jsonObject.put("date", pushDay);
                     try {
                         producer.send(new KeyedMessage<Integer, String>(topicName, jsonObject.toString()));
                     } catch (Exception e) {

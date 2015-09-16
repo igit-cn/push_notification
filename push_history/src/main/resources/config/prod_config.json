@@ -15,11 +15,11 @@
         "redisUpdateBatchSize" : 1000,
         "redisKeepRecordSize" : 50,
         "jedisConfig" : {
-            "maxTotal" : 200,
+            "maxTotal" : 1000,
             "maxIdle" : 20,
             "minIdle" : 10
         },
         "producerFetchSize" : 1000,
-        "consumerNum" : 200
+        "consumerNum" : 900
     }
 }

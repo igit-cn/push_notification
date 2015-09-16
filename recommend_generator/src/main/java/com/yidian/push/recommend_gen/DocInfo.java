@@ -5,26 +5,26 @@ package com.yidian.push.recommend_gen;
  */
 public class DocInfo {
     private String docId;
-    private String channel;
+    private String fromId;
     private String title;
 
-    public DocInfo(String docId, String channel, String title) {
+    public DocInfo(String docId, String fromId, String title) {
         this.docId = docId;
-        this.channel = channel;
+        this.fromId = fromId;
         this.title = title;
     }
 
     public static class Builder {
         private String docId;
-        private String channel;
+        private String fromId;
         private String title;
 
         public Builder withDocId(String docId) {
             this.docId = docId;
             return this;
         }
-        public Builder withChannel(String channel) {
-            this.channel = channel;
+        public Builder withFromId(String fromId) {
+            this.fromId = fromId;
             return this;
         }
         public Builder withTitle(String title) {
@@ -32,7 +32,7 @@ public class DocInfo {
             return this;
         }
         public DocInfo build() {
-            return new DocInfo(docId, channel, title);
+            return new DocInfo(docId, fromId, title);
         }
     }
 }

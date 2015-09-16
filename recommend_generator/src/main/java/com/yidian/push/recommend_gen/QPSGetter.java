@@ -21,7 +21,7 @@ public class QPSGetter {
 
     public void refresh() throws IOException {
         String jsonStr = HttpConnectionUtils.getGetResult(url, null);
-        JSONArray jsonArray = (JSONArray)JSONArray.parse(jsonStr);
+        JSONArray jsonArray = JSONArray.parseObject(jsonStr, JSONArray.class);
 
         if (null != jsonArray
                 && jsonArray.size() >= 1) {
