@@ -198,6 +198,8 @@ public class Generator {
                 UserPushRecord userPushRecord = iterator.next();
             }
             userPushRecordLinkedBlockingQueue.clear();
+            // gen map file
+            // gen push file
 
 
         }

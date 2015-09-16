@@ -5,9 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yidian.push.utils.HttpConnectionUtils;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.lang3.StringUtils;
-import sun.plugin.extension.ExtensionUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,7 +33,7 @@ public class DocIdTitleGetter {
             try {
                 Map<String, Object> params = new HashMap<>();
                 params.put("fields", "title");
-                params.put("version", 99999);
+                params.put("version", 999999);
                 params.put("docid", StringUtils.join(subList, ','));
                 String jsonStr = HttpConnectionUtils.getGetContent(url, params);
                 JSONObject jsonObject = JSONObject.parseObject(jsonStr);
