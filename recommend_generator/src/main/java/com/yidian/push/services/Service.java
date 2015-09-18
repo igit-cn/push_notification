@@ -2,8 +2,10 @@ package com.yidian.push.services;
 
 import com.yidian.push.config.Config;
 import com.yidian.push.config.RecommendGeneratorConfig;
+import com.yidian.push.recommend_gen.Generator;
 import com.yidian.push.utils.FileLock;
 import com.yidian.push.utils.GsonFactory;
+import com.yidian.push.utils.HttpConnectionUtils;
 import lombok.extern.log4j.Log4j;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -18,6 +20,16 @@ import java.io.IOException;
 public class Service implements Runnable {
     private static volatile boolean keepRunning = false;
 
+    public void gen() throws IOException, InterruptedException {
+        RecommendGeneratorConfig config = Config.getInstance().getRecommendGeneratorConfig();
+        HttpConnectionUtils.init(config.getHttpConnectionMaxTotal(), config.getHttpConnectionDefaultMaxPerRoute());
+
+        Generator generator = new Generator();
+        String inputFile = config.getInputDataPath() + "/0914.10000";
+        String outputPath = config.getOutputDataPath();
+        generator.processFile(inputFile, outputPath);
+    }
+
     @Override
     public void run() {
         RecommendGeneratorConfig config = null;
@@ -27,6 +39,8 @@ public class Service implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
 //        try {
 //
 //            keepRunning = true;
@@ -72,7 +86,7 @@ public class Service implements Runnable {
 //        }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         System.out.println(args.length);
         if (args.length >= 1) {
             String configFile = args[0];
@@ -80,17 +94,19 @@ public class Service implements Runnable {
             Config.setCONFIG_FILE(configFile);
         } else {
            // Config.setCONFIG_FILE("generator/src/main/resources/config/prod_config.json");
-            Config.setCONFIG_FILE("generator/src/main/resources/config/config2.json");
+            Config.setCONFIG_FILE("recommend_generator/src/main/resources/config/config.json");
             System.setProperty("log4j.configuration", "src/main/resources/config/log4j_debug.properties");
-            PropertyConfigurator.configure("generator/src/main/resources/config/log4j_debug.properties");
-            Logger.getRootLogger().setLevel(Level.DEBUG);
+            PropertyConfigurator.configure("recommend_generator/src/main/resources/config/log4j_debug.properties");
+           // Logger.getRootLogger().setLevel(Level.DEBUG);
         }
+        System.out.println(GsonFactory.getDefaultGson().toJson(Config.getInstance().getRecommendGeneratorConfig()));
         String lockFile = Config.getInstance().getRecommendGeneratorConfig().getLockFile();
         if (!FileLock.lockInstance(lockFile)) {
             System.out.println("One instance is already running, just quit.");
             System.exit(1);
         }
-        Service service = new Service();
-        service.run();
+        new Service().gen();
+//        Service service = new Service();
+//        service.run();
     }
 }

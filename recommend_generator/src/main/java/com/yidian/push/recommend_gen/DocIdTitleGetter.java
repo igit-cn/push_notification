@@ -7,6 +7,7 @@ import com.yidian.push.utils.HttpConnectionUtils;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.http.client.config.RequestConfig;
 
 import java.io.IOException;
 import java.util.*;
@@ -19,6 +20,15 @@ public class DocIdTitleGetter {
     private String url = "http://a1.go2yd.com/Website/contents/content?docid=0Af7Fkap&fields=title&version=999999";
 
     public static Map<String, String> getTitles(String url, int batchSize, List<String> docIds) {
+        int timeout = 5;
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(timeout * 1000)
+                .setConnectionRequestTimeout(timeout * 1000)
+                .setSocketTimeout(timeout * 1000).build();
+        return getTitles(url, batchSize, docIds, config);
+    }
+
+    public static Map<String, String> getTitles(String url, int batchSize, List<String> docIds, RequestConfig config) {
         if (null == docIds || docIds.size() == 0) {
             return new HashMap<>(0);
         }
@@ -58,6 +68,13 @@ public class DocIdTitleGetter {
         return res;
     }
 
+    public static Map<String, String> getTitles(String url, int batchSize, Set<String> docIdSet, RequestConfig config) {
+        if (null == docIdSet || docIdSet.size() == 0) {
+            return new HashMap<>(0);
+        }
+        List<String> docIdList = new ArrayList<>(docIdSet);
+        return getTitles(url, batchSize, docIdList, config);
+    }
     public static Map<String, String> getTitles(String url, int batchSize, Set<String> docIdSet) {
         if (null == docIdSet || docIdSet.size() == 0) {
             return new HashMap<>(0);

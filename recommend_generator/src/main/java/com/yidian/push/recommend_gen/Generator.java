@@ -7,12 +7,14 @@ import com.yidian.push.config.Config;
 import com.yidian.push.config.RecommendGeneratorConfig;
 import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushType;
+import com.yidian.push.utils.GsonFactory;
 import com.yidian.push.utils.HttpConnectionUtils;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -37,6 +39,8 @@ public class Generator {
     private AtomicInteger recordToProcessNum = new AtomicInteger(0);
     private Timer consumerTimer = new Timer("consumerTimer");
     private Timer refreshTimer = new Timer("refreshTimer");
+    private AtomicInteger totalValidToProcessNumber = new AtomicInteger(0);
+    private AtomicInteger totalValidProcessedNumber = new AtomicInteger(0);
 
 
     public Generator() throws IOException {
@@ -74,22 +78,30 @@ public class Generator {
 //    }
 
     public void consumer() {
+        log.info("consumer recordToProcessNum size is " + requestItemLinkedBlockingQueue.size());
         if (!requestItemLinkedBlockingQueue.isEmpty()) {
             int availableQps = config.getMaxQPS() - qpsGetter.getQps();
+            log.info("current available qps is :" + availableQps);
             if (availableQps <= 0) {
                 return;
             }
             List<RequestItem> list = new ArrayList<>(availableQps);
             int num = requestItemLinkedBlockingQueue.drainTo(list, availableQps);
             if (num > 0) {
+                log.info("get # of request to process: " + num);
                 for (final RequestItem item : list) {
                     executorService.submit(new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 recordToProcessNum.decrementAndGet();
-                                String url = "";
-                                String jsonStr = HttpConnectionUtils.getGetContent(url, null);
+                                String url = config.getRecommendURL();
+                                Map<String, Object> params = new HashMap<>(5);
+                                params.put("userid", item.getUserId());
+                                params.put("num", item.getNum());
+                                params.put("model", item.getModel());
+                                String jsonStr = HttpConnectionUtils.getGetResult(url, params, config.getRequestConfig());
+                                System.out.println(GsonFactory.getDefaultGson().toJson(item) + "; response:" + jsonStr);
                                 // TODO: parse the reply
                                 // and add it to the  userPushRecordLinkedBlockingQueue
                                 JSONObject jsonObject = JSON.parseObject(jsonStr);
@@ -123,10 +135,13 @@ public class Generator {
                                         }
                                         list.add(new UserPushRecord.DocId_PushType(docId, PushType.RECOMMEND));
                                     }
-                                    userPushRecordLinkedBlockingQueue.add(new UserPushRecord(item.getUserId(), list));
+                                    UserPushRecord userPushRecord = new UserPushRecord(item.getUserId(), item.getPlatform(), item.getAppId(), list);
+                                    userPushRecordLinkedBlockingQueue.add(userPushRecord);
                                 }
                             } catch (Exception e) {
-
+                                log.error("failed..." + ExceptionUtils.getFullStackTrace(e));
+                            } finally {
+                                totalValidProcessedNumber.incrementAndGet();
                             }
                         }
                     });
@@ -137,6 +152,7 @@ public class Generator {
 
     }
 
+
     private RequestItem parseLine(String line) {
         if (null == line) {
             return null;
@@ -144,9 +160,14 @@ public class Generator {
         String[] arr = line.split(",");
         if (4 == arr.length) {
             String userId = arr[0];
-            Platform platform = Platform.valueOf(arr[1]);
-            String appId = arr[2];
+            Platform platform = Platform.IPHONE;
+            if ("Android".equals(arr[2])) {
+                platform = Platform.ANDROID;
+            }
+
+            String appId = arr[1];
             String model = arr[3];
+            model = model.trim().replaceAll(" +", "+");
             int number = 20;
             return new RequestItem(userId, model, number, platform, appId);
         }
@@ -155,9 +176,13 @@ public class Generator {
 
     // this method can process one file at one time.
 
-    public void processFile(String file, String outputPath) throws InterruptedException {
+    public void processFile(String file, String outputPath) throws InterruptedException, IOException {
         if (processHappened) {
             throw new RuntimeException("process happened, new one instance to process.");
+        }
+        File outputPathFile = new File(outputPath);
+        if (!outputPathFile.isDirectory()) {
+            FileUtils.forceMkdir(new File(outputPath));
         }
         processHappened = true;
         Charset UTF_8 = StandardCharsets.UTF_8;
@@ -167,43 +192,167 @@ public class Generator {
         try {
             reader = Files.newBufferedReader(filePath, UTF_8);
             String line = null;
+            int num = 0;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 RequestItem item = parseLine(line);
-                if (item.isValid()) {
+                if (null != item && item.isValid()) {
                     recordToProcessNum.incrementAndGet();
                     requestItemLinkedBlockingQueue.offer(item);
                 }
             }
-            log.info("finish reading the file: " + file);
+            totalValidToProcessNumber.set(num);
+
+            log.info("finish reading the file: " + file + ", and got # of records to process : " + num);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        log.info("cur recordToProcessNum size is " + recordToProcessNum.get());
         while (true) {
-            if (recordToProcessNum.get() == 0) {
+            if (totalValidProcessedNumber != totalValidToProcessNumber) {
                 Thread.sleep(1000);
                 continue;
             }
             // done
+            log.info("before shutdown the recordToProcessNum size is " + recordToProcessNum.get());
+
             executorService.shutdown();
-            executorService.awaitTermination(5, TimeUnit.SECONDS);
+            executorService.awaitTermination(3000, TimeUnit.SECONDS);
             consumerTimer.cancel();
             refreshTimer.cancel();
+            break;
+        }
+        log.info("get all the user records");
+        String mappingFile = outputPath + "/recommend_push.map";
+        String appxIOSDataFile = outputPath + "/recommend_push4x.data.IOS";
+        String appxAndroidDataFile = outputPath + "/recommend_push4x.data.Android";
+        String mainIOSDataFile = outputPath + "/recommend_push.data.IOS";
+        String mainAndroidFile = outputPath + "/recommend_push.data.Android";
+        // gen map file
+        genMappingFile(mappingFile);
+        log.info("mapping file ready:" + mappingFile );
+        // gen push file
+        genDataFile(appxIOSDataFile, appxAndroidDataFile, mainIOSDataFile, mainAndroidFile);
+        log.info("data file ready.");
+        // clean up
+        clear();
+    }
 
-            // TODO: generate the file
-            Iterator<UserPushRecord> iterator = userPushRecordLinkedBlockingQueue.iterator();
-            while (iterator.hasNext()) {
-                UserPushRecord userPushRecord = iterator.next();
+    public void clear() {
+        userPushRecordLinkedBlockingQueue.clear();
+        requestItemLinkedBlockingQueue.clear();
+        docIdDocIdMapping.clear();
+        docIdInfoMapping.clear();
+        consumerTimer.cancel();
+        refreshTimer.cancel();
+    }
+
+    public void safeClose(BufferedWriter bw) {
+        if (null != bw) {
+            try {
+                bw.close();
             }
-            userPushRecordLinkedBlockingQueue.clear();
-            // gen map file
-            // gen push file
-
+            catch (IOException e) {
+                // ignore
+            }
 
         }
+    }
 
+    public boolean isAppx(String appId, Set<String> appIdExcludingSet) {
+        if (appIdExcludingSet != null && appIdExcludingSet.contains(appId)) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isMain(String appId, Set<String> appIdIncludingSet) {
+        if (appIdIncludingSet != null && appIdIncludingSet.contains(appId)) {
+            return true;
+        }
+        return false;
+    }
+
+
+    public void genDataFile(String appxIOSDataFile, String appxAndroidDataFile, String mainIOSDataFile, String mainAndroidFile) {
+
+        BufferedWriter appxIOSWriter = null;
+        BufferedWriter appxAndroidWriter = null;
+        BufferedWriter mainIOSWriter = null;
+        BufferedWriter mainAndroidWriter = null;
+
+        try {
+            appxIOSWriter = new BufferedWriter(new FileWriter(appxIOSDataFile));
+            appxAndroidWriter = new BufferedWriter(new FileWriter(appxAndroidDataFile));
+            mainIOSWriter = new BufferedWriter(new FileWriter(mainIOSDataFile));
+            mainAndroidWriter = new BufferedWriter(new FileWriter(mainAndroidFile));
+
+            for (UserPushRecord userPushRecord : userPushRecordLinkedBlockingQueue) {
+                boolean isMainAppId = isMain(userPushRecord.getAppId(), config.getAPP_MAIN());
+                boolean isAppXAppId = isAppx(userPushRecord.getAppId(), config.getNON_APP_X());
+                if (isMainAppId) {
+                    if (Platform.ANDROID == userPushRecord.getPlatform()) {
+                        mainAndroidWriter.write(userPushRecord.toString());
+                        mainAndroidWriter.newLine();
+                    } else {
+                        mainIOSWriter.write(userPushRecord.toString());
+                        mainIOSWriter.newLine();
+                    }
+                }
+                if (isAppXAppId) {
+                    if (Platform.ANDROID == userPushRecord.getPlatform()) {
+                        appxAndroidWriter.write(userPushRecord.toString());
+                        appxAndroidWriter.newLine();
+                    } else {
+                        appxIOSWriter.write(userPushRecord.toString());
+                        appxIOSWriter.newLine();
+                    }
+                }
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            safeClose(appxIOSWriter);
+            safeClose(appxAndroidWriter);
+            safeClose(mainIOSWriter);
+            safeClose(mainAndroidWriter);
+        }
+
+    }
+
+    public void genMappingFile(String file) {
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new FileWriter(file));
+            Map<String, String> docIdTitleMapping = DocIdTitleGetter.getTitles(config.getDocIdInfoURL(), config.getDocIdInfoBatchSize(), docIdInfoMapping.keySet());
+            for (String docId : docIdInfoMapping.keySet()) {
+                String title = docIdTitleMapping.get(docId);
+                if (StringUtils.isNotEmpty(title)) {
+                    docIdInfoMapping.get(docId).setTitle(title);
+                }
+            }
+            for (String docId : docIdInfoMapping.keySet()) {
+                DocInfo docInfo = docIdInfoMapping.get(docId);
+                String line = new StringBuilder().append(docId)
+                        .append("\t").append(null == docInfo.getFromId() ? "" : docInfo.getFromId())
+                        .append("\t").append(docInfo.getTitle())
+                        .toString();
+                bw.write(line);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+                if (null != bw) {
+                    try {bw.close();} catch (IOException e) {
+                        //ignore
+                    }
+                }
+        }
 
     }
 }

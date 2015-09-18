@@ -37,7 +37,6 @@ public class ZionPoolUtil {
             this.recordList = new ArrayList<>(fetchSize);
         }
 
-
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
@@ -48,14 +47,14 @@ public class ZionPoolUtil {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        log.info(threadName + " queue is empty");
+                        log.debug(threadName + " queue is empty");
                         continue;
                     }
                     recordList.clear();
                     int num = pushLogQueue.drainTo(recordList, fetchSize);
                     if (num > 0) {
                         try {
-                            log.info(threadName + " : got # of records to push: " + recordList.size());
+                            log.debug(threadName + " : got # of records to push: " + recordList.size());
                             ZionPoolUtil.addPushHistoryRecords(recordList);
                         } catch (Exception e) {
                             log.error(threadName + " consume record failed..." + ExceptionUtils.getFullStackTrace(e));
@@ -112,7 +111,7 @@ public class ZionPoolUtil {
                     public void run() {
                         log.info("queue size : " + blockingQueue.size());
                     }
-                }, 0, 3000);
+                }, 0, 10000);
 
             }
         }
@@ -194,7 +193,7 @@ public class ZionPoolUtil {
         } finally {
             if (jedis != null) {
                 try {
-                    log.info("try to return the jedis client in getRecordLength " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                    log.debug("try to return the jedis client in getRecordLength " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
                     jedis.close();
                 } catch (Exception e) {
                     //ignore
@@ -258,7 +257,7 @@ public class ZionPoolUtil {
         } finally {
             if (jedis != null) {
                 try {
-                    log.info("try to return the jedis client in addPushHistoryRecords " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                    log.debug("try to return the jedis client in addPushHistoryRecords " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
                     jedis.close();
                 } catch (Exception e) {
                     // ignore

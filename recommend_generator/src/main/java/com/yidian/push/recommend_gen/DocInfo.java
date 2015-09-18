@@ -1,8 +1,13 @@
 package com.yidian.push.recommend_gen;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Created by tianyuzhi on 15/9/12.
  */
+@Getter
+@Setter
 public class DocInfo {
     private String docId;
     private String fromId;

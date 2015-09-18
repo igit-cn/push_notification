@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Test {
     public static void main(String[] args) throws InterruptedException {
+        System.out.println("HM  NOTE 1LTEW".replaceAll(" +", "+"));
         DateTime dateTime = new DateTime();
         System.out.println(dateTime);
         System.out.println(dateTime.getSecondOfDay());
