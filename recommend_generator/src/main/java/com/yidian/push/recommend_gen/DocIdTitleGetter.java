@@ -40,17 +40,20 @@ public class DocIdTitleGetter {
             int end = (index + batchSize) >= total ? total : (index + batchSize);
             index = end;
             List<String> subList = docIds.subList(start, end);
+            log.info("try to get title for # of docid " + subList.size());
+
             try {
                 Map<String, Object> params = new HashMap<>();
                 params.put("fields", "title");
                 params.put("version", 999999);
                 params.put("docid", StringUtils.join(subList, ','));
-                String jsonStr = HttpConnectionUtils.getGetContent(url, params);
+                String jsonStr = HttpConnectionUtils.getGetResult(url, params, config);
                 JSONObject jsonObject = JSONObject.parseObject(jsonStr);
                 if (null != jsonObject
                         && "success".equals(jsonObject.getString("status"))
                         && jsonObject.containsKey("documents")) {
                     JSONArray documents = jsonObject.getJSONArray("documents");
+                    log.info("get title for # of docid in sub list: " + documents.size());
                     for (Object object : documents) {
                         JSONObject document = (JSONObject)object;
                         String docId = document.getString("docid");
@@ -58,6 +61,9 @@ public class DocIdTitleGetter {
                         if (StringUtils.isNotEmpty(docId)
                                 && StringUtils.isNotEmpty(title)) {
                             res.put(docId, title);
+                        }
+                        else {
+                            log.info("empty title for docid : " + docId);
                         }
                     }
                 }

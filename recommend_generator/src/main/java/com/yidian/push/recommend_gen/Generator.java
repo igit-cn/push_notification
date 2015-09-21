@@ -198,6 +198,7 @@ public class Generator {
                 RequestItem item = parseLine(line);
                 if (null != item && item.isValid()) {
                     recordToProcessNum.incrementAndGet();
+                    num ++;
                     requestItemLinkedBlockingQueue.offer(item);
                 }
             }
@@ -210,9 +211,11 @@ public class Generator {
         }
 
         log.info("cur recordToProcessNum size is " + recordToProcessNum.get());
+        log.info("totalValidProcessedNumber : " + totalValidProcessedNumber + ", totalValidToProcessNumber : " + totalValidToProcessNumber);
         while (true) {
-            if (totalValidProcessedNumber != totalValidToProcessNumber) {
+            if (totalValidProcessedNumber.get() != totalValidToProcessNumber.get()) {
                 Thread.sleep(1000);
+                log.info("totalValidProcessedNumber : " + totalValidProcessedNumber + ", totalValidToProcessNumber : " + totalValidToProcessNumber);
                 continue;
             }
             // done
@@ -328,7 +331,9 @@ public class Generator {
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new FileWriter(file));
+            log.info("try to get titles for # of docids " +  docIdInfoMapping.keySet().size());
             Map<String, String> docIdTitleMapping = DocIdTitleGetter.getTitles(config.getDocIdInfoURL(), config.getDocIdInfoBatchSize(), docIdInfoMapping.keySet());
+            log.info("finally get titles for # of docids " +  docIdInfoMapping.keySet().size());
             for (String docId : docIdInfoMapping.keySet()) {
                 String title = docIdTitleMapping.get(docId);
                 if (StringUtils.isNotEmpty(title)) {
