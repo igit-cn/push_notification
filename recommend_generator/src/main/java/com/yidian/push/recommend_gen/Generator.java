@@ -138,6 +138,9 @@ public class Generator {
                                     UserPushRecord userPushRecord = new UserPushRecord(item.getUserId(), item.getPlatform(), item.getAppId(), list);
                                     userPushRecordLinkedBlockingQueue.add(userPushRecord);
                                 }
+                                else {
+                                    log.info("NO RECOMMEND DOC for user: " + item.getUserId());
+                                }
                             } catch (Exception e) {
                                 log.error("failed..." + ExceptionUtils.getFullStackTrace(e));
                             } finally {
@@ -157,7 +160,7 @@ public class Generator {
         if (null == line) {
             return null;
         }
-        String[] arr = line.split(",");
+        String[] arr = line.split(",", -1);
         if (4 == arr.length) {
             String userId = arr[0];
             Platform platform = Platform.IPHONE;
@@ -200,6 +203,9 @@ public class Generator {
                     recordToProcessNum.incrementAndGet();
                     num ++;
                     requestItemLinkedBlockingQueue.offer(item);
+                }
+                else {
+                    log.info("INVALID RECORD:" + line);
                 }
             }
             totalValidToProcessNumber.set(num);

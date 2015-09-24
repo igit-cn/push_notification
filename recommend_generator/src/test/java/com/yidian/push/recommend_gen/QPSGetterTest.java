@@ -3,6 +3,7 @@ package com.yidian.push.recommend_gen;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.testng.Assert.*;
 
@@ -21,6 +22,14 @@ public class QPSGetterTest {
             Thread.sleep(1 * 1000);
         }
 
+    }
+
+    @Test
+    public void testSplit() {
+        String str = "1,2,";
+        for (int i = -1; i < 6; i ++) {
+            System.out.println(i + " " + Arrays.asList(str.split(",", i)));
+        }
     }
 
 }

@@ -6,7 +6,9 @@ import com.yidian.push.config.PushHistoryConfig;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.eclipse.jetty.util.StringUtil;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 
@@ -152,7 +154,8 @@ public class ZionPoolUtil {
         }
         int batchSize = config.getRedisUpdateBatchSize();
         int keepRecordSize = config.getRedisKeepRecordSize();
-        addPushHistoryRecords(uidRecordList, batchSize, keepRecordSize);
+        //addPushHistoryRecords(uidRecordList, batchSize, keepRecordSize);
+        addPushHistoryRecords2(uidRecordList, batchSize, keepRecordSize);
     }
 
     public static Map<String, Long> getRecordLength(List<String> keyList, int batchQuerySize) throws IOException {
@@ -246,6 +249,127 @@ public class ZionPoolUtil {
                         pipeline.rpop(key);
                         curRecordNum--;
                     }
+                }
+                if (isBatchEnd) {
+                    pipeline.syncAndReturnAll();
+                    //System.out.println(GsonFactory.getNonPrettyGson().toJson(res));
+                }
+            }
+        } catch (Exception e) {
+            log.error("write push history failed with exception: " + ExceptionUtils.getFullStackTrace(e));
+        } finally {
+            if (jedis != null) {
+                try {
+                    log.debug("try to return the jedis client in addPushHistoryRecords " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                    jedis.close();
+                } catch (Exception e) {
+                    // ignore
+                    log.error("failed to return the jedis client in addPushHistoryRecords "  + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                }
+            }
+        }
+
+    }
+
+    public static Map<String, String> getRecords(List<String> keyList, int batchQuerySize) throws IOException {
+        if (!isInitialized) {
+            init();
+        }
+        Jedis jedis = null;
+
+        int numKeys = keyList.size();
+        Map<String, String> keyValueMap = new HashMap<>(numKeys);
+
+        try {
+            jedis = zionpool.getClient();
+            int idx = 0;
+            while (idx < numKeys) {
+                Pipeline pipeline = jedis.pipelined();
+                int subStart = idx;
+                int subEnd = idx + batchQuerySize >= numKeys ? numKeys : idx + batchQuerySize;
+                for (int i = subStart; i < subEnd; i++) {
+                    pipeline.get(keyList.get(i));
+                }
+                List<Object> objects = pipeline.syncAndReturnAll();
+                if (null != objects && objects.size() == subEnd - subStart) {
+                    int keyIdx = subStart;
+                    for (Object obj : objects) {
+                        String value = (String) obj;
+                        keyValueMap.put(keyList.get(keyIdx), value);
+                        keyIdx++;
+                    }
+                }
+                idx = subEnd;
+            }
+        } catch (Exception e) {
+            log.error("get push history length with exception: " + ExceptionUtils.getFullStackTrace(e));
+        } finally {
+            if (jedis != null) {
+                try {
+                    log.debug("try to return the jedis client in getRecordLength " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                    jedis.close();
+                } catch (Exception e) {
+                    //ignore
+                    log.error("failed to return the jedis client in getRecordLength " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                }
+            }
+        }
+        return keyValueMap;
+    }
+
+    public static void addPushHistoryRecords2(List<String> uidRecordList, int batchQuerySize, int keepRecordSize) throws IOException {
+        if (!isInitialized) {
+            init();
+        }
+        Jedis jedis = null;
+
+        int numKeys = uidRecordList.size();
+        Pipeline pipeline = null;
+        try {
+            List<String> keyList = new ArrayList<>(numKeys);
+            List<String> valueList = new ArrayList<>(numKeys);
+            for (String uidRecord : uidRecordList) {
+                String[] arr = uidRecord.split(SEPARATOR);
+                if (arr.length != 2) {
+                    continue;
+                }
+                String key = arr[0];
+                String value = arr[1];
+                keyList.add(key);
+                valueList.add(value);
+            }
+            // get push history length
+            Map<String, String> curKeyValues = getRecords(keyList, batchQuerySize);
+
+            // update
+            jedis = zionpool.getClient();
+            for (int idx = 0; idx < numKeys; idx++) {
+                String key = keyList.get(idx);
+                String value = valueList.get(idx);
+
+                boolean isBatchStart = (idx == 0 || idx % batchQuerySize == 0);
+                boolean isBatchEnd = (idx + 1 == numKeys || (idx + 1) % batchQuerySize == 0);
+                if (isBatchStart) {
+                    pipeline = jedis.pipelined();
+                }
+                String curValue = curKeyValues.get(key);
+                if (StringUtils.isEmpty(curValue)) {
+                    pipeline.set(key, value);
+                } else {
+                    List<String> arr = Arrays.asList(curValue.split(SEPARATOR));
+                    String newVal;
+                    if (arr.size() >= keepRecordSize) {
+                        newVal = StringUtils.join(arr, SEPARATOR, 0, keepRecordSize - 1);
+                    }
+                    else {
+                        newVal = curValue;
+                    }
+                    if (StringUtils.isEmpty(newVal)) {
+                        newVal = value;
+                    } else {
+                        newVal = new StringBuilder(value).append(SEPARATOR).append(newVal).toString();
+                    }
+                    pipeline.set(key, newVal);
                 }
                 if (isBatchEnd) {
                     pipeline.syncAndReturnAll();
