@@ -35,6 +35,8 @@ public class RecommendGeneratorConfig {
     private String inputDataPath = "";
     private String outputDataPath = "";
 
+    private int titleMinLength = 7;
+
     public RequestConfig getRequestConfig() {
         return RequestConfig.custom()
                 .setConnectTimeout(socketConnectTimeout * 1000)

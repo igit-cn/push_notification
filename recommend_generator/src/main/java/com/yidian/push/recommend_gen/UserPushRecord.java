@@ -13,9 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 public class UserPushRecord {
-    private static final String CTR_A = "\u0001";
-    private static final String CTR_B = "\u0002";
-    private static final String CTR_C = "\u0003";
+    @Getter
     public static class DocId_PushType {
         public String docId;
         public PushType pushType; // give the push_type by score.
@@ -40,15 +38,15 @@ public class UserPushRecord {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(userId).append(CTR_A);
+        sb.append(userId).append(Constants.CTR_A);
         if (null != docIdPushTypeList) {
             boolean isFirst = true;
             for (DocId_PushType docId_pushType : docIdPushTypeList) {
                 if (!isFirst) {
-                    sb.append(CTR_C);
+                    sb.append(Constants.CTR_C);
                 }
                 isFirst = false;
-                sb.append(docId_pushType.docId).append(CTR_B).append(docId_pushType.pushType.getString());
+                sb.append(docId_pushType.docId).append(Constants.CTR_B).append(docId_pushType.pushType.getString());
             }
         }
         return sb.toString();

@@ -101,7 +101,7 @@ public class Generator {
                                 params.put("num", item.getNum());
                                 params.put("model", item.getModel());
                                 String jsonStr = HttpConnectionUtils.getGetResult(url, params, config.getRequestConfig());
-                                System.out.println(GsonFactory.getDefaultGson().toJson(item) + "; response:" + jsonStr);
+                                //System.out.println(GsonFactory.getDefaultGson().toJson(item) + "; response:" + jsonStr);
                                 // TODO: parse the reply
                                 // and add it to the  userPushRecordLinkedBlockingQueue
                                 JSONObject jsonObject = JSON.parseObject(jsonStr);
@@ -160,7 +160,7 @@ public class Generator {
         if (null == line) {
             return null;
         }
-        String[] arr = line.split(",", -1);
+        String[] arr = line.split(",", 4);
         if (4 == arr.length) {
             String userId = arr[0];
             Platform platform = Platform.IPHONE;
@@ -282,6 +282,30 @@ public class Generator {
             return true;
         }
         return false;
+    }
+
+    public String toLine(UserPushRecord record) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(record.getUserId()).append(Constants.CTR_A);
+        if (null != record.getDocIdPushTypeList()) {
+            boolean isFirst = true;
+            for (UserPushRecord.DocId_PushType docId_pushType : record.getDocIdPushTypeList()) {
+                String docId = docId_pushType.docId;
+                if (!docIdInfoMapping.containsKey(docId)) {
+                    String title = docIdInfoMapping.get(docId).getTitle();
+                    if (StringUtils.isEmpty(title) || title.length() < config.getTitleMinLength()) {
+                        log.info("filter the short title docid : " + docId);
+                        continue;
+                    }
+                }
+                if (!isFirst) {
+                    sb.append(Constants.CTR_C);
+                }
+                isFirst = false;
+                sb.append(docId_pushType.docId).append(Constants.CTR_B).append(docId_pushType.pushType.getString());
+            }
+        }
+        return sb.toString();
     }
 
 

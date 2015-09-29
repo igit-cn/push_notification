@@ -26,10 +26,16 @@ public class QPSGetterTest {
 
     @Test
     public void testSplit() {
-        String str = "1,2,";
+        String str = "54875700,yaoshan,Android,H880+ Eight core,MTK6592";
         for (int i = -1; i < 6; i ++) {
             System.out.println(i + " " + Arrays.asList(str.split(",", i)));
         }
+    }
+
+    @Test
+    public void testStringLength() {
+        String str = "中文1，,";
+        System.out.println(str.length());
     }
 
 }
