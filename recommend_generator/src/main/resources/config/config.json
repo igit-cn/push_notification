@@ -19,6 +19,7 @@
         "NON_APP_X" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
         "threadPoolSize" : 500,
         "inputDataPath" : "/tmp/",
-        "outputDataPath" : "/tmp/output_path"
+        "outputDataPath" : "/tmp/output_path",
+        "titleMinLength" : 7
     }
 }

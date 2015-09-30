@@ -77,6 +77,23 @@ public class Generator {
 //
 //    }
 
+    public PushType getPushTye(String factor) {
+        // fromid/fromid-news 64, tier1-news/tier1 512, coke/coke-news 256
+        if (StringUtils.isNotEmpty(factor)) {
+            if ("fromid".equals(factor) || "fromid-news".equals(factor)) {
+                return PushType.RECOMMEND;
+            }
+            else if ("coke".equals(factor) || "coke-news".equals(factor)) {
+                return PushType.RECOMMEND_2;
+            }
+            else if ("tier1".equals(factor) || "tier1-news".equals(factor)) {
+                return PushType.RECOMMEND_3;
+            }
+        }
+
+        return PushType.RECOMMEND_1;
+    }
+
     public void consumer() {
         log.info("consumer recordToProcessNum size is " + requestItemLinkedBlockingQueue.size());
         if (!requestItemLinkedBlockingQueue.isEmpty()) {
@@ -129,11 +146,12 @@ public class Generator {
                                         }
 
                                         DocInfo docInfo = new DocInfo(docId, fromId, title);
+                                        PushType pushType = getPushTye(factor);
 
                                         if (!docIdInfoMapping.containsKey(docId)) {
                                             docIdInfoMapping.putIfAbsent(docId, docInfo);
                                         }
-                                        list.add(new UserPushRecord.DocId_PushType(docId, PushType.RECOMMEND));
+                                        list.add(new UserPushRecord.DocId_PushType(docId, pushType));
                                     }
                                     UserPushRecord userPushRecord = new UserPushRecord(item.getUserId(), item.getPlatform(), item.getAppId(), list);
                                     userPushRecordLinkedBlockingQueue.add(userPushRecord);
@@ -292,6 +310,10 @@ public class Generator {
             for (UserPushRecord.DocId_PushType docId_pushType : record.getDocIdPushTypeList()) {
                 String docId = docId_pushType.docId;
                 if (!docIdInfoMapping.containsKey(docId)) {
+                    log.info("FILTER BY NO DOCID");
+                    continue;
+                }
+                else {
                     String title = docIdInfoMapping.get(docId).getTitle();
                     if (StringUtils.isEmpty(title) || title.length() < config.getTitleMinLength()) {
                         log.info("filter the short title docid : " + docId);
