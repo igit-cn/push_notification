@@ -51,6 +51,7 @@ KILLPROC_OPTS=""
 
 #######################
 # monit config
+MONIROT_NAME=${TBASENAME//\//_}
 MONIT_NAME=${MONIT_NAME-${TBASENAME}}
 
 #######################

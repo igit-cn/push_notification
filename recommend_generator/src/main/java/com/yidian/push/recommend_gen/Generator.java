@@ -195,6 +195,24 @@ public class Generator {
         return null;
     }
 
+    public boolean shouldProcess(RequestItem item) {
+        if (null == item || !item.isValid()) {
+            return false;
+        }
+        Set<Integer> buckets = config.getBuckets();
+        int bucketId = 0;
+        try {
+            bucketId = (int)(Long.parseLong(item.getUserId()) % 10);
+        } catch (Exception e) {
+            log.error("invalid userId : " + item.getUserId());
+            return false;
+        }
+        if (buckets == null || buckets.contains(bucketId)) {
+            return true;
+        }
+        return false;
+    }
+
     // this method can process one file at one time.
 
     public void processFile(String file, String outputPath) throws InterruptedException, IOException {
@@ -217,13 +235,17 @@ public class Generator {
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 RequestItem item = parseLine(line);
-                if (null != item && item.isValid()) {
+                boolean needProcess = shouldProcess(item);
+                if (needProcess) {
                     recordToProcessNum.incrementAndGet();
                     num ++;
+//                    if (num % 1000 == 0) {
+//                        log.info("got 1000 valid records to process");
+//                    }
                     requestItemLinkedBlockingQueue.offer(item);
                 }
                 else {
-                    log.info("INVALID RECORD:" + line);
+                    //log.info(line + " filtered ... ");
                 }
             }
             totalValidToProcessNumber.set(num);
@@ -257,17 +279,21 @@ public class Generator {
         String appxAndroidDataFile = outputPath + "/recommend_push4x.data.Android";
         String mainIOSDataFile = outputPath + "/recommend_push.data.IOS";
         String mainAndroidFile = outputPath + "/recommend_push.data.Android";
+        String successFile = outputPath + "_SUCCESS";
         // gen map file
         genMappingFile(mappingFile);
-        log.info("mapping file ready:" + mappingFile );
+        log.info("mapping file ready:" + mappingFile);
         // gen push file
         genDataFile(appxIOSDataFile, appxAndroidDataFile, mainIOSDataFile, mainAndroidFile);
         log.info("data file ready.");
+        FileUtils.touch(new File(successFile));
+        log.info("touch success file");
         // clean up
         clear();
     }
 
     public void clear() {
+        log.info("clear the generator");
         userPushRecordLinkedBlockingQueue.clear();
         requestItemLinkedBlockingQueue.clear();
         docIdDocIdMapping.clear();

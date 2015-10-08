@@ -7,6 +7,7 @@ import com.yidian.push.utils.FileLock;
 import com.yidian.push.utils.GsonFactory;
 import com.yidian.push.utils.HttpConnectionUtils;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -67,7 +68,14 @@ public class Service implements Runnable {
         String inputFile = getInputFile(config);
         String outputPath = getOutputPath(config);
         log.info("input file:[" + inputFile + "], output dir:[" + outputPath + "]");
-        generator.processFile(inputFile, outputPath);
+        if (StringUtils.isEmpty(inputFile) || StringUtils.isEmpty(outputPath)) {
+            log.info("invalid input file or output path");
+            generator.clear();
+            //throw new RuntimeException("invalid input file or output path");
+        }
+        else {
+            generator.processFile(inputFile, outputPath);
+        }
     }
 
     @Override

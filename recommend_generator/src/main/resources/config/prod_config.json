@@ -22,6 +22,7 @@
         "outputDataPath" : "/ssd1/worker/push_notification/recommend_push_users/push_data",
         "inputLookBackDays" : 7,
         "outputLookBackTimes" : 3,
-        "titleMinLength" : 7
+        "titleMinLength" : 7,
+        "buckets" : [0]
     }
 }
