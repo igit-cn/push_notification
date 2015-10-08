@@ -38,6 +38,7 @@ public class RecommendGeneratorConfig {
     private int outputLookBackTimes = 3;
 
     private int titleMinLength = 7;
+    private Set<Integer> buckets;
 
     public RequestConfig getRequestConfig() {
         return RequestConfig.custom()
