@@ -10,7 +10,9 @@ import lombok.extern.log4j.Log4j;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.joda.time.DateTime;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -20,13 +22,51 @@ import java.io.IOException;
 public class Service implements Runnable {
     private static volatile boolean keepRunning = false;
 
+    public String getInputFile(RecommendGeneratorConfig config)
+    {
+        String inputPath = config.getInputDataPath();
+        int lookBackDay = config.getInputLookBackDays();
+        for (int i = 0; i < lookBackDay; i ++) {
+            String day = DateTime.now().minusDays(i).toString("yyyy-MM-dd");
+            String fileName = inputPath + "/" + day;
+            File file = new File(fileName);
+            if (file.exists() && file.isFile()) {
+                log.info("get input file :" + fileName);
+                return fileName;
+            }
+            else {
+                log.info("input file :" + fileName + " does not exist");
+            }
+        }
+        return null;
+    }
+
+    public String getOutputPath(RecommendGeneratorConfig config) {
+        String outputPath = config.getOutputDataPath();
+        String day = DateTime.now().toString("yyyy-MM-dd");
+        int times = config.getOutputLookBackTimes();
+        for (int i = 0; i < times; i ++) {
+            String dirName = outputPath + "/" + day + "_" + i;
+            File file = new File(dirName);
+            if (!file.exists()) {
+                log.info("get output dir:" + dirName);
+                return dirName;
+            }
+            else {
+                log.info("output dir " + dirName + " already exists");
+            }
+        }
+        return null;
+    }
+
     public void gen() throws IOException, InterruptedException {
         RecommendGeneratorConfig config = Config.getInstance().getRecommendGeneratorConfig();
         HttpConnectionUtils.init(config.getHttpConnectionMaxTotal(), config.getHttpConnectionDefaultMaxPerRoute());
 
         Generator generator = new Generator();
-        String inputFile = config.getInputDataPath() + "/0914.10000";
-        String outputPath = config.getOutputDataPath();
+        String inputFile = getInputFile(config);
+        String outputPath = getOutputPath(config);
+        log.info("input file:[" + inputFile + "], output dir:[" + outputPath + "]");
         generator.processFile(inputFile, outputPath);
     }
 

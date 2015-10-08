@@ -34,6 +34,8 @@ public class RecommendGeneratorConfig {
     private int threadPoolSize = 500;
     private String inputDataPath = "";
     private String outputDataPath = "";
+    private int inputLookBackDays = 7;
+    private int outputLookBackTimes = 3;
 
     private int titleMinLength = 7;
 

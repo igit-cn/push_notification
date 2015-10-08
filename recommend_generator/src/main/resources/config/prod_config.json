@@ -18,8 +18,10 @@
         "APP_MAIN" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
         "NON_APP_X" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
         "threadPoolSize" : 500,
-        "inputDataPath" : "/tmp/",
-        "outputDataPath" : "/tmp/output_path",
+        "inputDataPath" : "/ssd1/worker/push_notification/recommend_push_users/pushable_users",
+        "outputDataPath" : "/ssd1/worker/push_notification/recommend_push_users/push_data",
+        "inputLookBackDays" : 7,
+        "outputLookBackTimes" : 3,
         "titleMinLength" : 7
     }
 }

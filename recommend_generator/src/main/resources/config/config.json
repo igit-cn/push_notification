@@ -20,6 +20,8 @@
         "threadPoolSize" : 500,
         "inputDataPath" : "/tmp/",
         "outputDataPath" : "/tmp/output_path",
+        "inputLookBackDays" : 7,
+        "outputLookBackTimes" : 3,
         "titleMinLength" : 7
     }
 }
