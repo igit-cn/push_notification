@@ -181,13 +181,13 @@ public class Generator {
         String[] arr = line.split(",", 4);
         if (4 == arr.length) {
             String userId = arr[0];
-            String plat = arr[1];
-            String appId = arr[2];
-            String model = arr[3];
             Platform platform = Platform.IPHONE;
-            if ("Android".equals(plat)) {
+            if ("Android".equals(arr[2])) {
                 platform = Platform.ANDROID;
             }
+
+            String appId = arr[1];
+            String model = arr[3];
             model = model.trim().replaceAll(" +", "+");
             int number = 20;
             return new RequestItem(userId, model, number, platform, appId);
