@@ -279,7 +279,7 @@ public class Generator {
         String appxAndroidDataFile = outputPath + "/recommend_push4x.data.Android";
         String mainIOSDataFile = outputPath + "/recommend_push.data.IOS";
         String mainAndroidFile = outputPath + "/recommend_push.data.Android";
-        String successFile = outputPath + "_SUCCESS";
+        String successFile = outputPath + "/_SUCCESS";
         // gen map file
         genMappingFile(mappingFile);
         log.info("mapping file ready:" + mappingFile);

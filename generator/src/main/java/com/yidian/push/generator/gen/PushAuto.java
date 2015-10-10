@@ -161,7 +161,7 @@ public class PushAuto {
                 if (null == userIdChannelMapping || !userIdChannelMapping.containsKey(curUserId)) {
                     //Long packedLong = curUserId;
                     //log.info("filtered by userIdChannelMapping: " + curUserId + " # " + userIdChannelMapping.containsKey(packedLong));
-                    log.debug(curUserId + " filtered by userId channle Mapping");
+                    log.debug(curUserId + " filtered by userId channel Mapping");
                     continue;
                 } else {
                     newsChannel = userIdChannelMapping.get(curUserId);
