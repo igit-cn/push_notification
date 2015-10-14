@@ -35,6 +35,7 @@
         "xiaomiPemBase" : "/Users/tianyuzhi/work/push_notification/trunk/data/xiaomi/",
         "xiaomiPemPattern" : "*.mmpp",
         "xiaomiPushMultipleMessagesUrl" : "https://api.xmpush.xiaomi.com/v2/multi_messages/aliases",
-        "xiaomiPushSingleMessageUrl" : "https://api.xmpush.xiaomi.com/v2/message/alias"
+        "xiaomiPushSingleMessageUrl" : "https://api.xmpush.xiaomi.com/v2/message/alias",
+        "androidUseRecommendPushTypes" : ["32","64","128","256","512"]
     }
 }

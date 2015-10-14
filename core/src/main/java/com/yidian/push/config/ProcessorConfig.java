@@ -2,12 +2,14 @@ package com.yidian.push.config;
 
 import com.yidian.push.data.HostPort;
 import com.yidian.push.data.Platform;
+import com.yidian.push.data.PushType;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.http.client.config.RequestConfig;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -57,6 +59,7 @@ public class ProcessorConfig {
     private String xiaomiPemPattern = "*.mmpp";
     private String xiaomiPushMultipleMessagesUrl = "https://api.xmpush.xiaomi.com/v2/multi_messages/aliases";
     private String xiaomiPushSingleMessageUrl = "https://api.xmpush.xiaomi.com/v2/message/alias";
+    private HashSet<PushType> androidUseRecommendPushTypes = null;
 
 
     public RequestConfig getRequestConfig() {
@@ -84,5 +87,12 @@ public class ProcessorConfig {
         else {
             return androidLoggerList;
         }
+    }
+
+    public boolean shouldUseRecommendPush(PushType pushType) {
+        if (null == androidUseRecommendPushTypes || !androidUseRecommendPushTypes.contains(pushType)) {
+            return false;
+        }
+        return true;
     }
 }

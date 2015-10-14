@@ -1,5 +1,6 @@
 package com.yidian.push.processor;
 
+import com.yidian.push.config.Config;
 import com.yidian.push.data.*;
 import com.yidian.push.push_request.PushRecord;
 import com.yidian.push.push_request.PushRequest;
@@ -32,7 +33,7 @@ public class AndroidProcessor {
     public static void processOne(PushRequest pushRequest) throws IOException {
         try {
             String pushType = pushRequest.getPushType();
-            if (PushType.isRecommendPush(pushType)) {
+            if (Config.getInstance().getProcessorConfig().shouldUseRecommendPush(PushType.getPushType(pushType))) {
                 processRecommend(pushRequest.getFileName());
             }
             else {
