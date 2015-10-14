@@ -17,7 +17,7 @@
         "socketReadTimeout" : 3,
         "APP_MAIN" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
         "NON_APP_X" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
-        "threadPoolSize" : 500,
+        "threadPoolSize" : 300,
         "inputDataPath" : "/tmp/",
         "outputDataPath" : "/tmp/output_path",
         "inputLookBackDays" : 7,
