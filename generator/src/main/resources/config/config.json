@@ -74,6 +74,7 @@
         "inactiveUserLookBackDays" : 4,
         "refreshTokenFrequencyInSeconds" : 600,
         "needSendNotification" : false,
+        "bucketIds" : [0,1,2,3,4],
         "xiaomiMaxNotificationNumber" : 3
 
     }
