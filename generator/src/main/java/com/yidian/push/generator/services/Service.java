@@ -2,10 +2,7 @@ package com.yidian.push.generator.services;
 
 import com.yidian.push.config.Config;
 import com.yidian.push.config.GeneratorConfig;
-import com.yidian.push.generator.gen.MySqlConnectionPool;
-import com.yidian.push.generator.gen.RedisConnectionPool;
-import com.yidian.push.generator.gen.Generator;
-import com.yidian.push.generator.gen.RefreshTokens;
+import com.yidian.push.generator.gen.*;
 import com.yidian.push.utils.FileLock;
 import com.yidian.push.utils.GsonFactory;
 import lombok.extern.log4j.Log4j;
@@ -33,6 +30,8 @@ public class Service implements Runnable {
         try {
             generatorConfig = Config.getInstance().getGeneratorConfig();
             log.info("generatorConfig is " + GsonFactory.getPrettyGson().toJson(generatorConfig));
+            // set the xiaomiMaxNotificationNumber in GenerateRequestFile.java
+            GenerateRequestFile.setXiaomiMaxNotificationNumber(generatorConfig.getXiaomiMaxNotificationNumber());
         } catch (IOException e) {
             e.printStackTrace();
         }

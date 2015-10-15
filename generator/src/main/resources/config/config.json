@@ -73,6 +73,8 @@
         "inactiveUserFilePrefix" : "inactive_users",
         "inactiveUserLookBackDays" : 4,
         "refreshTokenFrequencyInSeconds" : 600,
-        "needSendNotification" : false
+        "needSendNotification" : false,
+        "xiaomiMaxNotificationNumber" : 3
+
     }
 }

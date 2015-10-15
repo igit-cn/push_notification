@@ -69,6 +69,8 @@ public class GeneratorConfig {
     private int refreshTokenFrequencyInSeconds = 6000;
     private boolean needSendNotification = false;
     private Set<Integer> bucketIds = null;
+    // appid=xiaomi can show # of notifications at most
+    private int xiaomiMaxNotificationNumber = 2;
 
 
 

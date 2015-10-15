@@ -26,6 +26,12 @@ import java.util.*;
 @Log4j
 public class GenerateRequestFile {
     private static final LocalDateTime JAN_1_1970 = new LocalDateTime(1970, 1, 1, 0, 0);
+    private static volatile int xiaomiMaxNotificationNumber = 2;
+
+    public static void setXiaomiMaxNotificationNumber(int num) {
+        // TODO: get this number in the env is a better solution
+        xiaomiMaxNotificationNumber = num;
+    }
 
     public static String genRequestFileName(String host, int port, String table, String pushType) {
         String uuid = UUID.randomUUID().toString().replaceAll("-", "_");
@@ -42,7 +48,7 @@ public class GenerateRequestFile {
 
     public static int getNid(String table, int curNid, PushRecord pushRecord) {
         if (Platform.isAndroid(table) && AppId.XIAOMI.equals(pushRecord.getAppId())) {
-            return (curNid + 1) % 2;
+            return (curNid + 1) % xiaomiMaxNotificationNumber;
         }
         else {
             return (curNid + 1) % 5;
