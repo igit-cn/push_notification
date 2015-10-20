@@ -89,6 +89,9 @@ public class Generator {
             else if ("tier1".equals(factor) || "tier1-news".equals(factor)) {
                 return PushType.RECOMMEND_3;
             }
+            else if ("circle".equals(factor) || "circle-news".equals(factor)) {
+                return PushType.RECOMMEND_3;
+            }
         }
 
         return PushType.RECOMMEND_1;
@@ -153,6 +156,12 @@ public class Generator {
                                         }
                                         list.add(new UserPushRecord.DocId_PushType(docId, pushType));
                                     }
+                                    Collections.sort(list, new Comparator<UserPushRecord.DocId_PushType>() {
+                                        @Override
+                                        public int compare(UserPushRecord.DocId_PushType o1, UserPushRecord.DocId_PushType o2) {
+                                            return o1.pushType.getInt() - o2.pushType.getInt();
+                                        }
+                                    });
                                     UserPushRecord userPushRecord = new UserPushRecord(item.getUserId(), item.getPlatform(), item.getAppId(), list);
                                     userPushRecordLinkedBlockingQueue.add(userPushRecord);
                                 }
@@ -416,6 +425,10 @@ public class Generator {
                 String title = docIdTitleMapping.get(docId);
                 if (StringUtils.isNotEmpty(title)) {
                     docIdInfoMapping.get(docId).setTitle(title);
+                }
+                else {
+                    // remove the docid if it is not a valid one
+                    docIdInfoMapping.remove(docId);
                 }
             }
             for (String docId : docIdInfoMapping.keySet()) {

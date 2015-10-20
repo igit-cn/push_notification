@@ -9,7 +9,7 @@
         "maxQPS" : 800,
         "recommendURL" : "http://lc1.haproxy.yidian.com:8017/NewsRecommender/OfflineRecommendNewsHandler",
         "docIdInfoURL" : "http://a1.go2yd.com/Website/contents/content",
-        "docIdInfoBatchSize" : 1000,
+        "docIdInfoBatchSize" : 60,
         "httpConnectionDefaultMaxPerRoute" : 200,
         "httpConnectionMaxTotal" : 2000,
         "retryTimes" : 3,
