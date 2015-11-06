@@ -1,16 +1,28 @@
 package com.yidian.push.services;
 
 import com.yidian.push.config.Config;
+import com.yidian.push.config.PushHistoryConfig;
 import com.yidian.push.config.RecommendGeneratorConfig;
+import com.yidian.push.data.HostPort;
 import com.yidian.push.recommend_gen.Generator;
+import com.yidian.push.servlets.SlowGenerator;
 import com.yidian.push.utils.FileLock;
 import com.yidian.push.utils.GsonFactory;
 import com.yidian.push.utils.HttpConnectionUtils;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.joda.time.DateTime;
 
 import java.io.File;
@@ -61,22 +73,9 @@ public class Service implements Runnable {
     }
 
     public void gen() throws IOException, InterruptedException {
-        RecommendGeneratorConfig config = Config.getInstance().getRecommendGeneratorConfig();
-        HttpConnectionUtils.init(config.getHttpConnectionMaxTotal(), config.getHttpConnectionDefaultMaxPerRoute());
 
-        Generator generator = new Generator();
-        String inputFile = getInputFile(config);
-        String outputPath = getOutputPath(config);
-        log.info("input file:[" + inputFile + "], output dir:[" + outputPath + "]");
-        if (StringUtils.isEmpty(inputFile) || StringUtils.isEmpty(outputPath)) {
-            log.info("invalid input file or output path");
-            generator.clear();
-            //throw new RuntimeException("invalid input file or output path");
-        }
-        else {
-            generator.processFile(inputFile, outputPath);
-        }
     }
+
 
     @Override
     public void run() {
@@ -88,15 +87,6 @@ public class Service implements Runnable {
             e.printStackTrace();
         }
 
-
-//        try {
-//
-//            keepRunning = true;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            log.error("push notification generator init ...");
-//            throw new RuntimeException(e);
-//        }
 
         final Thread currentThread = Thread.currentThread();
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -113,25 +103,60 @@ public class Service implements Runnable {
                 }
             }
         });
-//        ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
-//        executor.scheduleAtFixedRate(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                } catch (Exception e) {
-//                    log.error("refresh tokens failed with exception : " + ExceptionUtils.getFullStackTrace(e));
-//                }
-//            }
-//        }, 0, generatorConfig.getRefreshTokenFrequencyInSeconds(), TimeUnit.SECONDS);
 
-//
-//        while(keepRunning) {
-//            try {
-//                Thread.sleep(sleepTime);
-//            } catch (InterruptedException e) {
-//                log.error("sleep failed...");
-//            }
-//        }
+
+        final Server server = new Server();
+
+        for (HostPort hostPort : config.getHostPortList()) {
+            Connector conn = new SelectChannelConnector();
+            conn.setHost(hostPort.getHost());
+            conn.setPort(hostPort.getPort());
+            server.addConnector(conn);
+        }
+        server.setGracefulShutdown(1000);
+
+
+        ServletContextHandler root = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        //TODO: add authorization filter here.
+        //root.addFilter(TestFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+        root.setContextPath("/push_service");
+        // set the max param size to java.lang.IllegalStateException: Form too large 337442>200000
+        // at org.eclipse.jetty.server.Request.extractParameters(Request.java:352)
+        root.addServlet(new ServletHolder(new SlowGenerator()), "/slow_generator/*");
+
+        HandlerList lists = new HandlerList();
+        lists.setHandlers(new Handler[] {root});
+
+        server.setHandler(lists);
+        try {
+            server.start();
+        } catch (Exception e) {
+            log.error("could not start the services" + ExceptionUtils.getFullStackTrace(e));
+        }
+
+
+        // run generator
+
+        try {
+            HttpConnectionUtils.init(config.getHttpConnectionMaxTotal(), config.getHttpConnectionDefaultMaxPerRoute());
+
+            Generator generator = new Generator();
+            String inputFile = getInputFile(config);
+            String outputPath = getOutputPath(config);
+            log.info("input file:[" + inputFile + "], output dir:[" + outputPath + "]");
+            if (StringUtils.isEmpty(inputFile) || StringUtils.isEmpty(outputPath)) {
+                log.info("invalid input file or output path");
+                generator.clear();
+                //throw new RuntimeException("invalid input file or output path");
+            } else {
+                generator.processFile(inputFile, outputPath);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -153,8 +178,6 @@ public class Service implements Runnable {
             System.out.println("One instance is already running, just quit.");
             System.exit(1);
         }
-        new Service().gen();
-//        Service service = new Service();
-//        service.run();
+        new Service().run();
     }
 }

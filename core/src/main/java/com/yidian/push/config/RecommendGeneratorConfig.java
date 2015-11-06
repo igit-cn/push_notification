@@ -1,11 +1,13 @@
 package com.yidian.push.config;
 
+import com.yidian.push.data.HostPort;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.http.client.config.RequestConfig;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,6 +17,8 @@ import java.util.Set;
 @Setter
 public class RecommendGeneratorConfig {
     private String lockFile = "/tmp/push_notification_recommend_generator.lck";
+    private List<HostPort> hostPortList = Arrays.asList(new HostPort("localhost", 8080));
+
     private String qpsURL = "http://dataplatform.yidian.com:4242/api/query?start=3m-ago&m=sum:prediction.default.qps.m1";
     private int qpsRefreshFrequencyInSeconds = 1;
     private int maxQPS = 800;
@@ -39,6 +43,7 @@ public class RecommendGeneratorConfig {
 
     private int titleMinLength = 7;
     private Set<Integer> buckets;
+    private int sleepTimeInSeconds = 10;
 
     public RequestConfig getRequestConfig() {
         return RequestConfig.custom()

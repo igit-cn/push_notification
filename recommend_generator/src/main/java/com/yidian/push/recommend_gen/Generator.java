@@ -7,7 +7,6 @@ import com.yidian.push.config.Config;
 import com.yidian.push.config.RecommendGeneratorConfig;
 import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushType;
-import com.yidian.push.utils.GsonFactory;
 import com.yidian.push.utils.HttpConnectionUtils;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.FileUtils;
@@ -28,6 +27,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Log4j
 public class Generator {
+    private static HashMap<Integer, Generator> INSTANCES = new HashMap<>();
+
     private LinkedBlockingQueue<RequestItem> requestItemLinkedBlockingQueue = new LinkedBlockingQueue<>();
     private ConcurrentMap<String, DocInfo> docIdInfoMapping = new ConcurrentHashMap<>();
     private ConcurrentMap<String, String> docIdDocIdMapping = new ConcurrentHashMap<>();
@@ -37,28 +38,53 @@ public class Generator {
     private RecommendGeneratorConfig config;
     private volatile boolean processHappened = false;
     private AtomicInteger recordToProcessNum = new AtomicInteger(0);
-    private Timer consumerTimer = new Timer("consumerTimer");
+    private Timer consumerTimer = null;
     private Timer refreshTimer = new Timer("refreshTimer");
     private AtomicInteger totalValidToProcessNumber = new AtomicInteger(0);
     private AtomicInteger totalValidProcessedNumber = new AtomicInteger(0);
 
+
+    private void startConsumer() {
+        if (null == consumerTimer) {
+            consumerTimer = new Timer("consumerTimer");
+            consumerTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        consumer();
+                    } catch (Exception e) {
+                        log.error("consumer Timer failed.");
+                    }
+                }
+            }, 0, 1000);
+            log.info("start the consumer");
+        }
+    }
+
+    private void stopConsumer() {
+        if (null != consumerTimer) {
+            consumerTimer.cancel();
+            consumerTimer = null;
+        }
+        log.info("stop the consumer");
+    }
+
+    public static synchronized void sleep(int timeInSeconds) throws InterruptedException {
+        for (Generator generator : INSTANCES.values()) {
+            generator.stopConsumer();
+            log.info("SLEEP# sleep seconds : " + timeInSeconds);
+            Thread.sleep(timeInSeconds * 1000);
+            log.info("SLEEP# done the sleep : " + timeInSeconds);
+            generator.startConsumer();
+        }
+    }
 
     public Generator() throws IOException {
         config = Config.getInstance().getRecommendGeneratorConfig();
         executorService = Executors.newFixedThreadPool(config.getThreadPoolSize());
 
         qpsGetter = new QPSGetter(config.getQpsURL());
-        consumerTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    consumer();
-                } catch (Exception e) {
-                    log.error("consumer Timer failed.");
-                }
-            }
-        }, 0, 1000);
-
+        startConsumer();
         refreshTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -70,6 +96,7 @@ public class Generator {
                 }
             }
         }, 0, config.getQpsRefreshFrequencyInSeconds() * 1000);
+        INSTANCES.put(this.hashCode(), this);
     }
 //
 //    private UserPushRecord parseResponse(JSONArray docList) {
@@ -307,8 +334,11 @@ public class Generator {
         requestItemLinkedBlockingQueue.clear();
         docIdDocIdMapping.clear();
         docIdInfoMapping.clear();
-        consumerTimer.cancel();
+        stopConsumer();
         refreshTimer.cancel();
+        if (INSTANCES.containsKey(this.hashCode())) {
+            INSTANCES.remove(this.hashCode());
+        }
     }
 
     public void safeClose(BufferedWriter bw) {

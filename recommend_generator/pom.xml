@@ -15,11 +15,23 @@
     <version>${project.parent.version}</version>
     <properties>
         <theMainClass></theMainClass>
+        <jetty.version>8.1.14.v20131031</jetty.version>
         <package_dir>${project.build.directory}/package</package_dir>
     </properties>
 
 
     <dependencies>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.yidian.push</groupId>
             <artifactId>core</artifactId>
