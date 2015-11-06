@@ -1,0 +1,31 @@
+{
+    "lockFile" : "/tmp/push_notification_request_recommend_generator.lck",
+    "pushRequestBaseDir" : "/Users/tianyuzhi/test/requests",
+    "requestBaseDir" : "/home/services/tianzy/test_generator/task",
+    "recommendGeneratorConfig" :{
+        "lockFile" : "/tmp/push_notification_recommend_generator.lck",
+        "hostPortList" : [
+            {"host": "localhost", "port": 9800},
+            {"host": "10.101.2.2", "port": 9800}
+        ],
+        "qpsURL" : "http://dataplatform.yidian.com:4242/api/query?start=3m-ago&m=sum:prediction.non_offline_qps.m1",
+        "qpsRefreshFrequencyInSeconds" : 1,
+        "maxQPS" : 800,
+        "recommendURL" : "http://lc1.haproxy.yidian.com:8017/NewsRecommender/OfflineRecommendNewsHandler",
+        "docIdInfoURL" : "http://a1.go2yd.com/Website/contents/content",
+        "docIdInfoBatchSize" : 60,
+        "httpConnectionDefaultMaxPerRoute" : 200,
+        "httpConnectionMaxTotal" : 2000,
+        "retryTimes" : 3,
+        "socketConnectTimeout" : 10,
+        "socketReadTimeout" : 3,
+        "APP_MAIN" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
+        "NON_APP_X" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
+        "threadPoolSize" : 100,
+        "inputDataPath" : "/tmp/",
+        "outputDataPath" : "/tmp/output_path",
+        "inputLookBackDays" : 7,
+        "outputLookBackTimes" : 3,
+        "titleMinLength" : 7
+    }
+}

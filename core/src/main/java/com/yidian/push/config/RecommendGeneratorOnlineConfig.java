@@ -1,5 +1,6 @@
 package com.yidian.push.config;
 
+import com.yidian.push.data.Environment;
 import com.yidian.push.data.HostPort;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
-public class RecommendGeneratorConfig {
+public class RecommendGeneratorOnlineConfig {
     private String lockFile = "/tmp/push_notification_recommend_generator.lck";
     private List<HostPort> hostPortList = Arrays.asList(new HostPort("localhost", 8080));
 
@@ -36,14 +37,30 @@ public class RecommendGeneratorConfig {
     private Set<String> NON_APP_X = new HashSet<>(Arrays.asList("hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"));
 
     private int consumerThreadPoolSize = 500;
+    private int pushThreadPoolSize = 50;
     private String inputDataPath = "";
     private String outputDataPath = "";
     private int inputLookBackDays = 7;
     private int outputLookBackTimes = 3;
 
+
     private int titleMinLength = 7;
     private Set<Integer> buckets;
     private int sleepTimeInSeconds = 10;
+    private String onlineAddTaskUrl = "http://push.yidian.com/task/add-task";
+    private String pushKey = "acf6dbe50dfa2c572f7fe13b699495d7";
+    private int recordToPushInOneSecond = 10000;
+    private int recordPushBatchSize = 50;
+    private Environment environment = Environment.RRODUCTION;
+
+
+    public boolean isTest() {
+        if (null!=environment && environment == Environment.RRODUCTION) {
+            return false;
+        }
+        return true;
+    }
+
 
     public RequestConfig getRequestConfig() {
         return RequestConfig.custom()

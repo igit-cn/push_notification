@@ -23,6 +23,7 @@ public class Config {
     private LoggingConfig loggingConfig = null;
     private PushHistoryConfig pushHistoryConfig = null;
     private RecommendGeneratorConfig recommendGeneratorConfig = null;
+    private RecommendGeneratorOnlineConfig recommendGeneratorOnlineConfig = null;
     //
     private static String CONFIG_FILE = null;
     private static Config config;

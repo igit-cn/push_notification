@@ -18,6 +18,7 @@
         <module>push_history</module>
         <module>statistics</module>
         <module>recommend_generator</module>
+        <module>recommend_generator_online</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
