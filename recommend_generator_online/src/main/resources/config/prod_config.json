@@ -30,5 +30,9 @@
         "buckets" : [0],
         "sleepTimeInSeconds" : 10,
         "onlineAddTaskUrl" : "http://push.yidian.com/task/add-task"
+        "pushKey" : "acf6dbe50dfa2c572f7fe13b699495d7";
+        "recordToPushInOneSecond" : 10000,
+        "recordPushBatchSize" : 50,
+        "environment" : "production"
     }
 }
