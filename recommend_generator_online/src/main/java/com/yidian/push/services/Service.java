@@ -167,9 +167,9 @@ public class Service implements Runnable {
             Config.setCONFIG_FILE(configFile);
         } else {
            // Config.setCONFIG_FILE("generator/src/main/resources/config/prod_config.json");
-            Config.setCONFIG_FILE("recommend_generator/src/main/resources/config/config.json");
-            System.setProperty("log4j.configuration", "src/main/resources/config/log4j_debug.properties");
-            PropertyConfigurator.configure("recommend_generator/src/main/resources/config/log4j_debug.properties");
+            Config.setCONFIG_FILE("recommend_generator_online/src/main/resources/config/config.json");
+            System.setProperty("log4j.configuration", "recommend_generator_online/src/main/resources/config/log4j_debug.properties");
+            PropertyConfigurator.configure("recommend_generator_online/src/main/resources/config/log4j_debug.properties");
            // Logger.getRootLogger().setLevel(Level.DEBUG);
         }
         System.out.println(GsonFactory.getDefaultGson().toJson(Config.getInstance().getRecommendGeneratorConfig()));

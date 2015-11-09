@@ -87,24 +87,6 @@ public class Service implements Runnable {
             e.printStackTrace();
         }
 
-
-        final Thread currentThread = Thread.currentThread();
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                keepRunning = false;
-                log.info("receive kill signal ...");
-                try {
-                    currentThread.join();
-
-                    log.info("shutdown the thread pools");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-
         final Server server = new Server();
 
         for (HostPort hostPort : config.getHostPortList()) {
@@ -135,6 +117,30 @@ public class Service implements Runnable {
         }
 
 
+        final Thread currentThread = Thread.currentThread();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                keepRunning = false;
+                log.info("receive kill signal ...");
+                try {
+                    currentThread.join();
+                    server.stop();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    server.join();
+                } catch (Exception e) {
+                    log.error("", e);
+                }
+
+                log.info("Server exit safely!");
+            }
+        });
+
         // run generator
 
         try {
@@ -150,6 +156,8 @@ public class Service implements Runnable {
                 //throw new RuntimeException("invalid input file or output path");
             } else {
                 generator.processFile(inputFile, outputPath);
+                log.info("shut down the process...");
+                keepRunning = false;
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
