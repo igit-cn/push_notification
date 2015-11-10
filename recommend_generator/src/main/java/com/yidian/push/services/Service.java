@@ -124,7 +124,6 @@ public class Service implements Runnable {
                 keepRunning = false;
                 log.info("receive kill signal ...");
                 try {
-                    currentThread.join();
                     server.stop();
                 } catch (InterruptedException e) {
                     e.printStackTrace();

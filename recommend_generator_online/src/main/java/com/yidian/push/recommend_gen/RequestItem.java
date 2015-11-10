@@ -24,7 +24,7 @@ public class RequestItem {
     }
 
     public boolean isValid() {
-        return StringUtils.isNotEmpty(userId) && (null != platform) && (num > 0);
+        return StringUtils.isNotEmpty(userId)  && (num > 0);
     }
 
     public static class Builder {

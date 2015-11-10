@@ -160,7 +160,6 @@ public class Generator {
                                 Map<String, Object> params = new HashMap<>(5);
                                 params.put("userid", item.getUserId());
                                 params.put("num", item.getNum());
-                                params.put("model", item.getModel());
                                 String jsonStr = HttpConnectionUtils.getGetResult(url, params, config.getRequestConfig());
                                 //System.out.println(GsonFactory.getDefaultGson().toJson(item) + "; response:" + jsonStr);
                                 // TODO: parse the reply
@@ -222,7 +221,7 @@ public class Generator {
     }
 
 
-    private RequestItem parseLine(String line) {
+    private RequestItem parseLine2(String line) {
         if (null == line) {
             return null;
         }
@@ -239,6 +238,20 @@ public class Generator {
             model = model.trim().replaceAll(" +", "+");
             int number = 20;
             return new RequestItem(userId, model, number, platform, appId);
+        }
+        return null;
+    }
+
+    private RequestItem parseLine(String line) {
+        if (null == line) {
+            return null;
+        }
+        String[] arr = line.split(",", 4);
+        if (2 == arr.length) {
+            String userId = arr[0];
+            String appId = arr[1];
+            int number = 20;
+            return new RequestItem(userId, "", number, null, appId);
         }
         return null;
     }
@@ -263,13 +276,9 @@ public class Generator {
 
     // this method can process one file at one time.
 
-    public void processFile(String file, String outputPath) throws InterruptedException, IOException {
+    public void processFile(String file) throws InterruptedException, IOException {
         if (processHappened) {
             throw new RuntimeException("process happened, new one instance to process.");
-        }
-        File outputPathFile = new File(outputPath);
-        if (!outputPathFile.isDirectory()) {
-            FileUtils.forceMkdir(new File(outputPath));
         }
         processHappened = true;
         Charset UTF_8 = StandardCharsets.UTF_8;
@@ -443,12 +452,14 @@ public class Generator {
                 docs.add(item);
             }
             jsonObject.put("docs", docs);
+            recordsToPushList.add(jsonObject);
         }
 
         int index = 0;
         while (index < length) {
             int start = index;
-            int end = (index + batch) > length ? length : index + batch;
+            int end = (index + batch) >= length ? length : index + batch;
+            index += batch;
             List<JSONObject> subList = recordsToPushList.subList(start, end);
             Map<String, Object> params = new HashMap<>();
             //type=real_time&recommend_doc_type=yidian&sound=&key=acf6dbe50dfa2c572f7fe13b699495d7&test=
@@ -477,6 +488,7 @@ public class Generator {
                     timesToRetry --;
                 }
             }
+            totalPushedNumber.addAndGet(end-start);
         }
     }
 
