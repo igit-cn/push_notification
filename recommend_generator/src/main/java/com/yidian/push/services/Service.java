@@ -157,14 +157,14 @@ public class Service implements Runnable {
             } else {
                 generator.processFile(inputFile, outputPath);
                 log.info("shut down the process...");
-                keepRunning = false;
+
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        System.exit(0);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -176,7 +176,7 @@ public class Service implements Runnable {
         } else {
            // Config.setCONFIG_FILE("generator/src/main/resources/config/prod_config.json");
             Config.setCONFIG_FILE("recommend_generator/src/main/resources/config/config.json");
-            System.setProperty("log4j.configuration", "src/main/resources/config/log4j_debug.properties");
+            System.setProperty("log4j.configuration", "recommend_generator/src/main/resources/config/log4j_debug.properties");
             PropertyConfigurator.configure("recommend_generator/src/main/resources/config/log4j_debug.properties");
            // Logger.getRootLogger().setLevel(Level.DEBUG);
         }
