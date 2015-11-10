@@ -476,6 +476,7 @@ public class Generator {
                     String response = HttpConnectionUtils.getPostResult(config.getOnlineAddTaskUrl(), params, config.getRequestConfig());
                     JSONObject json = JSON.parseObject(response);
                     if (null != json && "0".equals(json.getString("code"))) {
+                        log.info(response);
                         break;
                     } else {
                         if (null != json) {

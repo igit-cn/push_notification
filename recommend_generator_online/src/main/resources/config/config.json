@@ -33,6 +33,6 @@
         "pushKey" : "acf6dbe50dfa2c572f7fe13b699495d7",
         "recordToPushInOneSecond" : 10000,
         "recordPushBatchSize" : 50,
-        "environment" : "production"
+        "environment" : "test"
     }
 }
