@@ -155,7 +155,8 @@ public class ZionPoolUtil {
         int batchSize = config.getRedisUpdateBatchSize();
         int keepRecordSize = config.getRedisKeepRecordSize();
         //addPushHistoryRecords(uidRecordList, batchSize, keepRecordSize);
-        addPushHistoryRecords2(uidRecordList, batchSize, keepRecordSize);
+        //addPushHistoryRecords2(uidRecordList, batchSize, keepRecordSize);
+        addPushHistoryRecords3(uidRecordList, batchSize, keepRecordSize);
     }
 
     public static Map<String, Long> getRecordLength(List<String> keyList, int batchQuerySize) throws IOException {
@@ -375,6 +376,123 @@ public class ZionPoolUtil {
                     pipeline.syncAndReturnAll();
                     //System.out.println(GsonFactory.getNonPrettyGson().toJson(res));
                 }
+            }
+        } catch (Exception e) {
+            log.error("write push history failed with exception: " + ExceptionUtils.getFullStackTrace(e));
+        } finally {
+            if (jedis != null) {
+                try {
+                    log.debug("try to return the jedis client in addPushHistoryRecords " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                    jedis.close();
+                } catch (Exception e) {
+                    // ignore
+                    log.error("failed to return the jedis client in addPushHistoryRecords "  + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                }
+            }
+        }
+
+    }
+
+
+    public static Map<String, String> getRecordsWithMGet(List<String> keyList, int batchQuerySize) throws IOException {
+        if (!isInitialized) {
+            init();
+        }
+        Jedis jedis = null;
+
+        int numKeys = keyList.size();
+        Map<String, String> keyValueMap = new HashMap<>(numKeys);
+
+        try {
+            jedis = zionpool.getClient();
+            int idx = 0;
+            while (idx < numKeys) {
+                int subStart = idx;
+                int subEnd = idx + batchQuerySize >= numKeys ? numKeys : idx + batchQuerySize;
+                List<String> subList = keyList.subList(subStart, subEnd);
+                List<String> objects = jedis.mget(subList.toArray(new String[0]));
+                if (null != objects && objects.size() == subEnd - subStart) {
+                    int keyIdx = subStart;
+                    for (String value : objects) {
+                        keyValueMap.put(keyList.get(keyIdx), value);
+                        keyIdx++;
+                    }
+                }
+                idx = subEnd;
+            }
+        } catch (Exception e) {
+            log.error("get push history length with exception: " + ExceptionUtils.getFullStackTrace(e));
+        } finally {
+            if (jedis != null) {
+                try {
+                    log.debug("try to return the jedis client in getRecordLength " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                    jedis.close();
+                } catch (Exception e) {
+                    //ignore
+                    log.error("failed to return the jedis client in getRecordLength " + jedis.getClient().getHost() + ":" + jedis.getClient().getPort());
+                }
+            }
+        }
+        return keyValueMap;
+    }
+    // with mget/mset
+    public static void addPushHistoryRecords3(List<String> uidRecordList, int batchQuerySize, int keepRecordSize) throws IOException {
+        if (!isInitialized) {
+            init();
+        }
+        Jedis jedis = null;
+
+        int numKeys = uidRecordList.size();
+        try {
+            List<String> keyList = new ArrayList<>(numKeys);
+            List<String> valueList = new ArrayList<>(numKeys);
+            for (String uidRecord : uidRecordList) {
+                String[] arr = uidRecord.split(SEPARATOR);
+                if (arr.length != 2) {
+                    continue;
+                }
+                String key = arr[0];
+                String value = arr[1];
+                keyList.add(key);
+                valueList.add(value);
+            }
+            // get push history length
+            Map<String, String> curKeyValues = getRecordsWithMGet(keyList, batchQuerySize);
+            // cal the new key values
+            List<String> newKeyValues = new ArrayList<>(numKeys* 2);
+            for (int idx = 0; idx < numKeys; idx++) {
+                String key = keyList.get(idx);
+                String value = valueList.get(idx);
+                String curValue = curKeyValues.get(key);
+                newKeyValues.add(key);
+                if (StringUtils.isEmpty(curValue)) {
+                    newKeyValues.add(value);
+                }
+                else {
+                    List<String> arr = Arrays.asList(curValue.split(SEPARATOR));
+                    String newVal;
+                    if (arr.size() >= keepRecordSize) {
+                        newVal = StringUtils.join(arr, SEPARATOR, 0, keepRecordSize - 1);
+                    } else {
+                        newVal = curValue;
+                    }
+                    if (StringUtils.isEmpty(newVal)) {
+                        newVal = value;
+                    } else {
+                        newVal = new StringBuilder(value).append(SEPARATOR).append(newVal).toString();
+                    }
+                    newKeyValues.add(newVal);
+                }
+            }
+            // update
+            jedis = zionpool.getClient();
+            int idx = 0;
+            while (idx < numKeys) {
+                int subStart = 2 * idx;
+                idx = idx + batchQuerySize >= numKeys ? numKeys : idx + batchQuerySize;
+                int subEnd = 2* idx;
+                List<String> subList = newKeyValues.subList(subStart, subEnd);
+                jedis.mset(subList.toArray(new String[0]));
             }
         } catch (Exception e) {
             log.error("write push history failed with exception: " + ExceptionUtils.getFullStackTrace(e));
