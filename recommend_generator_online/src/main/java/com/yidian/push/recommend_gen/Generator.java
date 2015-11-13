@@ -106,7 +106,8 @@ public class Generator {
             @Override
             public void run() {
                 try {
-                    pushRecords();
+                    //pushRecords();
+                    push();
                 }
                 catch (Exception e) {
                     log.error("push failed with exception " + ExceptionUtils.getFullStackTrace(e));
@@ -154,6 +155,7 @@ public class Generator {
                     consumerExecutorService.submit(new Runnable() {
                         @Override
                         public void run() {
+                            boolean hasResult = false;
                             try {
                                 recordToProcessNum.decrementAndGet();
                                 String url = config.getRecommendURL();
@@ -203,12 +205,16 @@ public class Generator {
                                     });
                                     UserPushRecord userPushRecord = new UserPushRecord(item.getUserId(), item.getPlatform(), item.getAppId(), list);
                                     userPushRecordLinkedBlockingQueue.add(userPushRecord);
+                                    hasResult = true;
                                 } else {
                                     log.info("NO RECOMMEND DOC for user: " + item.getUserId());
                                 }
                             } catch (Exception e) {
                                 log.error("failed..." + ExceptionUtils.getFullStackTrace(e));
                             } finally {
+                                if (hasResult) {
+                                    totalPushedNumber.incrementAndGet();
+                                }
                                 totalValidProcessedNumber.incrementAndGet();
                             }
                         }
@@ -438,6 +444,7 @@ public class Generator {
             return;
         }
 
+        log.info("got " + length + " of records to push");
         List<JSONObject> recordsToPushList = new ArrayList<>(length);
         for (UserPushRecord pushRecord : list) {
             JSONObject jsonObject = new JSONObject();
@@ -489,6 +496,7 @@ public class Generator {
                     timesToRetry --;
                 }
             }
+            log.info("pushed " + length + " of records");
             totalPushedNumber.addAndGet(end-start);
         }
     }

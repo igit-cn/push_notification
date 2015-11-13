@@ -144,6 +144,7 @@ public class XiaomiPush {
             aps.put("alert", xiaomiMessage.getDescription());
             aps.put("badge", xiaomiMessage.getBadge());
             aps.put("sound", xiaomiMessage.getSound());
+            aps.put("title", xiaomiMessage.getTitle());
             payload.put("aps", aps);
             payload.put("rid", xiaomiMessage.getDocId());
             payload.put("rtype", xiaomiMessage.getResourceType().toString());
@@ -246,6 +247,7 @@ public class XiaomiPush {
         aps.put("alert", xiaomiMessage.getDescription());
         aps.put("badge", xiaomiMessage.getBadge());
         aps.put("sound", xiaomiMessage.getSound());
+        aps.put("title", xiaomiMessage.getTitle());
         payload.put("aps", aps);
         payload.put("rid", xiaomiMessage.getDocId());
         payload.put("rtype", xiaomiMessage.getResourceType().toString());

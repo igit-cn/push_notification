@@ -112,7 +112,6 @@ public class Service implements Runnable {
         }
 
 
-        final Thread currentThread = Thread.currentThread();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
