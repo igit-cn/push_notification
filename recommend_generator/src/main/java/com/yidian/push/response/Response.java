@@ -6,7 +6,7 @@ import lombok.Setter;
  * Created by yidianadmin on 15-4-27.
  */
 @Setter
-public class SlowResponse {
+public class Response {
     private int code = 0;
     private String status = null;
     private String description = null;

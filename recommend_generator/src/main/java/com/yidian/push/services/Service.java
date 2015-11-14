@@ -5,6 +5,7 @@ import com.yidian.push.config.PushHistoryConfig;
 import com.yidian.push.config.RecommendGeneratorConfig;
 import com.yidian.push.data.HostPort;
 import com.yidian.push.recommend_gen.Generator;
+import com.yidian.push.servlets.PushRecommend;
 import com.yidian.push.servlets.SlowGenerator;
 import com.yidian.push.utils.FileLock;
 import com.yidian.push.utils.GsonFactory;
@@ -105,9 +106,20 @@ public class Service implements Runnable {
         // set the max param size to java.lang.IllegalStateException: Form too large 337442>200000
         // at org.eclipse.jetty.server.Request.extractParameters(Request.java:352)
         root.addServlet(new ServletHolder(new SlowGenerator()), "/slow_generator/*");
+        root.addServlet(new ServletHolder(new PushRecommend()), "/push_recommend/*");
 
         HandlerList lists = new HandlerList();
         lists.setHandlers(new Handler[] {root});
+
+
+
+        // run generator
+
+        try {
+            HttpConnectionUtils.init(config.getHttpConnectionMaxTotal(), config.getHttpConnectionDefaultMaxPerRoute());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         server.setHandler(lists);
         try {
@@ -140,30 +152,7 @@ public class Service implements Runnable {
             }
         });
 
-        // run generator
 
-        try {
-            HttpConnectionUtils.init(config.getHttpConnectionMaxTotal(), config.getHttpConnectionDefaultMaxPerRoute());
-
-            Generator generator = new Generator();
-            String inputFile = getInputFile(config);
-            String outputPath = getOutputPath(config);
-            log.info("input file:[" + inputFile + "], output dir:[" + outputPath + "]");
-            if (StringUtils.isEmpty(inputFile) || StringUtils.isEmpty(outputPath)) {
-                log.info("invalid input file or output path");
-                generator.clear();
-                //throw new RuntimeException("invalid input file or output path");
-            } else {
-                generator.processFile(inputFile, outputPath);
-                log.info("shut down the process...");
-
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.exit(0);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {

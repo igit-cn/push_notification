@@ -2,7 +2,8 @@ package com.yidian.push.servlets;
 
 import com.yidian.push.config.Config;
 import com.yidian.push.recommend_gen.Generator;
-import com.yidian.push.response.SlowResponse;
+import com.yidian.push.recommend_gen.OnlineGenerator;
+import com.yidian.push.response.Response;
 import com.yidian.push.util.HttpHelper;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
@@ -20,7 +21,7 @@ import java.io.IOException;
 public class SlowGenerator extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        SlowResponse recordResponse = new SlowResponse();
+        Response recordResponse = new Response();
         String sleepTime = req.getParameter("sleep_time");
         int timeInSeconds = Config.getInstance().getRecommendGeneratorConfig().getSleepTimeInSeconds();
         if (StringUtils.isNotEmpty(sleepTime)) {
@@ -40,6 +41,7 @@ public class SlowGenerator extends HttpServlet {
         try {
             log.info("got sleep request");
             Generator.sleep(timeInSeconds);
+            OnlineGenerator.sleep(timeInSeconds);
             log.info("done the sleep request");
         } catch (InterruptedException e) {
             e.printStackTrace();
