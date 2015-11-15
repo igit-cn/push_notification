@@ -89,6 +89,10 @@ public class Service implements Runnable {
         }
 
         final Server server = new Server();
+        QueuedThreadPool threadPool = new QueuedThreadPool();
+        threadPool.setMinThreads(10);
+        threadPool.setMaxThreads(10);
+        server.setThreadPool(threadPool);
 
         for (HostPort hostPort : config.getHostPortList()) {
             Connector conn = new SelectChannelConnector();

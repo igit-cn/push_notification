@@ -138,5 +138,10 @@ public class PushRecommend extends HttpServlet {
             log.info("run online recommend");
             runOnlineRecommend();
         }
+        else {
+            recordResponse.markFailure();
+            recordResponse.setDescription("unknown task");
+            HttpHelper.setResponseParameters(resp, recordResponse);
+        }
     }
 }

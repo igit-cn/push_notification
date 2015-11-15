@@ -5,8 +5,7 @@
     "recommendGeneratorConfig" :{
         "lockFile" : "/tmp/push_notification_recommend_generator.lck",
         "hostPortList" : [
-            {"host": "localhost", "port": 9800},
-            {"host": "10.101.2.2", "port": 9800}
+            {"host": "localhost", "port": 9800}
         ],
         "qpsURL" : "http://dataplatform.yidian.com:4242/api/query?start=3m-ago&m=sum:prediction.non_offline_qps.m1",
         "qpsRefreshFrequencyInSeconds" : 1,
@@ -21,11 +20,20 @@
         "socketReadTimeout" : 3,
         "APP_MAIN" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
         "NON_APP_X" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
-        "threadPoolSize" : 100,
-        "inputDataPath" : "/tmp/",
-        "outputDataPath" : "/tmp/output_path",
+        "consumerThreadPoolSize" : 200,
+        "pushThreadPoolSize" : 50,
+        "inputDataPath" : "/Users/tianyuzhi/recommend_push_users/pushable_users",
+        "onlineInputDataPath" : "/Users/tianyuzhi/recommend_push_users/online_push_users",
+        "outputDataPath" : "/Users/tianyuzhi/recommend_push_users/push_data",
         "inputLookBackDays" : 7,
         "outputLookBackTimes" : 3,
-        "titleMinLength" : 7
+        "titleMinLength" : 7,
+        "buckets" : [0],
+        "sleepTimeInSeconds" : 10,
+        "onlineAddTaskUrl" : "http://10.101.1.220/task/add-task",
+        "pushKey" : "acf6dbe50dfa2c572f7fe13b699495d7",
+        "recordToPushInOneSecond" : 10000,
+        "recordPushBatchSize" : 50,
+        "environment" : "production"
     }
 }

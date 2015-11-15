@@ -24,6 +24,7 @@
         "consumerThreadPoolSize" : 200,
         "pushThreadPoolSize" : 50,
         "inputDataPath" : "/ssd1/worker/push_notification/recommend_push_users/pushable_users",
+        "onlineInputDataPath" : "/ssd1/worker/push_notification/recommend_push_users/online_push_users",
         "outputDataPath" : "/ssd1/worker/push_notification/recommend_push_users/push_data",
         "inputLookBackDays" : 7,
         "outputLookBackTimes" : 3,

@@ -143,8 +143,9 @@ public class OnlineGenerator {
     public void consumer() {
         log.info("consumer recordToProcessNum size is " + requestItemLinkedBlockingQueue.size());
         if (!requestItemLinkedBlockingQueue.isEmpty()) {
-            int availableQps = config.getMaxQPS() - qpsGetter.getQps();
-            log.info("current available qps is :" + availableQps);
+            int runningInstances = RunningInstance.getRunningNumber();
+            int availableQps = (config.getMaxQPS() - qpsGetter.getQps()) / runningInstances;
+            log.info("current available qps is :" + availableQps + ", current running instances is:" + runningInstances);
             if (availableQps <= 0) {
                 return;
             }
@@ -353,6 +354,7 @@ public class OnlineGenerator {
         pushExecutorServices.awaitTermination(3000, TimeUnit.SECONDS);
         stopConsumer();
         refreshTimer.cancel();
+        pushTimer.cancel();
 
         userPushRecordLinkedBlockingQueue.clear();
         requestItemLinkedBlockingQueue.clear();
