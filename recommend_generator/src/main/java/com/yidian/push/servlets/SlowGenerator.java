@@ -38,14 +38,44 @@ public class SlowGenerator extends HttpServlet {
 
         HttpHelper.setResponseParameters(resp, recordResponse);
         // TODO: generator .SlowALL
+        log.info("got sleep request");
+        final int finalTimeInSeconds = timeInSeconds;
+        long start = System.currentTimeMillis();
+
+        Thread threadA = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Generator.sleep(finalTimeInSeconds);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Thread threadB = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    OnlineGenerator.sleep(finalTimeInSeconds);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        threadA.start();
+        threadB.start();
         try {
-            log.info("got sleep request");
-            Generator.sleep(timeInSeconds);
-            OnlineGenerator.sleep(timeInSeconds);
-            log.info("done the sleep request");
+            threadA.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        try {
+            threadB.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        log.info("done the sleep request");
+        long end = System.currentTimeMillis();
+        log.info("ROUND_TIME: runBatchRecommend 运行时间：" + (end - start) / (1000.0 * 60) + " minute");
     }
 }

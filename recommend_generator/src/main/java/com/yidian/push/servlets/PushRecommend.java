@@ -59,6 +59,7 @@ public class PushRecommend extends HttpServlet {
 
     public void runBatchRecommend() {
         Generator generator = null;
+        long start = System.currentTimeMillis();
         try {
             generator = new Generator();
             RecommendGeneratorConfig config = Config.getInstance().getRecommendGeneratorConfig();
@@ -78,15 +79,17 @@ public class PushRecommend extends HttpServlet {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (null != generator)
-            {
+            if (null != generator) {
                 generator.clear();
             }
+            long end = System.currentTimeMillis();
+            log.info("ROUND_TIME: runBatchRecommend 运行时间：" + (end - start)/ (1000.0 * 60) + " minute");
         }
     }
 
     public void runOnlineRecommend() {
         OnlineGenerator generator = null;
+        long start = System.currentTimeMillis();
         try {
             generator = new OnlineGenerator();
             RecommendGeneratorConfig config = Config.getInstance().getRecommendGeneratorConfig();
@@ -111,6 +114,8 @@ public class PushRecommend extends HttpServlet {
                     // ignore
                 }
             }
+            long end = System.currentTimeMillis();
+            log.info("ROUND_TIME: runOnlineRecommend 运行时间：" + (end - start)/ (1000.0 * 60) + " minute");
         }
     }
 
@@ -118,10 +123,13 @@ public class PushRecommend extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Response recordResponse = new Response();
         String task = req.getParameter("task");
+        log.info("RECOMMEND_TASK: " + task);
         int runningInstances = RunningInstance.getRunningNumber();
-        if (runningInstances > 2) {
+        if (runningInstances >= 2) {
             recordResponse.markFailure();
             recordResponse.setDescription("there already 2 running instances, just skip this request.");
+            HttpHelper.setResponseParameters(resp, recordResponse);
+            return;
         }
 
         if ("batch_recommend".equals(task)) {

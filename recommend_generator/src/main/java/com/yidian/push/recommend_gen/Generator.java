@@ -8,6 +8,7 @@ import com.yidian.push.config.RecommendGeneratorConfig;
 import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushType;
 import com.yidian.push.utils.HttpConnectionUtils;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,6 +29,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Log4j
 public class Generator {
     private static ConcurrentHashMap<Integer, Generator> INSTANCES = new ConcurrentHashMap<>();
+    public static int getRunningInstancesNumber() {
+        return INSTANCES.size();
+    }
 
     private LinkedBlockingQueue<RequestItem> requestItemLinkedBlockingQueue = new LinkedBlockingQueue<>();
     private ConcurrentMap<String, DocInfo> docIdInfoMapping = new ConcurrentHashMap<>();

@@ -5,6 +5,7 @@ import com.yidian.push.config.PushHistoryConfig;
 import com.yidian.push.config.RecommendGeneratorConfig;
 import com.yidian.push.data.HostPort;
 import com.yidian.push.recommend_gen.Generator;
+import com.yidian.push.servlets.GetRunningInstances;
 import com.yidian.push.servlets.PushRecommend;
 import com.yidian.push.servlets.SlowGenerator;
 import com.yidian.push.utils.FileLock;
@@ -35,49 +36,6 @@ import java.io.IOException;
 @Log4j
 public class Service implements Runnable {
     private static volatile boolean keepRunning = false;
-
-    public String getInputFile(RecommendGeneratorConfig config)
-    {
-        String inputPath = config.getInputDataPath();
-        int lookBackDay = config.getInputLookBackDays();
-        for (int i = 0; i < lookBackDay; i ++) {
-            String day = DateTime.now().minusDays(i).toString("yyyy-MM-dd");
-            String fileName = inputPath + "/" + day;
-            File file = new File(fileName);
-            if (file.exists() && file.isFile()) {
-                log.info("get input file :" + fileName);
-                return fileName;
-            }
-            else {
-                log.info("input file :" + fileName + " does not exist");
-            }
-        }
-        return null;
-    }
-
-    public String getOutputPath(RecommendGeneratorConfig config) {
-        String outputPath = config.getOutputDataPath();
-        String day = DateTime.now().toString("yyyy-MM-dd");
-        int times = config.getOutputLookBackTimes();
-        for (int i = 0; i < times; i ++) {
-            String dirName = outputPath + "/" + day + "_" + i;
-            File file = new File(dirName);
-            if (!file.exists()) {
-                log.info("get output dir:" + dirName);
-                return dirName;
-            }
-            else {
-                log.info("output dir " + dirName + " already exists");
-            }
-        }
-        return null;
-    }
-
-    public void gen() throws IOException, InterruptedException {
-
-    }
-
-
     @Override
     public void run() {
         RecommendGeneratorConfig config = null;
@@ -90,8 +48,8 @@ public class Service implements Runnable {
 
         final Server server = new Server();
         QueuedThreadPool threadPool = new QueuedThreadPool();
-        threadPool.setMinThreads(10);
-        threadPool.setMaxThreads(10);
+        threadPool.setMinThreads(100);
+        threadPool.setMaxThreads(200);
         server.setThreadPool(threadPool);
 
         for (HostPort hostPort : config.getHostPortList()) {
@@ -102,6 +60,12 @@ public class Service implements Runnable {
         }
         server.setGracefulShutdown(1000);
 
+        try {
+            HttpConnectionUtils.init(config.getHttpConnectionMaxTotal(), config.getHttpConnectionDefaultMaxPerRoute());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         ServletContextHandler root = new ServletContextHandler(ServletContextHandler.SESSIONS);
         //TODO: add authorization filter here.
@@ -111,23 +75,15 @@ public class Service implements Runnable {
         // at org.eclipse.jetty.server.Request.extractParameters(Request.java:352)
         root.addServlet(new ServletHolder(new SlowGenerator()), "/slow_generator/*");
         root.addServlet(new ServletHolder(new PushRecommend()), "/push_recommend/*");
+        root.addServlet(new ServletHolder(new GetRunningInstances()), "/get_running/*");
 
         HandlerList lists = new HandlerList();
         lists.setHandlers(new Handler[] {root});
 
-
-
-        // run generator
-
-        try {
-            HttpConnectionUtils.init(config.getHttpConnectionMaxTotal(), config.getHttpConnectionDefaultMaxPerRoute());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         server.setHandler(lists);
         try {
             server.start();
+            log.info("server started...");
         } catch (Exception e) {
             log.error("could not start the services" + ExceptionUtils.getFullStackTrace(e));
         }

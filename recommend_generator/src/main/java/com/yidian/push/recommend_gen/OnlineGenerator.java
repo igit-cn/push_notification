@@ -10,6 +10,7 @@ import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushType;
 import com.yidian.push.utils.GsonFactory;
 import com.yidian.push.utils.HttpConnectionUtils;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +31,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Log4j
 public class OnlineGenerator {
     private static HashMap<Integer, OnlineGenerator> INSTANCES = new HashMap<>();
-
+    public static int getRunningInstancesNumber() {
+        return INSTANCES.size();
+    }
     private LinkedBlockingQueue<RequestItem> requestItemLinkedBlockingQueue = new LinkedBlockingQueue<>();
     private ConcurrentMap<String, DocInfo> docIdInfoMapping = new ConcurrentHashMap<>();
     private ConcurrentMap<String, String> docIdDocIdMapping = new ConcurrentHashMap<>();
@@ -214,7 +217,7 @@ public class OnlineGenerator {
                             } catch (Exception e) {
                                 log.error("failed..." + ExceptionUtils.getFullStackTrace(e));
                             } finally {
-                                if (hasResult) {
+                                if (!hasResult) {
                                     totalPushedNumber.incrementAndGet();
                                 }
                                 totalValidProcessedNumber.incrementAndGet();
