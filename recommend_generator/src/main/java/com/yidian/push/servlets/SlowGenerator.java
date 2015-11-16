@@ -76,6 +76,6 @@ public class SlowGenerator extends HttpServlet {
         }
         log.info("done the sleep request");
         long end = System.currentTimeMillis();
-        log.info("ROUND_TIME: runBatchRecommend 运行时间：" + (end - start) / (1000.0 * 60) + " minute");
+        log.info("ROUND_TIME: slowGenerator elapsed time：" + (end - start) / (1000.0 * 60) + " minute");
     }
 }

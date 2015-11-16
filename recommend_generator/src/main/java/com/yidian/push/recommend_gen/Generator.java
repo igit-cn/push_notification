@@ -439,8 +439,9 @@ public class Generator {
                 }
 
             }
+            log.info("generate all the data file.");
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             safeClose(appxIOSWriter);
