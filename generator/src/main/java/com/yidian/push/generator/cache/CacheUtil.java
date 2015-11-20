@@ -113,7 +113,7 @@ public class CacheUtil {
     public static List<Long> getUserSInFile(String file) {
         // TODO : currently the user id is saved as int, future it should be long
         FileChannel fileChannel = null;
-        List<Long> result = null;
+        List<Long> result = new ArrayList<>();
         // List<Integer> tmpList = null;
         try {
             long startTime = System.currentTimeMillis();
