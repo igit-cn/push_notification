@@ -135,8 +135,10 @@ public class XiaomiPush {
         }
         List<JSONObject> pushDataList = new ArrayList<>(xiaomiMessageList.size());
         for (XiaomiMessage xiaomiMessage : xiaomiMessageList) {
-            // for recommend news: we just use the app name as the title
-            String showTitle = xiaomiData.getAppName();
+            String showTitle = xiaomiMessage.getTitle();
+            if (StringUtils.isEmpty(showTitle)) {
+                showTitle = xiaomiData.getAppName();
+            }
 
             JSONObject pushOne = new JSONObject();
             JSONObject payload = new JSONObject();
@@ -144,7 +146,7 @@ public class XiaomiPush {
             aps.put("alert", xiaomiMessage.getDescription());
             aps.put("badge", xiaomiMessage.getBadge());
             aps.put("sound", xiaomiMessage.getSound());
-            aps.put("title", xiaomiMessage.getTitle());
+            aps.put("title", showTitle);
             payload.put("aps", aps);
             payload.put("rid", xiaomiMessage.getDocId());
             payload.put("rtype", xiaomiMessage.getResourceType().toString());
@@ -247,7 +249,7 @@ public class XiaomiPush {
         aps.put("alert", xiaomiMessage.getDescription());
         aps.put("badge", xiaomiMessage.getBadge());
         aps.put("sound", xiaomiMessage.getSound());
-        aps.put("title", xiaomiMessage.getTitle());
+        aps.put("title", showTitle);
         payload.put("aps", aps);
         payload.put("rid", xiaomiMessage.getDocId());
         payload.put("rtype", xiaomiMessage.getResourceType().toString());
