@@ -3,6 +3,7 @@ package com.yidian.push.recommend_gen;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
 import com.yidian.push.config.Config;
 import com.yidian.push.config.RecommendGeneratorConfig;
 import com.yidian.push.config.RecommendGeneratorOnlineConfig;
@@ -10,6 +11,7 @@ import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushType;
 import com.yidian.push.utils.GsonFactory;
 import com.yidian.push.utils.HttpConnectionUtils;
+import com.yidian.serving.metrics.MetricsFactoryUtil;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.FileUtils;
@@ -30,6 +32,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Log4j
 public class OnlineGenerator {
+    public static final String CALL_QPS = "push_notification.online_generator_call.qps";
+    public static final String CALL_LATENCY = "push_notification.online_generator_call.latency";
+    public static final String CALL_ERROR = "push_notification.online_generator_call.error";
+    public static final String CALL_NO_DOCS = "push_notification.online_generator_call.no_docs";
+    public static final String PUSH_QPS = "push_notification.online_generator_push.qps";
+
     private static HashMap<Integer, OnlineGenerator> INSTANCES = new HashMap<>();
     public static int getRunningInstancesNumber() {
         return INSTANCES.size();
@@ -161,13 +169,19 @@ public class OnlineGenerator {
                         @Override
                         public void run() {
                             boolean hasResult = false;
+                            long tsStart = 0;
+                            long tsEnd = 0;
                             try {
+                                MetricsFactoryUtil.getRegisteredFactory().getMeter(CALL_QPS).mark();
                                 recordToProcessNum.decrementAndGet();
                                 String url = config.getRecommendURL();
                                 Map<String, Object> params = new HashMap<>(5);
                                 params.put("userid", item.getUserId());
                                 params.put("num", item.getNum());
                                 String jsonStr = HttpConnectionUtils.getGetResult(url, params, config.getRequestConfig());
+                                tsEnd = System.currentTimeMillis();
+                                MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_LATENCY).update(tsEnd - tsStart);
+                                MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_ERROR).update(0);
                                 //System.out.println(GsonFactory.getDefaultGson().toJson(item) + "; response:" + jsonStr);
                                 // TODO: parse the reply
                                 // and add it to the  userPushRecordLinkedBlockingQueue
@@ -175,6 +189,7 @@ public class OnlineGenerator {
                                 if (null != jsonObject
                                         && "success".equals(jsonObject.getString("status"))
                                         && jsonObject.containsKey("results")) {
+                                    MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_NO_DOCS).update(0);
                                     JSONArray results = jsonObject.getJSONArray("results");
                                     List<UserPushRecord.DocId_PushType> list = new ArrayList<>(results.size());
                                     for (Object item : results) {
@@ -212,9 +227,13 @@ public class OnlineGenerator {
                                     userPushRecordLinkedBlockingQueue.add(userPushRecord);
                                     hasResult = true;
                                 } else {
+                                    MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_NO_DOCS).update(100);
                                     log.info("NO RECOMMEND DOC for user: " + item.getUserId());
                                 }
                             } catch (Exception e) {
+                                tsEnd = System.currentTimeMillis();
+                                MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_LATENCY).update(tsEnd - tsStart);
+                                MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_ERROR).update(100);
                                 log.error("failed..." + ExceptionUtils.getFullStackTrace(e));
                             } finally {
                                 if (!hasResult) {
@@ -487,6 +506,7 @@ public class OnlineGenerator {
             int timesToRetry = config.getRetryTimes();
             while (timesToRetry > 0) {
                 try {
+                    MetricsFactoryUtil.getRegisteredFactory().getMeter(PUSH_QPS).mark();
                     String response = HttpConnectionUtils.getPostResult(config.getOnlineAddTaskUrl(), params, config.getRequestConfig());
                     JSONObject json = JSON.parseObject(response);
                     if (null != json && "0".equals(json.getString("code"))) {

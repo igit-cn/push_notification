@@ -16,11 +16,18 @@
     <properties>
         <theMainClass></theMainClass>
         <jetty.version>8.1.14.v20131031</jetty.version>
+        <serving-metrics.version>0.1-SNAPSHOT</serving-metrics.version>
         <package_dir>${project.build.directory}/package</package_dir>
     </properties>
 
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.yidian.serving</groupId>
+            <artifactId>serving-metrics</artifactId>
+            <version>${serving-metrics.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>

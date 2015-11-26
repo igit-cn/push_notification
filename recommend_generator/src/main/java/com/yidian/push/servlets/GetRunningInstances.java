@@ -6,6 +6,7 @@ import com.yidian.push.recommend_gen.OnlineGenerator;
 import com.yidian.push.recommend_gen.RunningInstance;
 import com.yidian.push.response.Response;
 import com.yidian.push.util.HttpHelper;
+import com.yidian.serving.metrics.MetricsFactoryUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 
@@ -22,6 +23,7 @@ import java.io.IOException;
 public class GetRunningInstances extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        MetricsFactoryUtil.getRegisteredFactory().getMeter("push_notification.get_running_instances.qps").mark();
         Response recordResponse = new Response();
         int generatorNum = Generator.getRunningInstancesNumber();
         int onlineGeneratorNum = OnlineGenerator.getRunningInstancesNumber();

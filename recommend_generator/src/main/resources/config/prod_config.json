@@ -14,11 +14,17 @@
         "recommendURL" : "http://lc1.haproxy.yidian.com:8017/NewsRecommender/OfflineRecommendNewsHandler",
         "docIdInfoURL" : "http://a1.go2yd.com/Website/contents/content",
         "docIdInfoBatchSize" : 60,
-        "httpConnectionDefaultMaxPerRoute" : 200,
+        "httpConnectionDefaultMaxPerRoute" : 800,
         "httpConnectionMaxTotal" : 2000,
+        "automaticRetry" : false,
         "retryTimes" : 3,
         "socketConnectTimeout" : 10,
         "socketReadTimeout" : 3,
+        "opentsdbAddress" : "http://dataplatform.yidian.com:4245/api/put",
+        "opentsdbTags" : {
+            "host" : "10.101.2.2",
+            "component" : "push_notification"
+        },
         "APP_MAIN" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
         "NON_APP_X" : ["hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"],
         "consumerThreadPoolSize" : 200,

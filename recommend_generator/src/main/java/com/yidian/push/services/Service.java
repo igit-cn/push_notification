@@ -1,5 +1,9 @@
 package com.yidian.push.services;
 
+import com.google.common.collect.Maps;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
+import com.ning.http.client.providers.jdk.JDKAsyncHttpProvider;
 import com.yidian.push.config.Config;
 import com.yidian.push.config.PushHistoryConfig;
 import com.yidian.push.config.RecommendGeneratorConfig;
@@ -11,6 +15,11 @@ import com.yidian.push.servlets.SlowGenerator;
 import com.yidian.push.utils.FileLock;
 import com.yidian.push.utils.GsonFactory;
 import com.yidian.push.utils.HttpConnectionUtils;
+import com.yidian.serving.metrics.MetricsFactory;
+import com.yidian.serving.metrics.MetricsFactoryUtil;
+import com.yidian.serving.metrics.OnDemandMetricsFactory;
+import com.yidian.serving.metrics.reporter.opentsdb.HttpOpenTsdbClient;
+import com.yidian.serving.metrics.reporter.opentsdb.OpenTsdbClient;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -29,6 +38,9 @@ import org.joda.time.DateTime;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Map;
 
 /**
  * Created by yidianadmin on 15-3-5.
@@ -36,6 +48,7 @@ import java.io.IOException;
 @Log4j
 public class Service implements Runnable {
     private static volatile boolean keepRunning = false;
+
     @Override
     public void run() {
         RecommendGeneratorConfig config = null;
@@ -65,6 +78,22 @@ public class Service implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //init the reporter
+        String opentsdbAddress = config.getOpentsdbAddress();
+        Map tags = config.getOpentsdbTags();
+        if (null == tags || tags.size() == 0) {
+            tags = Maps.newHashMap();
+        }
+        try {
+            tags.put("host", InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            log.error("could not get the host name");
+        }
+
+        AsyncHttpClient asyncHttpClient = new AsyncHttpClient(new JDKAsyncHttpProvider(new AsyncHttpClientConfig.Builder().build()));
+        OpenTsdbClient openTsdbClient = new HttpOpenTsdbClient(asyncHttpClient, opentsdbAddress);
+        MetricsFactory metricsFactory = new OnDemandMetricsFactory(tags, openTsdbClient);
+        MetricsFactoryUtil.register(metricsFactory);
 
 
         ServletContextHandler root = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -78,7 +107,7 @@ public class Service implements Runnable {
         root.addServlet(new ServletHolder(new GetRunningInstances()), "/get_running/*");
 
         HandlerList lists = new HandlerList();
-        lists.setHandlers(new Handler[] {root});
+        lists.setHandlers(new Handler[]{root});
 
         server.setHandler(lists);
         try {
@@ -122,11 +151,11 @@ public class Service implements Runnable {
             System.out.println("User specified config file " + configFile);
             Config.setCONFIG_FILE(configFile);
         } else {
-           // Config.setCONFIG_FILE("generator/src/main/resources/config/prod_config.json");
+            // Config.setCONFIG_FILE("generator/src/main/resources/config/prod_config.json");
             Config.setCONFIG_FILE("recommend_generator/src/main/resources/config/config.json");
             System.setProperty("log4j.configuration", "recommend_generator/src/main/resources/config/log4j_debug.properties");
             PropertyConfigurator.configure("recommend_generator/src/main/resources/config/log4j_debug.properties");
-           // Logger.getRootLogger().setLevel(Level.DEBUG);
+            // Logger.getRootLogger().setLevel(Level.DEBUG);
         }
         System.out.println(GsonFactory.getDefaultGson().toJson(Config.getInstance().getRecommendGeneratorConfig()));
         String lockFile = Config.getInstance().getRecommendGeneratorConfig().getLockFile();

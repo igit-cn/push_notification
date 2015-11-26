@@ -8,7 +8,7 @@ import com.yidian.push.config.RecommendGeneratorConfig;
 import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushType;
 import com.yidian.push.utils.HttpConnectionUtils;
-import lombok.Getter;
+import com.yidian.serving.metrics.MetricsFactoryUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,6 +28,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Log4j
 public class Generator {
+    public static final String CALL_QPS = "push_notification.generator_call.qps";
+    public static final String CALL_LATENCY = "push_notification.generator_call.latency";
+    public static final String CALL_ERROR = "push_notification.generator_call.error";
+    public static final String CALL_NO_DOCS = "push_notification.generator_call.no_docs";
+
     private static ConcurrentHashMap<Integer, Generator> INSTANCES = new ConcurrentHashMap<>();
     public static int getRunningInstancesNumber() {
         return INSTANCES.size();
@@ -146,14 +151,21 @@ public class Generator {
                     executorService.submit(new Runnable() {
                         @Override
                         public void run() {
+                            long tsStart = 0;
+                            long tsEnd = 0;
                             try {
+                                MetricsFactoryUtil.getRegisteredFactory().getMeter(CALL_QPS).mark();
                                 recordToProcessNum.decrementAndGet();
                                 String url = config.getRecommendURL();
                                 Map<String, Object> params = new HashMap<>(5);
                                 params.put("userid", item.getUserId());
                                 params.put("num", item.getNum());
                                 params.put("model", item.getModel());
-                                String jsonStr = HttpConnectionUtils.getGetResult(url, params, config.getRequestConfig());
+                                tsStart = System.currentTimeMillis();
+                                String jsonStr = HttpConnectionUtils.getGetResult(url, params, config.getRequestConfig(), config.isAutomaticRetry());
+                                tsEnd = System.currentTimeMillis();
+                                MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_LATENCY).update(tsEnd - tsStart);
+                                MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_ERROR).update(0);
                                 //System.out.println(GsonFactory.getDefaultGson().toJson(item) + "; response:" + jsonStr);
                                 // TODO: parse the reply
                                 // and add it to the  userPushRecordLinkedBlockingQueue
@@ -161,6 +173,7 @@ public class Generator {
                                 if (null != jsonObject
                                         && "success".equals(jsonObject.getString("status"))
                                         && jsonObject.containsKey("results")) {
+                                    MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_NO_DOCS).update(0);
                                     JSONArray results = jsonObject.getJSONArray("results");
                                     List<UserPushRecord.DocId_PushType> list = new ArrayList<>(results.size());
                                     for (Object item : results) {
@@ -199,9 +212,13 @@ public class Generator {
                                     userPushRecordLinkedBlockingQueue.add(userPushRecord);
                                 }
                                 else {
+                                    MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_NO_DOCS).update(100);
                                     log.info("NO RECOMMEND DOC for user: " + item.getUserId());
                                 }
                             } catch (Exception e) {
+                                tsEnd = System.currentTimeMillis();
+                                MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_LATENCY).update(tsEnd - tsStart);
+                                MetricsFactoryUtil.getRegisteredFactory().getHistogram(CALL_ERROR).update(100);
                                 log.error("failed..." + ExceptionUtils.getFullStackTrace(e));
                             } finally {
                                 totalValidProcessedNumber.incrementAndGet();

@@ -7,6 +7,7 @@ import com.yidian.push.recommend_gen.OnlineGenerator;
 import com.yidian.push.recommend_gen.RunningInstance;
 import com.yidian.push.response.Response;
 import com.yidian.push.util.HttpHelper;
+import com.yidian.serving.metrics.MetricsFactoryUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -23,6 +24,8 @@ import java.io.IOException;
  */
 @Log4j
 public class PushRecommend extends HttpServlet {
+    private static final String BATCH_RECOMMEND = "batch_recommend";
+    private static final String ONLINE_RECOMMEND = "online_recommend";
 
     public String getInputFile(String base, int lookBackDay)
     {
@@ -132,19 +135,27 @@ public class PushRecommend extends HttpServlet {
             return;
         }
 
-        if ("batch_recommend".equals(task)) {
+        if (BATCH_RECOMMEND.equals(task)) {
             recordResponse.markSuccess();
             recordResponse.setDescription("got the batch_recommend request");
             HttpHelper.setResponseParameters(resp, recordResponse);
             log.info("run batch recommend");
+            MetricsFactoryUtil.getRegisteredFactory().getMeter("push_notification."+BATCH_RECOMMEND+".qps").mark();
+            long start = System.currentTimeMillis();
             runBatchRecommend();
+            long end = System.currentTimeMillis();
+            MetricsFactoryUtil.getRegisteredFactory().getHistogram("push_notification."+BATCH_RECOMMEND+".latency").update(end - start);
         }
-        else if ("online_recommend".equals(task)) {
+        else if (ONLINE_RECOMMEND.equals(task)) {
             recordResponse.markSuccess();
             recordResponse.setDescription("got the online_recommend request");
             HttpHelper.setResponseParameters(resp, recordResponse);
             log.info("run online recommend");
+            long start = System.currentTimeMillis();
+            MetricsFactoryUtil.getRegisteredFactory().getMeter("push_notification."+ONLINE_RECOMMEND+".qps").mark();
             runOnlineRecommend();
+            long end = System.currentTimeMillis();
+            MetricsFactoryUtil.getRegisteredFactory().getHistogram("push_notification."+ONLINE_RECOMMEND+".latency").update(end - start);
         }
         else {
             recordResponse.markFailure();

@@ -3,6 +3,8 @@ package com.yidian.push.recommend_gen;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 
 import static org.testng.Assert.*;
@@ -11,6 +13,14 @@ import static org.testng.Assert.*;
  * Created by tianyuzhi on 15/9/14.
  */
 public class QPSGetterTest {
+
+    @Test
+    public void getHostName() throws UnknownHostException {
+        InetAddress address = InetAddress.getLocalHost();
+        System.out.println(address.getHostName()); // 输出本机名
+
+    }
+
 
     @Test
     public void testRefresh() throws IOException, InterruptedException {

@@ -5,6 +5,7 @@ import com.yidian.push.recommend_gen.Generator;
 import com.yidian.push.recommend_gen.OnlineGenerator;
 import com.yidian.push.response.Response;
 import com.yidian.push.util.HttpHelper;
+import com.yidian.serving.metrics.MetricsFactoryUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 
@@ -21,6 +22,7 @@ import java.io.IOException;
 public class SlowGenerator extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        MetricsFactoryUtil.getRegisteredFactory().getMeter("push_notification.slow_processor.qps").mark();
         Response recordResponse = new Response();
         String sleepTime = req.getParameter("sleep_time");
         int timeInSeconds = Config.getInstance().getRecommendGeneratorConfig().getSleepTimeInSeconds();
@@ -77,5 +79,6 @@ public class SlowGenerator extends HttpServlet {
         log.info("done the sleep request");
         long end = System.currentTimeMillis();
         log.info("ROUND_TIME: slowGenerator elapsed time：" + (end - start) / (1000.0 * 60) + " minute");
+        MetricsFactoryUtil.getRegisteredFactory().getHistogram("push_notification.slow_processor.latency").update(end-start);
     }
 }

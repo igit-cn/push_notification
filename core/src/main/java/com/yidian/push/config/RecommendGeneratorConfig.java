@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.http.client.config.RequestConfig;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by yidianadmin on 15-2-2.
@@ -29,9 +26,12 @@ public class RecommendGeneratorConfig {
 
     private int httpConnectionDefaultMaxPerRoute = 200;
     private int httpConnectionMaxTotal = 2000;
+    private boolean automaticRetry = true;
     private int retryTimes = 3;
     private int socketConnectTimeout = 10;
     private int socketReadTimeout = 3;
+    private String opentsdbAddress = "http://dataplatform.yidian.com:4245/api/put";
+    private Map<String, String> opentsdbTags = new HashMap<>();
 
     private Set<String> APP_MAIN = new HashSet<>(Arrays.asList("hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"));
     private Set<String> NON_APP_X = new HashSet<>(Arrays.asList("hipu","yidian","yddk","xiaomi","zxpad","haowai","weixinwen","hot","ydtxz","ydtp","kxw","lastmile"));

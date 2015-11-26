@@ -15,6 +15,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
@@ -159,12 +160,15 @@ public class HttpConnectionUtils {
 
     // add get methods, this is not a good way to do this...
 
-    public static String getGetResult(String url, Map<String, Object> params, Map<String, String> headers, RequestConfig config) throws IOException {
+    public static String getGetResult(String url, Map<String, Object> params, Map<String, String> headers, RequestConfig config, boolean automaticRetry) throws IOException {
         HttpGet httpGet = new HttpGet(url);
         String result = null;
         try {
-
-            CloseableHttpClient client =  HttpClients.custom().setConnectionManager(cm).setDefaultRequestConfig(config).build();
+            HttpClientBuilder httpClientBuilder =  HttpClients.custom().setConnectionManager(cm).setDefaultRequestConfig(config);
+            if (!automaticRetry) {
+                httpClientBuilder.disableAutomaticRetries();
+            }
+            CloseableHttpClient client =  httpClientBuilder.build();
             List<NameValuePair> nameValuePairList = new ArrayList<>();
             if (null != params ) {
                 for (String key : params.keySet()) {
@@ -216,7 +220,11 @@ public class HttpConnectionUtils {
     }
 
     public static String getGetResult(String url, Map<String, Object> params, RequestConfig config) throws IOException {
-        return getGetResult(url, params, null, config);
+        return getGetResult(url, params, null, config, true);
+    }
+
+    public static String getGetResult(String url, Map<String, Object> params, RequestConfig config, boolean needRetry) throws IOException {
+        return getGetResult(url, params, null, config, needRetry);
     }
 
     public static String getGetResult(String url, Map<String, Object> params) throws IOException {
@@ -225,10 +233,16 @@ public class HttpConnectionUtils {
                 .setConnectTimeout(timeout * 1000)
                 .setConnectionRequestTimeout(timeout * 1000)
                 .setSocketTimeout(timeout * 1000).build();
-        return getGetResult(url, params, config);
+        return getGetResult(url, params, config, true);
     }
 
-    public static String getGetContent(String url, Map<String, Object> params) throws IOException {
-        return getGetResult(url, params);
+    public static String getGetResult(String url, Map<String, Object> params, boolean needRetry) throws IOException {
+        int timeout = 5;
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(timeout * 1000)
+                .setConnectionRequestTimeout(timeout * 1000)
+                .setSocketTimeout(timeout * 1000).build();
+        return getGetResult(url, params, config, needRetry);
     }
+
 }
