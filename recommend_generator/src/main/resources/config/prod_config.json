@@ -11,7 +11,7 @@
         "qpsURL" : "http://dataplatform.yidian.com:4242/api/query?start=3m-ago&m=sum:prediction.non_offline_qps.m1",
         "qpsRefreshFrequencyInSeconds" : 1,
         "maxQPS" : 800,
-        "recommendURL" : "http://lc1.haproxy.yidian.com:8017/NewsRecommender/OfflineRecommendNewsHandler",
+        "recommendURL" : "http://10.101.0.140:8017/NewsRecommender/OfflineRecommendNewsHandler",
         "docIdInfoURL" : "http://a1.go2yd.com/Website/contents/content",
         "docIdInfoBatchSize" : 60,
         "httpConnectionDefaultMaxPerRoute" : 800,
