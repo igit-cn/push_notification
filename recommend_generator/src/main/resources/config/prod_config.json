@@ -44,6 +44,7 @@
         "environment" : "production",
         "filterBase" : "/ssd1/worker/push_notification/recommend_push_users/filter_users",
         "filterLookBackDays" : 1,
-        "filterEnabled" : true
+        "filterEnabled" : true,
+        "pushIdURL" : "http://push.yidian.com/id/get-push-id"
     }
 }

@@ -48,7 +48,7 @@ public class FilterUsers {
         }
         List<String> files = new ArrayList<>();
         for (int i = 0; i < lookBackDay; i ++) {
-            String day = DateTime.now().toString("yyyy-MM-dd");
+            String day = DateTime.now().minusDays(i).toString("yyyy-MM-dd");
             String pattern = "*" + day;
             try {
                 List<String> dayFiles = getMatchFiles(pattern, filterPath);
