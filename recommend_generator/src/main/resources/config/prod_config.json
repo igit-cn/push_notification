@@ -41,6 +41,9 @@
         "pushKey" : "acf6dbe50dfa2c572f7fe13b699495d7",
         "recordToPushInOneSecond" : 10000,
         "recordPushBatchSize" : 50,
-        "environment" : "production"
+        "environment" : "production",
+        "filterBase" : "/ssd1/worker/push_notification/recommend_push_users/filter_users",
+        "filterLookBackDays" : 1,
+        "filterEnabled" : true
     }
 }

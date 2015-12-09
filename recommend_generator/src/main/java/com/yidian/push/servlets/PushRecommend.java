@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by tianyuzhi on 15/11/14.
@@ -90,11 +91,11 @@ public class PushRecommend extends HttpServlet {
         }
     }
 
-    public void runOnlineRecommend() {
+    public void runOnlineRecommend(String round) {
         OnlineGenerator generator = null;
         long start = System.currentTimeMillis();
         try {
-            generator = new OnlineGenerator();
+            generator = new OnlineGenerator(round);
             RecommendGeneratorConfig config = Config.getInstance().getRecommendGeneratorConfig();
             String inputFile = getInputFile(config.getOnlineInputDataPath(), config.getInputLookBackDays());
             log.info("input file:[" + inputFile + "]");
@@ -126,6 +127,7 @@ public class PushRecommend extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Response recordResponse = new Response();
         String task = req.getParameter("task");
+        String round = req.getParameter("round");
         log.info("RECOMMEND_TASK: " + task);
         int runningInstances = RunningInstance.getRunningNumber();
         if (runningInstances >= 2) {
@@ -153,7 +155,7 @@ public class PushRecommend extends HttpServlet {
             log.info("run online recommend");
             long start = System.currentTimeMillis();
             MetricsFactoryUtil.getRegisteredFactory().getMeter("push_notification."+ONLINE_RECOMMEND+".qps").mark();
-            runOnlineRecommend();
+            runOnlineRecommend(round);
             long end = System.currentTimeMillis();
             MetricsFactoryUtil.getRegisteredFactory().getHistogram("push_notification."+ONLINE_RECOMMEND+".latency").update(end - start);
         }

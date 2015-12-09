@@ -52,6 +52,10 @@ public class RecommendGeneratorConfig {
     private int recordToPushInOneSecond = 10000;
     private int recordPushBatchSize = 50;
     private Environment environment = Environment.RRODUCTION;
+    private String filterBase = "/ssd1/worker/push_notification/recommend_push_users/filter_users";
+    private int filterLookBackDays = 1;
+    private boolean filterEnabled = true;
+    private String pushIdURL = "http://push.yidian.com/id/get-push-id";
 
     public boolean isTest() {
         if (null!=environment && environment == Environment.RRODUCTION) {

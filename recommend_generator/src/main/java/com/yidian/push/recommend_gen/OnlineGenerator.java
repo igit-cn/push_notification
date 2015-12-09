@@ -3,20 +3,17 @@ package com.yidian.push.recommend_gen;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.bcel.internal.generic.PUSH;
 import com.yidian.push.config.Config;
 import com.yidian.push.config.RecommendGeneratorConfig;
-import com.yidian.push.config.RecommendGeneratorOnlineConfig;
 import com.yidian.push.data.Platform;
 import com.yidian.push.data.PushType;
 import com.yidian.push.utils.GsonFactory;
 import com.yidian.push.utils.HttpConnectionUtils;
 import com.yidian.serving.metrics.MetricsFactoryUtil;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joda.time.DateTime;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -58,6 +55,49 @@ public class OnlineGenerator {
     private AtomicInteger totalValidToProcessNumber = new AtomicInteger(0);
     private AtomicInteger totalValidProcessedNumber = new AtomicInteger(0);
     private AtomicInteger totalPushedNumber = new AtomicInteger(0);
+    private Set<String> filterUsers = new HashSet<>();
+    private String pushRound = "0";
+    private String mainPushId = "oneline_mian_push_id";
+    private String appxPushId = "oneline_appx_push_id";
+
+    public static String getPushId(String url, Map<String, Object> params) {
+        String pushId = "";
+        try {
+            String jsonStr = HttpConnectionUtils.getGetResult(url, params);
+            JSONObject json = JSONObject.parseObject(jsonStr);
+            if (null != json
+                    && "0".equals(json.getString("code"))
+                    && json.containsKey("result")) {
+                JSONObject result = json.getJSONObject("result");
+                pushId = result.getString("push_id");
+            }
+        } catch (Exception e) {
+            log.error("get the pushId failed with Exception: " + ExceptionUtils.getFullStackTrace(e));
+        }
+        return pushId;
+    }
+
+    public void getPushIds() {
+        String url = config.getPushIdURL();
+        // http://push.yidian.com/id/get-push-id?type=realtime&push_tag=evening&day=2015-11-01
+        String type = "realtime";
+        String pushTag = "online_recommend-" + pushRound;
+        String day = DateTime.now().toString("yyyy-MM-dd");
+        Map<String, Object> params = new HashMap<>();
+        params.put("type", type);
+        params.put("push_tag", pushTag + "-main");
+        params.put("day", day);
+        String mainPushId = getPushId(url, params);
+        if (StringUtils.isNotEmpty(mainPushId)) {
+            this.mainPushId = mainPushId;
+        }
+        params.put("push_tag", pushTag + "-appx");
+        String appxPushId = getPushId(url, params);
+        if (StringUtils.isNotEmpty(appxPushId)) {
+            this.appxPushId = appxPushId;
+        }
+        log.info("main push id:" + this.mainPushId + ", appx push id:" + this.appxPushId);
+    }
 
 
     private void startConsumer() {
@@ -95,11 +135,12 @@ public class OnlineGenerator {
         }
     }
 
-    public OnlineGenerator() throws IOException {
+    public OnlineGenerator(String pushRound) throws IOException {
         config = Config.getInstance().getRecommendGeneratorConfig();
         consumerExecutorService = Executors.newFixedThreadPool(config.getConsumerThreadPoolSize());
         pushExecutorServices = Executors.newFixedThreadPool(config.getPushThreadPoolSize());
-
+        this.pushRound = pushRound;
+        getPushIds();
         qpsGetter = new QPSGetter(config.getQpsURL());
         startConsumer();
         refreshTimer.schedule(new TimerTask() {
@@ -298,6 +339,9 @@ public class OnlineGenerator {
             log.error("invalid userId : " + item.getUserId());
             return false;
         }
+        if (filterUsers.contains(item.getUserId())) {
+            return false;
+        }
         if (buckets == null || buckets.contains(bucketId)) {
             return true;
         }
@@ -314,6 +358,8 @@ public class OnlineGenerator {
         Charset UTF_8 = StandardCharsets.UTF_8;
         Path filePath = new File(file).toPath();
         BufferedReader reader = null;
+        filterUsers = FilterUsers.getUsers(config.getFilterBase(), config.getFilterLookBackDays(), config.isFilterEnabled());
+        log.info("get " + filterUsers.size() + " filtered users");
         log.info("start to process : " + file);
         try {
             reader = Files.newBufferedReader(filePath, UTF_8);

@@ -51,6 +51,7 @@ public class Generator {
     private Timer refreshTimer = new Timer("refreshTimer");
     private AtomicInteger totalValidToProcessNumber = new AtomicInteger(0);
     private AtomicInteger totalValidProcessedNumber = new AtomicInteger(0);
+    private Set<String> filterUsers = new HashSet<>();
 
 
     private void startConsumer() {
@@ -266,6 +267,9 @@ public class Generator {
             log.error("invalid userId : " + item.getUserId());
             return false;
         }
+        if (filterUsers.contains(item.getUserId())) {
+            return false;
+        }
         if (buckets == null || buckets.contains(bucketId)) {
             return true;
         }
@@ -286,6 +290,8 @@ public class Generator {
         Charset UTF_8 = StandardCharsets.UTF_8;
         Path filePath = new File(file).toPath();
         BufferedReader reader = null;
+        filterUsers = FilterUsers.getUsers(config.getFilterBase(), config.getFilterLookBackDays(), config.isFilterEnabled());
+        log.info("get " + filterUsers.size() + " filtered users");
         log.info("start to process : " + file);
         try {
             reader = Files.newBufferedReader(filePath, UTF_8);
