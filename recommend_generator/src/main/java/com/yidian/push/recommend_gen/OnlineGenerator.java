@@ -523,6 +523,12 @@ public class OnlineGenerator {
             jsonObject.put("userid", pushRecord.getUserId());
             jsonObject.put("appid", pushRecord.getAppId());
             jsonObject.put("platfrom", pushRecord.getPlatform());
+            if (isMain(pushRecord.getAppId(), config.getAPP_MAIN())) {
+                jsonObject.put("push_id", mainPushId);
+            }
+            if (isAppx(pushRecord.getAppId(), config.getNON_APP_X())) {
+                jsonObject.put("push_id", appxPushId);
+            }
             JSONArray docs = new JSONArray(pushRecord.getDocIdPushTypeList().size());
             for (UserPushRecord.DocId_PushType docId_pushType : pushRecord.getDocIdPushTypeList()) {
                 JSONObject item = new JSONObject();
