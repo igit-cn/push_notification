@@ -119,6 +119,7 @@ public class CacheUtil {
             long startTime = System.currentTimeMillis();
             fileChannel = new FileInputStream(file).getChannel();
             long fileSze = fileChannel.size();
+            fileSze = fileSze > 0 ? fileSze : 1;
             ByteBuffer byteBuffer = ByteBuffer.allocate((int) fileSze);
             byteBuffer.clear();
             int[] arr = new int[(int) fileSze / 4];

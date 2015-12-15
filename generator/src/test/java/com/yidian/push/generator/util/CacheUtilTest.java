@@ -36,9 +36,17 @@ public class CacheUtilTest {
         String file = "/Users/tianyuzhi/t973";
         long startTime = System.currentTimeMillis();
         List<Long> longs = CacheUtil.getUserSInFile2(file);
-        System.out.println("cost time is seconds: " + (System.currentTimeMillis() - startTime)/ 1000.0);
+        System.out.println("cost time is seconds: " + (System.currentTimeMillis() - startTime) / 1000.0);
         for (int i = 0; i < 3 && i < longs.size(); i ++) {
             System.out.println(longs.get(i));
         }
     }
+
+    @Test
+    public void testGetEmptyFile() throws Exception {
+        String file = "/tmp/push_notification/cache/a/b";
+        List<Long> longs = CacheUtil.getUserSInFile2(file);
+        List<Long> longList = CacheUtil.getUserSInFile(file);
+    }
+
 }

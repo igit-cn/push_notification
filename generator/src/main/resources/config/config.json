@@ -63,7 +63,7 @@
         "minUserFilePath" : "/home/services/push_notification/cache/min_new_user_uid/",
         "minUserFilePrefix" : "host_table_userid",
         "minUserLookBackDays" : 4,
-        "cacheBasePath" : "/home/services/push_notification/cache",
+        "cacheBasePath" : "/tmp/push_notification/cache",
         "localChannelCachePath" : "/home/services/push_services/local_news/cache",
         "localChannelMappingFile" : "/home/services/push_services/local_news/cache/location_channel_cache.data",
         "autoLocalCacheIndex" : 4,
