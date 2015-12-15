@@ -10,7 +10,7 @@
         ],
         "qpsURL" : "http://dataplatform.yidian.com:4242/api/query?start=3m-ago&m=sum:prediction.non_offline_qps.m1",
         "qpsRefreshFrequencyInSeconds" : 1,
-        "maxQPS" : 800,
+        "maxQPS" : 1000,
         "recommendURL" : "http://10.101.0.140:8017/NewsRecommender/OfflineRecommendNewsHandler",
         "docIdInfoURL" : "http://a1.go2yd.com/Website/contents/content",
         "docIdInfoBatchSize" : 60,
@@ -43,7 +43,7 @@
         "recordPushBatchSize" : 50,
         "environment" : "production",
         "filterBase" : "/ssd1/worker/push_notification/recommend_push_users/filter_users",
-        "filterLookBackDays" : 1,
+        "filterLookBackDays" : 3,
         "filterEnabled" : true,
         "pushIdURL" : "http://push.yidian.com/id/get-push-id"
     }

@@ -59,6 +59,7 @@ public class OnlineGenerator {
     private String pushRound = "0";
     private String mainPushId = "oneline_mian_push_id";
     private String appxPushId = "oneline_appx_push_id";
+    private boolean isPushTopic = true;
 
     public static String getPushId(String url, Map<String, Object> params) {
         String pushId = "";
@@ -135,11 +136,12 @@ public class OnlineGenerator {
         }
     }
 
-    public OnlineGenerator(String pushRound) throws IOException {
+    public OnlineGenerator(String pushRound, boolean isPushTopic) throws IOException {
         config = Config.getInstance().getRecommendGeneratorConfig();
         consumerExecutorService = Executors.newFixedThreadPool(config.getConsumerThreadPoolSize());
         pushExecutorServices = Executors.newFixedThreadPool(config.getPushThreadPoolSize());
         this.pushRound = pushRound;
+        this.isPushTopic = isPushTopic;
         getPushIds();
         qpsGetter = new QPSGetter(config.getQpsURL());
         startConsumer();
@@ -522,7 +524,7 @@ public class OnlineGenerator {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("userid", pushRecord.getUserId());
             jsonObject.put("appid", pushRecord.getAppId());
-            jsonObject.put("platfrom", pushRecord.getPlatform());
+            jsonObject.put("platform", pushRecord.getPlatform());
             if (isMain(pushRecord.getAppId(), config.getAPP_MAIN())) {
                 jsonObject.put("push_id", mainPushId);
             }
@@ -552,6 +554,12 @@ public class OnlineGenerator {
             params.put("key", config.getPushKey());
             if (config.isTest()) {
                 params.put("test", "true");
+            }
+            if (isPushTopic) {
+                params.put("push_topic", "1");
+            }
+            else {
+                params.put("push_topic", "0");
             }
             params.put("messages", GsonFactory.getNonPrettyGson().toJson(subList));
 

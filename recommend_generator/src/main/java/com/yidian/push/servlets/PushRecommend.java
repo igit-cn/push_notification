@@ -91,11 +91,11 @@ public class PushRecommend extends HttpServlet {
         }
     }
 
-    public void runOnlineRecommend(String round) {
+    public void runOnlineRecommend(String round, boolean isPushTopic) {
         OnlineGenerator generator = null;
         long start = System.currentTimeMillis();
         try {
-            generator = new OnlineGenerator(round);
+            generator = new OnlineGenerator(round, isPushTopic);
             RecommendGeneratorConfig config = Config.getInstance().getRecommendGeneratorConfig();
             String inputFile = getInputFile(config.getOnlineInputDataPath(), config.getInputLookBackDays());
             log.info("input file:[" + inputFile + "]");
@@ -128,6 +128,7 @@ public class PushRecommend extends HttpServlet {
         Response recordResponse = new Response();
         String task = req.getParameter("task");
         String round = req.getParameter("round");
+        boolean isPushTopic = "true".equals(req.getParameter("push_topic"));
         log.info("RECOMMEND_TASK: " + task);
         int runningInstances = RunningInstance.getRunningNumber();
         if (runningInstances >= 2) {
@@ -155,7 +156,7 @@ public class PushRecommend extends HttpServlet {
             log.info("run online recommend");
             long start = System.currentTimeMillis();
             MetricsFactoryUtil.getRegisteredFactory().getMeter("push_notification."+ONLINE_RECOMMEND+".qps").mark();
-            runOnlineRecommend(round);
+            runOnlineRecommend(round, isPushTopic);
             long end = System.currentTimeMillis();
             MetricsFactoryUtil.getRegisteredFactory().getHistogram("push_notification."+ONLINE_RECOMMEND+".latency").update(end - start);
         }
