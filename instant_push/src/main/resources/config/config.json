@@ -1,0 +1,14 @@
+{
+    "lockFile" : "/tmp/push_notification_instant_push.lck",
+    "pushRequestBaseDir" : "/ssd/data/push_notification/request",
+    "instantPushConfig" :{
+        "lockFile": "/tmp/push_notification_instant_push.lck",
+        "consumerTopicName": "relatedchannel",
+        "requestScanIntervalInSeconds": 3,
+        "consumerNum": 1,
+        "consumerProperties": {
+            "zookeeper.connect": "hadoop2-13.lg-4-e10.yidian.com:2181,hadoop2-14.lg-4-e10.yidian.com:2181,hadoop2-2.lg-4-e9.yidian.com:2181",
+            "group.id": "relatedchannel_group_id"
+        }
+    }
+}

@@ -24,6 +24,7 @@ public class Config {
     private PushHistoryConfig pushHistoryConfig = null;
     private RecommendGeneratorConfig recommendGeneratorConfig = null;
     private RecommendGeneratorOnlineConfig recommendGeneratorOnlineConfig = null;
+    private InstantPushConfig instantPushConfig = null;
     //
     private static String CONFIG_FILE = null;
     private static Config config;
@@ -32,7 +33,7 @@ public class Config {
         CONFIG_FILE = configFile;
     }
 
-    public Config(){}
+    private Config(){}
     public static Config getInstance() throws IOException {
         if (null != config) {
             return config;
