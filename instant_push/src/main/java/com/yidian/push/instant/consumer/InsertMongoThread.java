@@ -42,7 +42,6 @@ public class InsertMongoThread extends Thread {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
                     // Refer to : http://stackoverflow.com/questions/3590000/what-does-java-lang-thread-interrupt-do
                     // this will break the loop
                     break;
