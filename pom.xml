@@ -48,6 +48,7 @@
         <jetty.version>8.1.14.v20131031</jetty.version>
         <zionpool.version>1.0-SNAPSHOT</zionpool.version>
         <push-channel.version>1.0-SNAPSHOT</push-channel.version>
+        <serving-metrics.version>0.1-SNAPSHOT</serving-metrics.version>
     </properties>
 
     <build>

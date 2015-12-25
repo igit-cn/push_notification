@@ -1,0 +1,11 @@
+# start of finance
+(ttl:开盘 OR ttl:午盘 OR ttl:收盘 OR ttl:收评 OR ttl:午评) AND (src:金融界 OR src:财新网 OR src:中金在线)
+(ttl:抢筹 OR ttl:龙虎榜 OR ttl:机构 OR (ttl:青睐 AND ttl:股)) AND (src:金融界 OR src:东方财富网 OR src:华股财经)
+# end of finance
+#START OF TEST
+(ttl:开盘 OR ttl:午盘 OR ttl:收盘 OR ttl:收评 OR ttl:午评)
+(ttl:抢筹 OR ttl:龙虎榜 OR ttl:机构 OR (ttl:青睐 AND ttl:股))
+(ttl:股票 OR ttl:股市)
+#END OF TESET
+# start of sports
+# end of sports

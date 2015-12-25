@@ -24,6 +24,17 @@
             <groupId>com.hipu.relevance</groupId>
             <artifactId>pushchannel</artifactId>
             <version>${push-channel.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>mongo-java-driver</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.yidian.serving</groupId>
+            <artifactId>serving-metrics</artifactId>
+            <version>${serving-metrics.version}</version>
         </dependency>
         <dependency>
             <groupId>com.yidian.push</groupId>
@@ -72,13 +83,17 @@
             <!--<artifactId>kafka_2.10</artifactId>-->
             <!--<version>0.8.2.2</version>-->
         <!--</dependency>-->
-
-
         <dependency>
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
             <version>1.1.1.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+
         <!--<dependency>-->
             <!--<groupId>org.apache.kafka</groupId>-->
             <!--<artifactId>kafka_2.10</artifactId>-->

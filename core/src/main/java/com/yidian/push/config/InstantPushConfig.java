@@ -3,6 +3,7 @@ package com.yidian.push.config;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -15,9 +16,18 @@ public class InstantPushConfig {
     private String lockFile = "/tmp/push_notification_instant_push.lck";
     private int requestScanIntervalInSeconds = 3;
     private String consumerTopicName = "relatedchannel";
-    private int consumerNum = 1;
+    private int topicConsumerNum = 1;
+    private int processNum = 1;
+    private int processFetchSize = 1;
+    private String queryFile = "";
     private Map<String, String> producerProperties = null;
     private Map<String, String> consumerProperties = null;
+    private String mongoHost = "";
+    private int mongoPort = 27017;
+    private String mongoDBName = "";
+    private String mongoCollName = "";
+    private String opentsdbAddress = "http://dataplatform.yidian.com:4245/api/put";
+    private Map<String, String> opentsdbTags = null;
 
 
 

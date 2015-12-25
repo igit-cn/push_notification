@@ -1,0 +1,3 @@
+(ttl:开盘 OR ttl:午盘 OR ttl:收盘 OR ttl:收评 OR ttl:午评) AND (src:金融界 OR src:财新网 OR src:中金在线)
+(ttl:开盘 OR ttl:午盘 OR ttl:收盘 OR ttl:收评 OR ttl:午评) AND (src:金融界 OR src:财新网 OR src:中金在线)
+

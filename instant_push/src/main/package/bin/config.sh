@@ -12,7 +12,7 @@ TBASENAME=$(basename $TBASEDIR)
 #######################
 # programe name
 # Fullpath is required
-PROG="/usr/local/jdk1.7/bin/java"
+PROG="/usr/local/jdk1.8/bin/java"
 
 PROGNAME=$(basename ${PROG})
 PROGBASE=${PROGNAME%%.*}
