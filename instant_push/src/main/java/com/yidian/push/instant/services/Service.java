@@ -64,7 +64,7 @@ public class Service implements Runnable {
                     if (null != finalChannelConsumer) {
                         finalChannelConsumer.destroy();
                     }
-                    MongoUtil.destory();
+                    MongoUtil.destroy();
                     currentThread.join();
                     log.info("shutdown the thread pools");
                 } catch (InterruptedException e) {

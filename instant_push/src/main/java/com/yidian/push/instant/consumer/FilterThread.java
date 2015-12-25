@@ -48,9 +48,11 @@ public class FilterThread extends Thread {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    break;
                 }
                 continue;
             }
+            log.info(Thread.currentThread().isInterrupted());
 
             List<DocChannelInfo> docChannelInfoList = new ArrayList<>(num);
             for (String str : docInfoList) {

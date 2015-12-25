@@ -35,6 +35,7 @@ public class ChannelConsumer {
     private List<FilterThread> threadPool = null;
     private ConsumerConnector consumerConnector = null;
     private InsertMongoThread insertMongoThread = null;
+    private Timer getMongoQueueSizeTimer = null;
 
     public ChannelConsumer(InstantPushConfig config) {
         this.config = config;
@@ -54,7 +55,8 @@ public class ChannelConsumer {
         insertMongoThread = new InsertMongoThread("insert_mongo", docChannelInfoQueue,fetchSize);
         insertMongoThread.start();
         log.info("start insert_mongo");
-        new Timer("consumerTimer").schedule(new TimerTask() {
+        getMongoQueueSizeTimer = new Timer("consumerTimer");
+        getMongoQueueSizeTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
@@ -82,9 +84,11 @@ public class ChannelConsumer {
         }
         for (FilterThread thread : threadPool)
         {
+            thread.interrupt();
             thread.join(5000);
             log.info("join thread num : " + thread.getThreadName());
         }
+        getMongoQueueSizeTimer.cancel();
         insertMongoThread.interrupt();
         insertMongoThread.join();
         log.info("join insertMongoThread");

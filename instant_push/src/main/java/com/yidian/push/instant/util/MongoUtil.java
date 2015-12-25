@@ -34,7 +34,7 @@ public class MongoUtil {
         mongoClient = new MongoClient(config.getMongoHost(), config.getMongoPort());
     }
 
-    public static void destory() {
+    public static void destroy() {
         if (mongoClient != null) {
             mongoClient.close();
         }
@@ -80,6 +80,7 @@ public class MongoUtil {
             Document document = buildDocument(docChannelInfo);
             try {
                 collection.insertOne(document);
+                //collection.findOneAndUpdate();
             } catch (Exception e) {
                 log.error("insert into mongo failed..." + e.getMessage());
             }
