@@ -1,5 +1,6 @@
 package com.yidian.push.instant.util;
 
+import com.google.gson.Gson;
 import com.mongodb.InsertOptions;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -10,6 +11,7 @@ import com.yidian.push.config.Config;
 import com.yidian.push.config.InstantPushConfig;
 import com.yidian.push.instant.data.Channel;
 import com.yidian.push.instant.data.DocChannelInfo;
+import com.yidian.push.utils.GsonFactory;
 import com.yidian.serving.metrics.MetricsFactoryUtil;
 import lombok.extern.log4j.Log4j;
 import org.bson.Document;
@@ -82,7 +84,9 @@ public class MongoUtil {
         MongoCollection collection = db.getCollection(config.getMongoCollName());
         for (DocChannelInfo docChannelInfo : docChannelInfoList) {
             String day = new DateTime(DateTimeZone.UTC).toString("yyyy-MM-dd");
+            String localDay = new DateTime().toString("yyyy-MM-dd");
             String insertTime = new DateTime(DateTimeZone.UTC).toString("yyyy-MM-dd HH:mm:ss");
+
             Document queryDocument = new Document()
                     .append("_id", docChannelInfo.getDocId());
 
@@ -92,6 +96,7 @@ public class MongoUtil {
             boolean foundChannel = false;
             for (Channel channel : docChannelInfo.getChannels()) {
                 if (channel.getRelevance() < config.getRelevanceThreshold()) {
+                    log.info("FILTER_CHANNEL: " + GsonFactory.getDefaultGson().toJson(channel));
                     continue;
                 }
                 Map<String, Object> map = new HashMap<>();
@@ -112,7 +117,9 @@ public class MongoUtil {
                 if (null == old) {
                     collection.findOneAndUpdate(queryDocument,
                         new Document().append("$set",
-                                    new Document().append("day", day).append("firstUpdateTime", insertTime)),
+                                    new Document().append("day", day)
+                                            .append("firstUpdateTime", insertTime))
+                                            .append("localDay", localDay),
                         new FindOneAndUpdateOptions().returnDocument(ReturnDocument.BEFORE).upsert(true)
                     );
                 }
