@@ -117,9 +117,9 @@ public class MongoUtil {
                 if (null == old) {
                     collection.findOneAndUpdate(queryDocument,
                         new Document().append("$set",
-                                    new Document().append("day", day)
-                                            .append("firstUpdateTime", insertTime))
-                                            .append("localDay", localDay),
+                                new Document().append("day", day)
+                                        .append("firstUpdateTime", insertTime)
+                                        .append("localDay", localDay)),
                         new FindOneAndUpdateOptions().returnDocument(ReturnDocument.BEFORE).upsert(true)
                     );
                 }
