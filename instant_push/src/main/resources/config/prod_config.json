@@ -1,7 +1,7 @@
 {
     "lockFile" : "/tmp/push_notification_instant_push.lck",
     "pushRequestBaseDir" : "/ssd/data/push_notification/request",
-    "instantPushConfig" :{
+    "instantPushConfig" : {
         "lockFile": "/tmp/push_notification_instant_push.lck",
         "requestScanIntervalInSeconds": 3,
         "consumerTopicName": "relatedchannel",
@@ -26,10 +26,11 @@
         "mongoPort": 27017,
         "mongoDBName": "instant_push",
         "mongoCollName": "related_channel_doc",
-        "opentsdbAddress" : "http://dataplatform.yidian.com:4245/api/put",
-        "opentsdbTags" : {
-            "host" : "10.101.2.2",
-            "component" : "push_notification"
-        }
+        "opentsdbAddress": "http://dataplatform.yidian.com:4245/api/put",
+        "opentsdbTags": {
+            "host": "10.101.2.2",
+            "component": "push_notification"
+        },
+        "relevanceThreshold": 0.8
     }
 }

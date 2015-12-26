@@ -28,6 +28,7 @@ public class InstantPushConfig {
     private String mongoCollName = "";
     private String opentsdbAddress = "http://dataplatform.yidian.com:4245/api/put";
     private Map<String, String> opentsdbTags = null;
+    private double relevanceThreshold = 0.8;
 
 
 

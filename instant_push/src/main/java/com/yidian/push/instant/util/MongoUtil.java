@@ -89,7 +89,11 @@ public class MongoUtil {
             Document updateDocument = new Document()
                     .append("modifiedAt", docChannelInfo.getModifiedAt())
                     .append("lastUpdateTime", insertTime);
+            boolean foundChannel = false;
             for (Channel channel : docChannelInfo.getChannels()) {
+                if (channel.getRelevance() < config.getRelevanceThreshold()) {
+                    continue;
+                }
                 Map<String, Object> map = new HashMap<>();
                 map.put("signature", channel.getSignature());
                 map.put("name", channel.getName());
@@ -97,7 +101,9 @@ public class MongoUtil {
                 map.put("r", channel.getRelevance());
                 map.put("score", channel.getScore());
                 updateDocument.put("channels." + channel.getFromId(), map);
+                foundChannel = true;
             }
+            if (!foundChannel) { continue; }
             try {
                 Object old = collection.findOneAndUpdate(queryDocument,
                         new Document().append("$set", updateDocument),
