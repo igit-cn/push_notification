@@ -92,8 +92,7 @@ public class MongoUtil {
 
             Document updateDocument = new Document()
                     .append("modifiedAt", docChannelInfo.getModifiedAt())
-                    .append("lastUpdateTime", insertTime)
-                    .append("pushed",false);
+                    .append("lastUpdateTime", insertTime);
             boolean foundChannel = false;
             for (Channel channel : docChannelInfo.getChannels()) {
                 if (channel.getRelevance() < config.getRelevanceThreshold()) {
@@ -120,6 +119,7 @@ public class MongoUtil {
                         new Document().append("$set",
                                 new Document().append("day", day)
                                         .append("firstUpdateTime", insertTime)
+                                        .append("pushed",false)
                                         .append("localDay", localDay)),
                         new FindOneAndUpdateOptions().returnDocument(ReturnDocument.BEFORE).upsert(true)
                     );
