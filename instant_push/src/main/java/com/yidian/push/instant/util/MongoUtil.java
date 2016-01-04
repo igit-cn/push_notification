@@ -92,7 +92,8 @@ public class MongoUtil {
 
             Document updateDocument = new Document()
                     .append("modifiedAt", docChannelInfo.getModifiedAt())
-                    .append("lastUpdateTime", insertTime);
+                    .append("lastUpdateTime", insertTime)
+                    .append("pushed",false);
             boolean foundChannel = false;
             for (Channel channel : docChannelInfo.getChannels()) {
                 if (channel.getRelevance() < config.getRelevanceThreshold()) {
