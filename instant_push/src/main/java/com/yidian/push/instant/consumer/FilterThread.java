@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -25,6 +26,7 @@ public class FilterThread extends Thread {
     private int fetchSize = 1;
     private String queryFile = null;
     private List<Query> queryList;
+    private Map<String, List<Query>> tagToQueries = null;
 
     public FilterThread(String name, BlockingQueue<String> docInfoStringQueue,
                         BlockingQueue<DocChannelInfo> docChannelInfoLinkedBlockingQueue,
@@ -36,6 +38,7 @@ public class FilterThread extends Thread {
         this.fetchSize = fetchSize;
         this.queryFile = queryFile;
         this.queryList = FilterUtil.loadQueries(this.queryFile);
+        this.tagToQueries = FilterUtil.loadTagQueries(this.queryFile);
     }
 
     @Override
@@ -62,7 +65,7 @@ public class FilterThread extends Thread {
                     log.error("could not parse the doc channel info : " + str);
                 }
             }
-            List<DocChannelInfo> matchedList = FilterUtil.matchQueries(queryList, docChannelInfoList);
+            List<DocChannelInfo> matchedList = FilterUtil.matchQueries(tagToQueries, docChannelInfoList);
             for (DocChannelInfo docChannelInfo : matchedList) {
                 docChannelInfoQueue.add(docChannelInfo);
                 MetricsFactoryUtil.getRegisteredFactory().getMeter(MATCHED_QPS).mark();

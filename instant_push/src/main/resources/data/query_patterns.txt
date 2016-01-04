@@ -1,18 +1,24 @@
 # start of finance
+START_TAG finance
 (ttl:开盘 OR ttl:午盘 OR ttl:收盘 OR ttl:收评 OR ttl:午评) AND (src:金融界 OR src:财新网 OR src:中金在线)
 (ttl:抢筹 OR ttl:龙虎榜 OR ttl:机构 OR (ttl:青睐 AND ttl:股)) AND (src:金融界 OR src:东方财富网 OR src:华股财经)
+END_TAG
 # end of finance
 #START OF TEST
+START_TAG test
 (ttl:开盘 OR ttl:午盘 OR ttl:收盘 OR ttl:收评 OR ttl:午评)
 (ttl:抢筹 OR ttl:龙虎榜 OR ttl:机构 OR (ttl:青睐 AND ttl:股))
 (ttl:股票 OR ttl:股市)
+END_TAG
 #END OF TEST
 # start of sports
+START_TAG sports
 # title : src : score
 (ttl:欧冠 OR ttl:英超 OR ttl:西甲 OR ttl:德甲 OR ttl:意甲 OR ttl:意大利杯 OR ttl:联赛杯 OR ttl:世俱杯) AND (src:手机腾讯网 OR src:新浪体育 OR src:腾讯体育) AND (ttl:0-0 OR ttl:0-1 OR ttl:0-2 OR ttl:0-3 OR ttl:0-4 OR ttl:0-5 OR ttl:0-6 OR ttl:0-7 OR ttl:0-8 OR ttl:0-9 OR ttl:1-0 OR ttl:1-1 OR ttl:1-2 OR ttl:1-3 OR ttl:1-4 OR ttl:1-5 OR ttl:1-6 OR ttl:1-7 OR ttl:1-8 OR ttl:1-9 OR ttl:2-0 OR ttl:2-1 OR ttl:2-2 OR ttl:2-3 OR ttl:2-4 OR ttl:2-5 OR ttl:2-6 OR ttl:2-7 OR ttl:2-8 OR ttl:2-9 OR ttl:3-0 OR ttl:3-1 OR ttl:3-2 OR ttl:3-3 OR ttl:3-4 OR ttl:3-5 OR ttl:3-6 OR ttl:3-7 OR ttl:3-8 OR ttl:3-9 OR ttl:4-0 OR ttl:4-1 OR ttl:4-2 OR ttl:4-3 OR ttl:4-4 OR ttl:4-5 OR ttl:4-6 OR ttl:4-7 OR ttl:4-8 OR ttl:4-9 OR ttl:5-0 OR ttl:5-1 OR ttl:5-2 OR ttl:5-3 OR ttl:5-4 OR ttl:5-5 OR ttl:5-6 OR ttl:5-7 OR ttl:5-8 OR ttl:5-9 OR ttl:6-0 OR ttl:6-1 OR ttl:6-2 OR ttl:6-3 OR ttl:6-4 OR ttl:6-5 OR ttl:6-6 OR ttl:6-7 OR ttl:6-8 OR ttl:6-9 OR ttl:7-0 OR ttl:7-1 OR ttl:7-2 OR ttl:7-3 OR ttl:7-4 OR ttl:7-5 OR ttl:7-6 OR ttl:7-7 OR ttl:7-8 OR ttl:7-9 OR ttl:8-0 OR ttl:8-1 OR ttl:8-2 OR ttl:8-3 OR ttl:8-4 OR ttl:8-5 OR ttl:8-6 OR ttl:8-7 OR ttl:8-8 OR ttl:8-9 OR ttl:9-0 OR ttl:9-1 OR ttl:9-2 OR ttl:9-3 OR ttl:9-4 OR ttl:9-5 OR ttl:9-6 OR ttl:9-7 OR ttl:9-8 OR ttl:9-9)
 # title : src
 (ttl:欧冠 OR ttl:英超 OR ttl:西甲 OR ttl:德甲 OR ttl:意甲) AND (src:手机腾讯网 OR src:新浪体育 OR src:腾讯体育)
 # ttl:src:score
 (ttl:中超 OR ttl:足协杯 OR ttl:亚冠 OR ttl:世预赛) AND (src:手机腾讯网 OR src:新浪体育 OR src:腾讯体育) AND (ttl:0-0 OR ttl:0-1 OR ttl:0-2 OR ttl:0-3 OR ttl:0-4 OR ttl:0-5 OR ttl:0-6 OR ttl:0-7 OR ttl:0-8 OR ttl:0-9 OR ttl:1-0 OR ttl:1-1 OR ttl:1-2 OR ttl:1-3 OR ttl:1-4 OR ttl:1-5 OR ttl:1-6 OR ttl:1-7 OR ttl:1-8 OR ttl:1-9 OR ttl:2-0 OR ttl:2-1 OR ttl:2-2 OR ttl:2-3 OR ttl:2-4 OR ttl:2-5 OR ttl:2-6 OR ttl:2-7 OR ttl:2-8 OR ttl:2-9 OR ttl:3-0 OR ttl:3-1 OR ttl:3-2 OR ttl:3-3 OR ttl:3-4 OR ttl:3-5 OR ttl:3-6 OR ttl:3-7 OR ttl:3-8 OR ttl:3-9 OR ttl:4-0 OR ttl:4-1 OR ttl:4-2 OR ttl:4-3 OR ttl:4-4 OR ttl:4-5 OR ttl:4-6 OR ttl:4-7 OR ttl:4-8 OR ttl:4-9 OR ttl:5-0 OR ttl:5-1 OR ttl:5-2 OR ttl:5-3 OR ttl:5-4 OR ttl:5-5 OR ttl:5-6 OR ttl:5-7 OR ttl:5-8 OR ttl:5-9 OR ttl:6-0 OR ttl:6-1 OR ttl:6-2 OR ttl:6-3 OR ttl:6-4 OR ttl:6-5 OR ttl:6-6 OR ttl:6-7 OR ttl:6-8 OR ttl:6-9 OR ttl:7-0 OR ttl:7-1 OR ttl:7-2 OR ttl:7-3 OR ttl:7-4 OR ttl:7-5 OR ttl:7-6 OR ttl:7-7 OR ttl:7-8 OR ttl:7-9 OR ttl:8-0 OR ttl:8-1 OR ttl:8-2 OR ttl:8-3 OR ttl:8-4 OR ttl:8-5 OR ttl:8-6 OR ttl:8-7 OR ttl:8-8 OR ttl:8-9 OR ttl:9-0 OR ttl:9-1 OR ttl:9-2 OR ttl:9-3 OR ttl:9-4 OR ttl:9-5 OR ttl:9-6 OR ttl:9-7 OR ttl:9-8 OR ttl:9-9)
-# TODO: add more...
+END_TAG
 # end of sports
+# TODO: add more...
