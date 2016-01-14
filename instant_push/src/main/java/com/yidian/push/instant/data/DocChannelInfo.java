@@ -27,6 +27,7 @@ public class DocChannelInfo {
     private List<Channel> channels = null;
     private long modifiedAt = 0;
     private String matchedQueryTag = null;
+    private String src = null;
 
 
     public List<Channel> getChannels() {

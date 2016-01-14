@@ -93,6 +93,7 @@ public class MongoUtil {
             Document updateDocument = new Document()
                     .append("modifiedAt", docChannelInfo.getModifiedAt())
                     .append("matchedQueryTag", docChannelInfo.getMatchedQueryTag())
+                    .append("src", docChannelInfo.getSrc())
                     .append("lastUpdateTime", insertTime);
             boolean foundChannel = false;
             for (Channel channel : docChannelInfo.getChannels()) {
