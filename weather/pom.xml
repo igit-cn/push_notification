@@ -13,6 +13,40 @@
     <groupId>com.yidian.push</groupId>
     <artifactId>weather</artifactId>
     <version>1.0.0</version>
+    <description>weather info from : http://openweather.weather.com.cn/ </description>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.yidian.serving</groupId>
+            <artifactId>serving-metrics</artifactId>
+            <version>${serving-metrics.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yidian.push</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-time.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${alibaba.fastjson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
     
 </project>

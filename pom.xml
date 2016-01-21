@@ -20,6 +20,7 @@
         <module>recommend_generator</module>
         <module>recommend_generator_online</module>
         <module>instant_push</module>
+        <module>weather</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

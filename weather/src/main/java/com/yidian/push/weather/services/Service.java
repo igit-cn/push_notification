@@ -6,9 +6,6 @@ import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.providers.jdk.JDKAsyncHttpProvider;
 import com.yidian.push.config.Config;
 import com.yidian.push.config.InstantPushConfig;
-import com.yidian.push.instant.consumer.ChannelConsumer;
-
-import com.yidian.push.instant.util.MongoUtil;
 import com.yidian.push.utils.FileLock;
 import com.yidian.push.utils.GsonFactory;
 import com.yidian.serving.metrics.MetricsFactory;
@@ -43,28 +40,21 @@ public class Service implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try {
-            keepRunning = true;
-            MongoUtil.init();
-        } catch (IOException e) {
-            e.printStackTrace();
-            log.error("push notification logging init ...");
-            throw new RuntimeException(e);
-        }
+//        try {
+//            keepRunning = true;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            log.error("push notification logging init ...");
+//            throw new RuntimeException(e);
+//        }
 
-        ChannelConsumer channelConsumer = new ChannelConsumer(config);
         final Thread currentThread = Thread.currentThread();
-        final ChannelConsumer finalChannelConsumer = channelConsumer;
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 keepRunning = false;
                 log.info("receive kill signal ...");
                 try {
-                    if (null != finalChannelConsumer) {
-                        finalChannelConsumer.destroy();
-                    }
-                    MongoUtil.destroy();
                     currentThread.join();
                     log.info("shutdown the thread pools");
                 } catch (InterruptedException e) {
@@ -90,17 +80,11 @@ public class Service implements Runnable {
         MetricsFactory metricsFactory = new OnDemandMetricsFactory(tags, openTsdbClient);
         MetricsFactoryUtil.register(metricsFactory);
 
-        channelConsumer.run();
         log.info("service started.");
 
     }
 
     public static void main(String[] args) throws IOException {
-//        Logger.getRootLogger().setLevel(Level.DEBUG);
-//        Config.setCONFIG_FILE("instant_push/src/main/resources/config/config.json");
-
-        //new ChannelConsumer(Config.getInstance().getInstantPushConfig()).run2();;
-
         System.out.println(args.length);
         if (args.length >= 1) {
             String configFile = args[0];
@@ -117,7 +101,6 @@ public class Service implements Runnable {
             System.out.println("One instance is already running, just quit.");
             System.exit(1);
         }
-        // new ChannelConsumer(null).run2();;
         Service service = new Service();
         service.run();
 
