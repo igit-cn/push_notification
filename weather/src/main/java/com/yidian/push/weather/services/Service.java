@@ -5,7 +5,7 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.providers.jdk.JDKAsyncHttpProvider;
 import com.yidian.push.config.Config;
-import com.yidian.push.config.InstantPushConfig;
+import com.yidian.push.config.WeatherPushConfig;
 import com.yidian.push.utils.FileLock;
 import com.yidian.push.utils.GsonFactory;
 import com.yidian.serving.metrics.MetricsFactory;
@@ -32,10 +32,10 @@ public class Service implements Runnable {
 
     @Override
     public void run() {
-        InstantPushConfig config = null;
+        WeatherPushConfig config = null;
 
         try {
-            config = Config.getInstance().getInstantPushConfig();
+            config = Config.getInstance().getWeatherPushConfig();
             log.info("Config is " + GsonFactory.getPrettyGson().toJson(config));
         } catch (IOException e) {
             e.printStackTrace();
@@ -96,7 +96,7 @@ public class Service implements Runnable {
             PropertyConfigurator.configure("src/main/resources/config/log4j_debug.properties");
             Logger.getRootLogger().setLevel(Level.DEBUG);
         }
-        String lockFile = Config.getInstance().getInstantPushConfig().getLockFile();
+        String lockFile = Config.getInstance().getWeatherPushConfig().getLockFile();
         if (!FileLock.lockInstance(lockFile)) {
             System.out.println("One instance is already running, just quit.");
             System.exit(1);

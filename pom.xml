@@ -50,6 +50,7 @@
         <zionpool.version>1.0-SNAPSHOT</zionpool.version>
         <push-channel.version>1.0-SNAPSHOT</push-channel.version>
         <serving-metrics.version>0.1-SNAPSHOT</serving-metrics.version>
+        <mongo-java-driver.version>3.2.0</mongo-java-driver.version>
     </properties>
 
     <build>

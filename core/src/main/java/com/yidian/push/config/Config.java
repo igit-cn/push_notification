@@ -25,6 +25,7 @@ public class Config {
     private RecommendGeneratorConfig recommendGeneratorConfig = null;
     private RecommendGeneratorOnlineConfig recommendGeneratorOnlineConfig = null;
     private InstantPushConfig instantPushConfig = null;
+    private WeatherPushConfig weatherPushConfig = null;
     //
     private static String CONFIG_FILE = null;
     private static Config config;

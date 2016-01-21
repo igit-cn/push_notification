@@ -21,5 +21,9 @@ public class WeatherPushConfig {
     private String opentsdbAddress = "http://dataplatform.yidian.com:4245/api/put";
     private Map<String, String> opentsdbTags = null;
 
+    private WeatherConfig weatherConfig = null;
+
+
+
 
 }

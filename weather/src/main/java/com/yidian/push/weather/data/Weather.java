@@ -7,6 +7,7 @@ import com.yidian.push.config.WeatherConfig;
 import com.yidian.push.utils.HttpConnectionUtils;
 import com.yidian.push.weather.exception.UrlGenerationException;
 import com.yidian.push.weather.util.AreaUtil;
+import com.yidian.push.weather.util.SmartWeatherUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -96,23 +97,17 @@ public class Weather {
         this.url = weatherConfig.getUrl();
     }
 
-
-    public static String encrypt(String url, String privateKey, String macName, String encoding) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
-        byte[] data = privateKey.getBytes(encoding);
-        SecretKey secretKey = new SecretKeySpec(data, macName);
-        Mac mac = Mac.getInstance(macName);
-        mac.init(secretKey);
-        byte[] text = url.getBytes(encoding);
-        byte[] signature =  mac.doFinal(text);
-        return URLEncoder.encode(new BASE64Encoder().encode(signature), encoding);
+    public String getArea(String areaId) {
+        return idToAreaMapping.get(areaId);
     }
+
 
 
     public String genUrl(String areaId, WeatherType weatherType, String date) throws UrlGenerationException {
         String baseUrl = url + "?areaid=" + areaId + "&type=" + weatherType.getName() + "&date=" + date + "&appid=";
         String encryptedKey;
         try {
-            encryptedKey = encrypt(baseUrl + appId, privateKey, macAlgorithmName, encoding);
+            encryptedKey = SmartWeatherUtil.encrypt(baseUrl + appId, privateKey, macAlgorithmName, encoding);
         } catch (Exception e) {
             throw new UrlGenerationException("url generation error : " + e.getMessage());
         }
