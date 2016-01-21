@@ -22,7 +22,7 @@
             "auto.offset.reset": "largest",
             "group.id": "relatedchannel_group_id"
         },
-        "mongoHost": "10.111.0.42",
+        "mongoHost": "10.101.2.22",
         "mongoPort": 27017,
         "mongoDBName": "instant_push",
         "mongoCollName": "related_channel_doc",

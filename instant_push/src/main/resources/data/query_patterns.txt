@@ -1,6 +1,6 @@
 # start of finance
 START_TAG finance
-(ttl:开盘 OR ttl:午盘 OR ttl:收盘 OR ttl:收评 OR ttl:午评) AND (-ttl:换手) AND (src:金融界 OR src:财新网 OR src:中金在线 OR src:证券时报 OR src:东方财富网 OR src:中国资本证券网 OR src:同花顺)
+(ttl:开盘 OR ttl:午盘 OR ttl:收盘 OR ttl:收评 OR ttl:午评) AND (-ttl:换手) AND (ttl:沪指 OR ttl:大盘 OR ttl:创业板) AND (ttl:涨OR ttl:跌) AND (src:金融界 OR src:财新网 OR src:中金在线 OR src:证券时报 OR src:东方财富网 OR src:中国资本证券网 OR src:同花顺)
 (ttl:抢筹 OR ttl:龙虎榜 OR ttl:机构 OR (ttl:青睐 AND ttl:股) OR (ttl:追捧 AND ttl:股) OR (ttl:买入 AND ttl:股)) AND (src:金融界 OR src:东方财富网 OR src:华股财经 OR src:证券时报网)
 (ttl:离岸 OR ttl:在岸 OR ttl:中间价 OR (ttl:人民币 AND ttl:汇率)) AND (src:华尔街见闻 OR src:财新网 OR src:一财网OR src:汇通网OR src: fx168)
 END_TAG
