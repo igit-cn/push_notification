@@ -1,0 +1,37 @@
+{
+    "lockFile" : "/tmp/push_notification_instant_push.lck",
+    "pushRequestBaseDir" : "/ssd/data/push_notification/request",
+    "instantPushConfig" :{
+        "lockFile": "/tmp/push_notification_instant_push.lck",
+        "requestScanIntervalInSeconds": 3,
+        "consumerTopicName": "relatedchannel",
+        "topicConsumerNum": 1,
+        "processNum": 1,
+        "processFetchSize": 1,
+        "queryFile": "src/main/resources/data/query_patterns.txt",
+        "consumerProperties": {
+            "metadata.broker.list": "kafka1-1.yidian.com:9092,kafka1-3.yidian.com:9092,101-1-148-lg-201-l10.yidian.com:9092,101-1-149-lg-201-l10.yidian.com:9092,101-1-150-lg-201-l10.yidian.com:9092,kafka1-2.yidian.com:9092",
+            "serializer.class": "kafka.serializer.StringEncoder",
+            "compression.codec": "2",
+            "compressed.topics": "relatedchannel",
+            "zookeeper.connect": "hadoop2-13.lg-4-e10.yidian.com:2181,hadoop2-14.lg-4-e10.yidian.com:2181,hadoop2-2.lg-4-e9.yidian.com:2181",
+            "auto.commit.enable": "true",
+            "auto.commit.interval.ms": "1000",
+            "zookeeper.session.timeout.ms": "30000",
+            "rebalance.backoff.ms": "30000",
+            //"auto.offset.reset": "smallest",
+            "auto.offset.reset": "largest",
+            "group.id": "relatedchannel_group_id"
+        },
+        "mongoHost": "10.111.0.42",
+        "mongoPort": 27017,
+        "mongoDBName": "instant_push",
+        "mongoCollName": "related_channel_doc",
+        "opentsdbAddress" : "http://dataplatform.yidian.com:4245/api/put",
+        "opentsdbTags": {
+            "host" : "10.101.2.2",
+            "component" : "push_notification"
+        },
+        "relevanceThreshold": 0.8
+    }
+}

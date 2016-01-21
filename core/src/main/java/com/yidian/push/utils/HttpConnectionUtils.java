@@ -1,5 +1,6 @@
 package com.yidian.push.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.log4j.Log4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -14,6 +15,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -243,6 +245,43 @@ public class HttpConnectionUtils {
                 .setConnectionRequestTimeout(timeout * 1000)
                 .setSocketTimeout(timeout * 1000).build();
         return getGetResult(url, params, config, needRetry);
+    }
+
+    public static String doPostJSON(String url,JSONObject json) throws IOException {
+        HttpPost post = new HttpPost(url);
+        String response = null;
+        try {
+            HttpClientBuilder httpClientBuilder =  HttpClients.custom().setConnectionManager(cm);
+            CloseableHttpClient client =  httpClientBuilder.build();
+
+            StringEntity s = new StringEntity(json.toString());
+            s.setContentEncoding("UTF-8");
+            s.setContentType("application/json");
+            post.setEntity(s);
+
+            response = client.execute(post, new ResponseHandler<String>() {
+                @Override
+                public String handleResponse(HttpResponse httpResponse) throws IOException {
+                    StatusLine statusLine = httpResponse.getStatusLine();
+                    HttpEntity entity = httpResponse.getEntity();
+                    if (statusLine.getStatusCode() >= 300) {
+                        throw new HttpResponseException(
+                                statusLine.getStatusCode(),
+                                statusLine.getReasonPhrase());
+                    }
+                    if (entity == null) {
+                        throw new ClientProtocolException("Response contains no content");
+                    }
+                    ContentType contentType = ContentType.getOrDefault(entity);
+                    Charset charset = contentType.getCharset();
+                    return EntityUtils.toString(entity, charset);
+                }
+            });
+            return response;
+        } finally {
+            post.releaseConnection();
+        }
+
     }
 
 }
