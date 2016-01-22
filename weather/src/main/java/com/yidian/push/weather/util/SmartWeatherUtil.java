@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.yidian.push.utils.HttpConnectionUtils;
 import com.yidian.push.weather.data.Document;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import sun.misc.BASE64Encoder;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @Log4j
 public class SmartWeatherUtil {
     private static final String SUCCESS = "success";
@@ -28,8 +29,8 @@ public class SmartWeatherUtil {
         Mac mac = Mac.getInstance(macName);
         mac.init(secretKey);
         byte[] text = url.getBytes(encoding);
-        byte[] signature =  mac.doFinal(text);
-        return URLEncoder.encode(new BASE64Encoder().encode(signature), encoding);
+        byte[] signature = mac.doFinal(text);
+        return URLEncoder.encode(new Base64().encodeAsString(signature), encoding);
     }
 
     public static String genDocAndGetDocId(String genDocUrl, String title, String content, String mediaId, String getDocIdUrl) {
@@ -55,7 +56,7 @@ public class SmartWeatherUtil {
             }
 
         } catch (Exception e) {
-            log.error("could not get gen doc with exception:" + ExceptionUtils.getFullStackTrace(e));
+            log.error("could not gen doc with exception:" + ExceptionUtils.getFullStackTrace(e));
         }
         return weMediaDocId;
     }
@@ -73,10 +74,24 @@ public class SmartWeatherUtil {
                 docId = jsonObject.getJSONObject("result").getString("news_id");
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error("could not get docid with exception :" + ExceptionUtils.getFullStackTrace(e));
         }
         return docId;
+    }
+
+    public static String getLocalChannel(String url, String location) throws IOException {
+        String res = null;
+        Map<String, Object> args = new HashMap<>();
+        args.put("location", location);
+        String response = HttpConnectionUtils.getGetResult(url, args);
+        JSONObject jsonObject = JSONObject.parseObject(response);
+        if (SUCCESS.equals(jsonObject.getString("status"))
+                && jsonObject.containsKey("result")) {
+            res = jsonObject.getJSONObject("result").getString(location);
+        }
+
+        return res;
     }
 
     public static boolean pushDocument(Document document, String pushUrl, String pushKey) {

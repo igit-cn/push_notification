@@ -1,9 +1,6 @@
 package com.yidian.push.weather.util;
 
-import com.alibaba.fastjson.JSONObject;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
 
 /**
  * Created by tianyuzhi on 16/1/21.

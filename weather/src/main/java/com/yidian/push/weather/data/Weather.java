@@ -8,6 +8,7 @@ import com.yidian.push.utils.HttpConnectionUtils;
 import com.yidian.push.weather.exception.UrlGenerationException;
 import com.yidian.push.weather.util.AreaUtil;
 import com.yidian.push.weather.util.SmartWeatherUtil;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -30,6 +31,7 @@ import java.util.Map;
  * Created by tianyuzhi on 16/1/18.
  */
 @Log4j
+@Getter
 public class Weather {
     private static final String ITEM_SEPARATOR = ";";
     private static final String KEY_VALUE_SEPARATOR = ",";
