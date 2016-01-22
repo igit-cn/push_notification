@@ -14,32 +14,48 @@ import java.util.Map;
 @Setter
 public class Document {
     private Alarm alarm;
-    private String alamId;
+    private String alarmId;
     private String docId;
     private String title;
     private String content;
-    private String publishDate;
-    private Map<String, String> fromIds = new HashMap<>();
+    private String publishTime;
+    private boolean shouldPush = false;
+    private boolean pushed = false;
+    private Map<String, Boolean> fromIdPushed = new HashMap<>();
 
     public Document(){}
 
 
     public Document(Alarm alarm) {
         this.alarm = alarm;
-        this.alamId = alarm.getId();
+        this.alarmId = alarm.getId();
         this.title = alarm.getProvince() + alarm.getCity() + alarm.getCounty()
                 + "气象台发布" + alarm.getCategoryName() + alarm.getLevelName()
                 + "预警";
         this.content = alarm.getContent();
-        this.publishDate = alarm.getPublishTime();
+        this.publishTime = alarm.getPublishTime();
     }
 
     public void addFromId(String fromId) {
-        if (null == fromIds) {
-            fromIds = new HashMap<>();
+        if (null == fromIdPushed) {
+            fromIdPushed = new HashMap<>();
         }
-        if (StringUtils.isNotEmpty(fromId)) {
-            fromIds.put(fromId, "1");
+        if (StringUtils.isNotEmpty(fromId)
+                && !fromIdPushed.containsKey(fromId)) {
+            fromIdPushed.put(fromId, false);
         }
+    }
+
+    public void markFromIdAsPushed(String fromId) {
+        if (fromIdPushed != null
+                && StringUtils.isNotEmpty(fromId)
+                && fromIdPushed.containsKey(fromId)) {
+            fromIdPushed.put(fromId, true);
+
+        }
+    }
+
+    public void markAsPushed() {
+        pushed = true;
     }
 }

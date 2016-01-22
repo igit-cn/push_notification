@@ -144,6 +144,9 @@ public class Weather {
         }
         return alarmList;
     }
+    public boolean isInGuangdong(String areaId) {
+        return idToGuangdongAreaMapping.containsKey(areaId);
+    }
 
     public List<Alarm> getAreaAlarms(String area) throws IOException, UrlGenerationException {
         area = AreaUtil.normalize(area);

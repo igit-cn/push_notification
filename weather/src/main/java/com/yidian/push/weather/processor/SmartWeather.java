@@ -1,6 +1,8 @@
 package com.yidian.push.weather.processor;
 
+import com.yidian.push.config.Config;
 import com.yidian.push.config.WeatherPushConfig;
+import com.yidian.push.utils.GsonFactory;
 import com.yidian.push.weather.data.Alarm;
 import com.yidian.push.weather.data.Document;
 import com.yidian.push.weather.data.Pair;
@@ -15,6 +17,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -27,30 +30,46 @@ public class SmartWeather {
     private boolean IsInitialized = false;
     private WeatherPushConfig config = null;
     private Weather weather = null;
-    private volatile Map<String, String> areaIdToChannel = new HashMap<>();
     private BlockingQueue<Pair<String, Alarm>> incomingAlarmQueue = new LinkedBlockingQueue<>();
     private List<Pair<String, Alarm>> incomingAlarmList = new LinkedList<>();
 
+    // TODO: save cache in local file system, load the file when started
     private static Map<String, Document> cachedAlarmIdDocMapping = new HashMap<>();
-    private Map<String, Document> incomingAlarmIdDocMapping = new HashMap<>();
+    private List<String> newlyIncomingAlarmIds = new ArrayList<>();
     private Timer refreshLocalCacheTimer = new Timer("LocalChannelRefreshTimer");
+    private volatile Map<String, String> areaIdToChannel = new HashMap<>();
 
+    private volatile static SmartWeather singleton;
+    public static SmartWeather getInstance() {
+        if (singleton == null) {
+            synchronized (SmartWeather.class) {
+                if (singleton == null) {
+                    try {
+                        singleton = new SmartWeather(Config.getInstance().getWeatherPushConfig());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+        return singleton;
+    }
 
-
-    public SmartWeather(WeatherPushConfig config) {
+    private SmartWeather(WeatherPushConfig config) {
         this.config = config;
         weather = new Weather(config.getWeatherConfig());
+        getAllLocalChannels();
         refreshLocalCacheTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
                     getAllLocalChannels();
                 } catch (Exception e) {
-                    log.error("consumer Timer failed.");
+                    log.error("refresh Timer failed.");
                 }
             }
         }, 0, config.getLocalChannelRefreshIntervalInSeconds() * 1000);
-        log.info("start the consumer");
+        log.info("start the refresh timer");
     }
 
     public void destroy() {
@@ -78,6 +97,7 @@ public class SmartWeather {
             }
         }
         if (!errorHappened) {
+            log.info("finish refresh");
             areaIdToChannel = newAreaIdToChannel;
         }
     }
@@ -92,14 +112,42 @@ public class SmartWeather {
                 break;
             }
         }
-        log.info("finish refresh");
+    }
+
+    public void task() {
+        reset();
+        getAlarms();
+        generateDocIfNeeded();
+        push();
+        cleanCache();
+    }
+
+    public void push() {
+        if (newlyIncomingAlarmIds.isEmpty()) {
+            return;
+        }
+        for (String alarmId : newlyIncomingAlarmIds) {
+            Document document = cachedAlarmIdDocMapping.get(alarmId);
+            if (document.isShouldPush() && !document.isPushed()) {
+                log.info("try to push document: " + GsonFactory.getDefaultGson().toJson(document));
+                pushDocument(document);
+            }
+            MongoUtil.saveOrUpdateDocuments(Arrays.asList(document));
+        }
     }
 
     public void reset() {
         incomingAlarmQueue.clear();
         incomingAlarmList.clear();
-        incomingAlarmIdDocMapping.clear();
+        newlyIncomingAlarmIds.clear();
+    }
 
+    public boolean pushDocument(Document document) {
+        boolean pushed = SmartWeatherUtil.pushDocument(document, config.getPushUrl(), config.getPushKey(), config.getPushUserIds());
+        if (pushed) {
+            document.markAsPushed();
+        }
+        return pushed;
     }
 
     public void getAlarms() {
@@ -136,15 +184,15 @@ public class SmartWeather {
         DateTime now = DateTime.now();
         DateTime timeToClean = now.minusDays(config.getCleanCacheDays());
         List<String> alarmIdList = new ArrayList<>();
-        for(String alarmId : cachedAlarmIdDocMapping.keySet()) {
+        for (String alarmId : cachedAlarmIdDocMapping.keySet()) {
             Document document = cachedAlarmIdDocMapping.get(alarmId);
-            String publishDate = document.getPublishDate();
+            String publishDate = document.getPublishTime();
             if (StringUtils.isEmpty(publishDate)) {
-                document.setPublishDate(now.toString("yyyy-MM-dd HH:mm:ss"));
+                document.setPublishTime(now.toString("yyyy-MM-dd HH:mm:ss"));
                 continue;
             }
             DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-            DateTime publishTime = DateTime.parse(publishDate,format);
+            DateTime publishTime = DateTime.parse(publishDate, format);
             if (publishTime.isBefore(timeToClean)) {
                 alarmIdList.add(alarmId);
             }
@@ -166,10 +214,11 @@ public class SmartWeather {
         List<Document> processedDocuments = new ArrayList<>(alarmIdSet.size());
         boolean status = MongoUtil.getProcessedDocuments(alarmIdSet, processedDocuments);
         if (!status) {
-            // TODO:
+            log.error("could not get processed docs from mongodb, and weather push will not happen");
+            return false;
         }
         for (Document document : processedDocuments) {
-            cachedAlarmIdDocMapping.put(document.getAlamId(), document);
+            cachedAlarmIdDocMapping.put(document.getAlarmId(), document);
         }
         for (Pair<String, Alarm> pair : incomingAlarmList) {
             String areaId = pair.getFirst();
@@ -183,6 +232,8 @@ public class SmartWeather {
             String channel = areaIdToChannel.getOrDefault(areaId, "");
             if (!docGenerated) {
                 Document document = new Document(alarm);
+                boolean shouldPush = shouldPush(areaId, alarm);
+                document.setShouldPush(shouldPush);
                 String docId = SmartWeatherUtil.genDocAndGetDocId(
                         config.getGenDocUrl(),
                         document.getTitle(),
@@ -191,8 +242,10 @@ public class SmartWeather {
                         config.getGetDocIdUrl()
                 );
                 if (StringUtils.isNotEmpty(docId)) {
+                    MongoUtil.saveOrUpdateDocuments(Arrays.asList(document));
                     document.setDocId(docId);
                     cachedAlarmIdDocMapping.put(alarmId, document);
+                    newlyIncomingAlarmIds.add(alarmId);
                 }
             }
             cachedAlarmIdDocMapping.get(alarmId).addFromId(channel);
@@ -200,13 +253,27 @@ public class SmartWeather {
         return true;
     }
 
-    public void task() {
-        reset();
-        getAlarms();
-        generateDocIfNeeded();
-        cleanCache();
 
+    public boolean shouldPush(String areaId, Alarm alarm) {
+        String alarmLevel = alarm.getLevelId();
+        if (weather.isInGuangdong(areaId)) {
+            if (StringUtils.isNotEmpty(config.getAlarmGuangdongPushLevel())
+                    && config.getAlarmGuangdongPushLevel().compareTo(alarmLevel) <= 0) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            if (StringUtils.isNotEmpty(config.getAlarmPushLevel())
+                    && config.getAlarmPushLevel().compareTo(alarmLevel) <= 0) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
     }
-
 
 }

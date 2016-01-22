@@ -1,10 +1,12 @@
 package com.yidian.push.weather.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yidian.push.utils.GsonFactory;
 import com.yidian.push.utils.HttpConnectionUtils;
 import com.yidian.push.weather.data.Document;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.crypto.Mac;
@@ -15,8 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 @Log4j
@@ -94,8 +95,61 @@ public class SmartWeatherUtil {
         return res;
     }
 
-    public static boolean pushDocument(Document document, String pushUrl, String pushKey) {
-        return true;
+
+
+    public static boolean pushDocument(Document document, String pushUrl, String pushKey, String pushUserIds) {
+        //		String url="http://lc1.haproxy.yidian.com:8703/push/add_task.php?host=push.yidian-inc.com&userids=auto_break&type[]=weather&docid="+docid+"&channel="+"u_faked"+"&key="+key;
+        boolean succeeded = false;
+        List<String> channelList = new ArrayList<>();
+        for (String channel : document.getFromIdPushed().keySet()) {
+            boolean channelPushed = document.getFromIdPushed().getOrDefault(channel, true);
+            if (!channelPushed) {
+                channelList.add(channel);
+            }
+        }
+        if (channelList.size() == 0) {
+            log.info("no channel to push for docid [" + document.getDocId()
+                    + "], alarmId [" + document.getAlarmId() + "]");
+            succeeded = true;
+        }
+        else {
+            String channels = StringUtils.join(channelList, ",");
+            succeeded = pushDocument(document, pushUrl, pushKey, pushUserIds, channels);
+        }
+        return succeeded;
+    }
+
+    public static boolean pushDocument(Document document, String pushUrl, String pushKey, String pushUserIds, String channels) {
+        boolean succeeded = false;
+        if (StringUtils.isEmpty(channels)) {
+            succeeded = true;
+        }
+        else {
+            Map<String, Object> params = new HashMap<>();
+            params.put("key", pushKey);
+            params.put("userids", pushUserIds);
+            params.put("docid", document.getDocId());
+            params.put("type", Arrays.asList("weather"));
+            params.put("channel", channels);
+
+            try {
+                String response = HttpConnectionUtils.getGetResult(pushUrl, params);
+                JSONObject jsonObject = JSONObject.parseObject(response);
+                if (jsonObject.containsKey("status") && SUCCESS.equals(jsonObject.getString("status"))) {
+                    succeeded = true;
+                }
+                else {
+                    succeeded = false;
+                    log.error(GsonFactory.getNonPrettyGson().toJson(document) + " push failed with reason:"
+                            + jsonObject.getString("reason"));
+                }
+            } catch (IOException e) {
+                log.error(GsonFactory.getNonPrettyGson().toJson(document) + " push failed with reason:"
+                        + ExceptionUtils.getFullStackTrace(e));
+                succeeded = false;
+            }
+        }
+        return succeeded;
     }
 
 

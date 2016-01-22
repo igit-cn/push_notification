@@ -8,6 +8,7 @@ import com.yidian.push.config.Config;
 import com.yidian.push.config.WeatherPushConfig;
 import com.yidian.push.utils.FileLock;
 import com.yidian.push.utils.GsonFactory;
+import com.yidian.push.weather.util.MongoUtil;
 import com.yidian.serving.metrics.MetricsFactory;
 import com.yidian.serving.metrics.MetricsFactoryUtil;
 import com.yidian.serving.metrics.OnDemandMetricsFactory;
@@ -33,20 +34,20 @@ public class Service implements Runnable {
     @Override
     public void run() {
         WeatherPushConfig config = null;
-
         try {
             config = Config.getInstance().getWeatherPushConfig();
             log.info("Config is " + GsonFactory.getPrettyGson().toJson(config));
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        try {
-//            keepRunning = true;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            log.error("push notification logging init ...");
-//            throw new RuntimeException(e);
-//        }
+        try {
+            keepRunning = true;
+            MongoUtil.init();
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("push notification logging init ...");
+            throw new RuntimeException(e);
+        }
 
         final Thread currentThread = Thread.currentThread();
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -56,6 +57,7 @@ public class Service implements Runnable {
                 log.info("receive kill signal ...");
                 try {
                     currentThread.join();
+                    MongoUtil.destroy();
                     log.info("shutdown the thread pools");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
