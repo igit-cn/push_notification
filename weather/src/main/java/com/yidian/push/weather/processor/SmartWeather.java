@@ -35,6 +35,7 @@ public class SmartWeather {
 
     // TODO: save cache in local file system, load the file when started
     private static Map<String, Document> cachedAlarmIdDocMapping = new HashMap<>();
+    private Map<String, Integer> todayFromIdPushedTimes = new HashMap<>();
     private List<String> newlyIncomingAlarmIds = new ArrayList<>();
     private Timer refreshLocalCacheTimer = new Timer("LocalChannelRefreshTimer");
     private volatile Map<String, String> areaIdToChannel = new HashMap<>();
@@ -122,18 +123,29 @@ public class SmartWeather {
         cleanCache();
     }
 
-    public void push() {
+    public boolean push() {
         if (newlyIncomingAlarmIds.isEmpty()) {
-            return;
+            return true;
+        }
+        String day = DateTime.now().toString("yyyy-MM-dd");
+        if (!MongoUtil.getFromIdPushCounter(day, todayFromIdPushedTimes) ) {
+            return false;
         }
         for (String alarmId : newlyIncomingAlarmIds) {
             Document document = cachedAlarmIdDocMapping.get(alarmId);
-            if (document.isShouldPush() && !document.isPushed()) {
+            if (config.isDebug()) {
+                log.info("try to push document: " + GsonFactory.getDefaultGson().toJson(document) + " to " + config.getDebugChannels());
+                SmartWeatherUtil.pushDocument(document, config.getPushUrl(),
+                        config.getPushKey(), config.getPushUserIds(), config.getDebugChannels());
+            }
+            else if (document.isShouldPush() && !document.isPushed()) {
                 log.info("try to push document: " + GsonFactory.getDefaultGson().toJson(document));
                 pushDocument(document);
             }
             MongoUtil.saveOrUpdateDocuments(Arrays.asList(document));
         }
+        MongoUtil.saveOrUpdateDocuments(day, todayFromIdPushedTimes);
+        return true;
     }
 
     public void reset() {
@@ -143,7 +155,30 @@ public class SmartWeather {
     }
 
     public boolean pushDocument(Document document) {
-        boolean pushed = SmartWeatherUtil.pushDocument(document, config.getPushUrl(), config.getPushKey(), config.getPushUserIds());
+
+        List<String> channelList = new ArrayList<>();
+        for (String channel : document.getFromIdPushed().keySet()) {
+            boolean channelPushed = document.getFromIdPushed().getOrDefault(channel, true);
+            if (!channelPushed) {
+                int curPushCount = todayFromIdPushedTimes.getOrDefault(channel, 0);
+                if (curPushCount < config.getDayPushThreshold()) {
+                    channelList.add(channel);
+                    todayFromIdPushedTimes.put(channel, curPushCount + 1);
+                }
+                else {
+                    log.info("filter channel[" + channel + "] due to threshold.");
+                }
+            }
+        }
+
+        if (channelList.size() == 0) {
+            return true;
+        }
+
+        String channels = StringUtils.join(channelList, ",");
+        boolean pushed = SmartWeatherUtil.pushDocument(document,
+                config.getPushUrl(), config.getPushKey(),
+                config.getPushUserIds(), channels);
         if (pushed) {
             document.markAsPushed();
         }

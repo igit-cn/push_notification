@@ -101,7 +101,7 @@ public class MongoUtil {
                         .append("alarm", GsonFactory.getNonPrettyGson().toJson(doc.getAlarm()))
                         .append("lastUpdateTime", lastUpdateTime);
                 collection.findOneAndUpdate(query,
-                        new Document().append("$set",update),
+                        new Document().append("$set", update),
                         new FindOneAndUpdateOptions().returnDocument(ReturnDocument.BEFORE).upsert(true));
             }
             succeed = true;
@@ -111,4 +111,52 @@ public class MongoUtil {
         }
         return succeed;
     }
+
+    public static boolean getFromIdPushCounter(String day, Map<String, Integer> fromIdCounters) {
+        boolean succeed = true;
+        try {
+            MongoDatabase db = mongoClient.getDatabase(config.getMongoDBName());
+            MongoCollection collection = db.getCollection(config.getMongoPushCounterCollName());
+            FindIterable<Document> cursor = collection.find(Filters.eq("_id", day));
+            Map<String, Integer> tmpCounters = null;
+            for (Document document : cursor) {
+                    tmpCounters = document.get("fromIdCounters", Map.class);
+                break;
+            }
+            if (tmpCounters != null && !tmpCounters.isEmpty()) {
+                fromIdCounters.clear();
+                fromIdCounters.putAll(tmpCounters);
+            }
+            succeed = true;
+        } catch (Exception e) {
+            log.error("get documents failed with exception:" + ExceptionUtils.getFullStackTrace(e));
+            succeed = false;
+        }
+        return succeed;
+    }
+
+    public static boolean saveOrUpdateDocuments(String day, Map<String, Integer> fromIdCounters) {
+        boolean succeed = false;
+        try {
+            MongoDatabase db = mongoClient.getDatabase(config.getMongoDBName());
+            MongoCollection collection = db.getCollection(config.getMongoPushCounterCollName());
+            Document query = new Document().append("_id", day);
+            Document update = new Document();
+            for (String fromId : fromIdCounters.keySet()) {
+                Integer count = fromIdCounters.get(fromId);
+                update.append("fromIdCounters." + fromId, count);
+            }
+            collection.findOneAndUpdate(
+                    query,
+                    new Document().append("$set", update),
+                    new FindOneAndUpdateOptions().returnDocument(ReturnDocument.BEFORE).upsert(true));
+            succeed = true;
+        } catch (Exception e) {
+            log.error("save documents failed with exception:" + ExceptionUtils.getFullStackTrace(e));
+            succeed = false;
+        }
+        return succeed;
+    }
+
+
 }

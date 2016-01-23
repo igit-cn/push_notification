@@ -136,6 +136,7 @@ public class SmartWeatherUtil {
                 String response = HttpConnectionUtils.getGetResult(pushUrl, params);
                 JSONObject jsonObject = JSONObject.parseObject(response);
                 if (jsonObject.containsKey("status") && SUCCESS.equals(jsonObject.getString("status"))) {
+                    log.info(GsonFactory.getNonPrettyGson().toJson(document) + " push succeeded");
                     succeeded = true;
                 }
                 else {
