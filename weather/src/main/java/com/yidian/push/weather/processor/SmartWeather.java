@@ -34,7 +34,7 @@ public class SmartWeather {
     private List<Pair<String, Alarm>> incomingAlarmList = new LinkedList<>();
 
     // TODO: save cache in local file system, load the file when started
-    private static Map<String, Document> cachedAlarmIdDocMapping = new HashMap<>();
+    private Map<String, Document> cachedAlarmIdDocMapping = new HashMap<>();
     private Map<String, Integer> todayFromIdPushedTimes = new HashMap<>();
     private List<String> newlyIncomingAlarmIds = new ArrayList<>();
     private Timer refreshLocalCacheTimer = new Timer("LocalChannelRefreshTimer");

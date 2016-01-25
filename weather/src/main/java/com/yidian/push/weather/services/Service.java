@@ -6,8 +6,13 @@ import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.providers.jdk.JDKAsyncHttpProvider;
 import com.yidian.push.config.Config;
 import com.yidian.push.config.WeatherPushConfig;
+import com.yidian.push.data.HostPort;
 import com.yidian.push.utils.FileLock;
 import com.yidian.push.utils.GsonFactory;
+import com.yidian.push.weather.processor.SmartWeather;
+import com.yidian.push.weather.servlets.GetAlarmServlet;
+import com.yidian.push.weather.servlets.GetHistoryServlet;
+import com.yidian.push.weather.servlets.GetSupportedAreasServlet;
 import com.yidian.push.weather.util.MongoUtil;
 import com.yidian.serving.metrics.MetricsFactory;
 import com.yidian.serving.metrics.MetricsFactoryUtil;
@@ -18,6 +23,14 @@ import lombok.extern.log4j.Log4j;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -40,6 +53,38 @@ public class Service implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        final Server server = new Server();
+        QueuedThreadPool threadPool = new QueuedThreadPool();
+        for (HostPort hostPort : config.getHostPortList()) {
+            Connector conn = new SelectChannelConnector();
+            conn.setHost(hostPort.getHost());
+            conn.setPort(hostPort.getPort());
+            server.addConnector(conn);
+        }
+        threadPool.setMinThreads(config.getJettyMinThreads());
+        threadPool.setMaxThreads(config.getJettyMaxThreads());
+        server.setGracefulShutdown(1000);
+        server.setThreadPool(threadPool);
+        ServletContextHandler root = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        //TODO: add authorization filter here.
+        //root.addFilter(TestFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+        root.setContextPath("/smart_weather");
+        // set the max param size to java.lang.IllegalStateException: Form too large 337442>200000
+        // at org.eclipse.jetty.server.Request.extractParameters(Request.java:352)
+        root.setMaxFormContentSize(config.getJettyMaxFormContentSize());
+        root.addServlet(new ServletHolder(new GetHistoryServlet()), "/get_history/*");
+        root.addServlet(new ServletHolder(new GetAlarmServlet()), "/get_alarm/*");
+        root.addServlet(new ServletHolder(new GetSupportedAreasServlet()), "/get_supported_areas/*");
+        HandlerList lists = new HandlerList();
+        lists.setHandlers(new Handler[]{root});
+
+        server.setHandler(lists);
+        try {
+            server.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         try {
             keepRunning = true;
             MongoUtil.init();
@@ -49,19 +94,20 @@ public class Service implements Runnable {
             throw new RuntimeException(e);
         }
 
-        final Thread currentThread = Thread.currentThread();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 keepRunning = false;
                 log.info("receive kill signal ...");
                 try {
-                    currentThread.join();
-                    MongoUtil.destroy();
-                    log.info("shutdown the thread pools");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    server.stop();
+                } catch (Exception e) {
+                    //ignore
                 }
+                SmartWeather.getInstance().destroy();
+                MongoUtil.destroy();
+                log.info("shutdown the thread pools");
+
             }
         });
 
@@ -82,7 +128,11 @@ public class Service implements Runnable {
         MetricsFactory metricsFactory = new OnDemandMetricsFactory(tags, openTsdbClient);
         MetricsFactoryUtil.register(metricsFactory);
 
+
+
         log.info("service started.");
+        SmartWeather.getInstance().process();
+        log.info("finish the services");
 
     }
 

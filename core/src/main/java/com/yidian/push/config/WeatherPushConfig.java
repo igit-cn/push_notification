@@ -1,8 +1,11 @@
 package com.yidian.push.config;
 
+import com.yidian.push.data.HostPort;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -14,11 +17,17 @@ import java.util.Properties;
 public class WeatherPushConfig {
     private String lockFile = "/tmp/push_notification_weather_push.lck";
 
-    private String mongoHost = "";
+    private List<HostPort> hostPortList = Arrays.asList(new HostPort("localhost", 8080));
+    private List<HostPort> httpsHostPortList = Arrays.asList(new HostPort("localhost", 8081));
+    private int jettyMinThreads = 50;
+    private int jettyMaxThreads = 100;
+    private int jettyMaxFormContentSize = 20 * 1024 * 1024; // 20M
+
+    private String mongoHost = "10.101.2.22";
     private int mongoPort = 27017;
-    private String mongoDBName = "";
-    private String mongoWeatherCollName = "";
-    private String mongoPushCounterCollName = "";
+    private String mongoDBName = "instant_weather_alarm";
+    private String mongoWeatherCollName = "weather_alarm";
+    private String mongoPushCounterCollName = "push_counter";
     private String opentsdbAddress = "http://dataplatform.yidian.com:4245/api/put";
     private Map<String, String> opentsdbTags = null;
 
@@ -39,8 +48,9 @@ public class WeatherPushConfig {
     private String debugChannels = "u_faked";
     private int dayPushThreshold = 1;
 
-    private String alarmPushLevel = "";
-    private String alarmGuangdongPushLevel = "";
+    private String alarmPushLevel = "03";
+    private String alarmGuangdongPushLevel = "04";
+
 
 
 
