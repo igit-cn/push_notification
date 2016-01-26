@@ -10,15 +10,14 @@ import com.yidian.push.weather.util.AreaUtil;
 import com.yidian.push.weather.util.SmartWeatherUtil;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.protocol.HTTP;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.Charset;
+import java.util.*;
 
 /**
  * Created by tianyuzhi on 16/1/18.
@@ -157,45 +156,29 @@ public class Weather {
         }
         log.info("get weather data from url:" + queryUrl);
         String response = HttpConnectionUtils.getGetResult(queryUrl, null);
-        //response = new String(response.getBytes(HTTP.DEF_CONTENT_CHARSET), "UTF-8");
+        //String encoding = getEncoding(response);
+        //response = new String(response.getBytes(encoding), "UTF-8");
         return response;
     }
 
-//    public static String getEncoding(String str) {
-//        String encode = "GB2312";
-//        try {
-//            if (str.equals(new String(str.getBytes(encode), encode))) {
-//                String s = encode;
-//                return s;
-//            }
-//        } catch (Exception exception) {
-//        }
-//        encode = "ISO-8859-1";
-//        try {
-//            if (str.equals(new String(str.getBytes(encode), encode))) {
-//                String s1 = encode;
-//                return s1;
-//            }
-//        } catch (Exception exception1) {
-//        }
-//        encode = "UTF-8";
-//        try {
-//            if (str.equals(new String(str.getBytes(encode), encode))) {
-//                String s2 = encode;
-//                return s2;
-//            }
-//        } catch (Exception exception2) {
-//        }
-//        encode = "GBK";
-//        try {
-//            if (str.equals(new String(str.getBytes(encode), encode))) {
-//                String s3 = encode;
-//                return s3;
-//            }
-//        } catch (Exception exception3) {
-//        }
-//        return "";
-//    }
+    public static String getEncoding(String str) {
+        List<String> charsetList = Arrays.asList(
+                Charsets.ISO_8859_1.name(),
+                "GB2312",
+                "GBK",
+                Charsets.UTF_8.name()
+            );
+        for (String encode : charsetList) {
+            try {
+                if (str.equals(new String(str.getBytes(encode), encode))) {
+                    String s = encode;
+                    return s;
+                }
+            } catch (Exception exception) {
+            }
+        }
+        return "";
+    }
 
 
 }
