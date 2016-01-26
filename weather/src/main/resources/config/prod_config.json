@@ -1,20 +1,15 @@
 {
     "lockFile" : "/tmp/push_notification_instant_push.lck",
     "pushRequestBaseDir" : "/ssd/data/push_notification/request",
-    "instantPushConfig" : {
+    "weatherPushConfig" : {
         "lockFile": "/tmp/push_notification_instant_push.lck",
         "hostPortList" : [
-            {"host": "localhost", "port": 5266},
-            {"host": "10.111.0.57", "port": 5266}
+            {"host": "10.101.2.2", "port":8080}
         ],
         "httpsHostPortList" : [],
-        "jettyMinThreads": 5000,
-        "jettyMaxThreads": 10000,
+        "jettyMinThreads": 10,
+        "jettyMaxThreads": 20,
         "jettyMaxFormContentSize":20971520,
-        "mongoHost": "10.101.2.22",
-        "mongoPort": 27017,
-        "mongoDBName": "instant_push",
-        "mongoCollName": "related_channel_doc",
         "mongoHost": "10.101.2.22",
         "mongoPort": 27017,
         "mongoDBName": "instant_weather_alarm",
@@ -49,6 +44,7 @@
         "genDocMediaId": "64485",
         "getDocIdUrl": "http://lc2.haproxy.yidian.com:9100/post/get-post",
         "getLocalChannelUrl": "http://lc1.haproxy.yidian.com:8701/push_service/cityToChannel",
+        "_getLocalChannelUrl": "http://localhost:8888/push_service/cityToChannel",
         "pushUrl": "http://lc1.haproxy.yidian.com:8703/push/add_task.php",
         "pushKey": "2c6875aa781253ce445c450fd08e066e",
         "pushUserIds": "auto",
