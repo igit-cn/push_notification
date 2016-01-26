@@ -310,7 +310,7 @@ public class SmartWeather {
                 cachedAlarmIdDocMapping.get(alarmId).addFromId(channel);
             }
             else {
-                log.error("NO_CHANNEL for area: " + area);
+                log.info("NO_CHANNEL for area: " + area);
             }
             cachedAlarmIdDocMapping.get(alarmId).addArea(area);
         }
