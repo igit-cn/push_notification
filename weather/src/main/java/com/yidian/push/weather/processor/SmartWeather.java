@@ -105,7 +105,7 @@ public class SmartWeather {
 
 
     public void process() {
-        while (!Thread.currentThread().isInterrupted()) {
+         while (!Thread.currentThread().isInterrupted()) {
             task();
             try {
                 Thread.sleep(config.getRefreshIntervalInSeconds() * 1000);
@@ -238,8 +238,15 @@ public class SmartWeather {
                 continue;
             }
             try {
-                DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
-                DateTime publishTime = DateTime.parse(publishDate, format);
+                DateTimeFormatter format1 = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
+                DateTimeFormatter format2 = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+                DateTime publishTime;
+                if (publishDate.length() == 16) {
+                    publishTime = DateTime.parse(publishDate, format1);
+                }
+                else {
+                    publishTime = DateTime.parse(publishDate, format2);
+                }
                 if (publishTime.isBefore(timeToClean)) {
                     alarmIdList.add(alarmId);
                 }
