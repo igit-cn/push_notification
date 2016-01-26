@@ -24,7 +24,7 @@ public class Document {
     private boolean shouldPush = false;
     private boolean pushed = false;
     private Map<String, Boolean> fromIdPushed = new HashMap<>();
-    private Set<String> areas = new HashSet<>();
+    private Map<String, String> areas = new HashMap<>();
 
     public Document(){}
 
@@ -39,12 +39,12 @@ public class Document {
         this.publishTime = alarm.getPublishTime();
     }
 
-    public void addArea(String area) {
+    public void addArea(String area, String fromId) {
         if (areas == null) {
-            areas = new HashSet<>();
+            areas = new HashMap<>();
         }
         if (StringUtils.isNotEmpty(area)) {
-            areas.add(area);
+            areas.put(fromId, area);
         }
     }
     public void addFromId(String fromId) {

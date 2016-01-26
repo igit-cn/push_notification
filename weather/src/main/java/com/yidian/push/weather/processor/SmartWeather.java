@@ -308,11 +308,10 @@ public class SmartWeather {
             }
             if (StringUtils.isNotEmpty(channel)) {
                 cachedAlarmIdDocMapping.get(alarmId).addFromId(channel);
-            }
-            else {
+                cachedAlarmIdDocMapping.get(alarmId).addArea(area, channel);
+            } else {
                 log.info("NO_CHANNEL for area: " + area);
             }
-            cachedAlarmIdDocMapping.get(alarmId).addArea(area);
         }
         log.info("totally got " + newlyIncomingAlarmIds.size() + " new alarm(s)");
         for (String alarmId : newlyIncomingAlarmIds) {
