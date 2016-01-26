@@ -26,19 +26,32 @@ public class GetAlarmServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String city = req.getParameter("city");
+        String areaId = req.getParameter("areaId");
         AlarmResponse response = new AlarmResponse();
 
-        if (StringUtils.isEmpty(city)) {
-            response.setDescription("city not set");
+        if (StringUtils.isEmpty(city) && StringUtils.isEmpty(areaId)) {
+            response.setDescription("city or areaId not set");
             HttpHelper.setResponseParameters(resp, response);
         }
-        try {
-            List<Alarm> alarmList = SmartWeather.getInstance().getWeather().getAreaAlarms(city);
-            response.setResult(alarmList);
-            response.markSuccess();
-        } catch (UrlGenerationException e) {
-            log.error("get alarm for city[" + city + "] with error " + ExceptionUtils.getFullStackTrace(e));
-            response.setDescription(e.getMessage());
+        if (StringUtils.isNotEmpty(areaId)) {
+            try {
+                List<Alarm> alarmList = SmartWeather.getInstance().getWeather().getAreaIdAlarms(areaId);
+                response.setResult(alarmList);
+                response.markSuccess();
+            } catch (UrlGenerationException e) {
+                log.error("get alarm for city[" + city + "] with error " + ExceptionUtils.getFullStackTrace(e));
+                response.setDescription(e.getMessage());
+            }
+        }
+        else {
+            try {
+                List<Alarm> alarmList = SmartWeather.getInstance().getWeather().getAreaAlarms(city);
+                response.setResult(alarmList);
+                response.markSuccess();
+            } catch (UrlGenerationException e) {
+                log.error("get alarm for city[" + city + "] with error " + ExceptionUtils.getFullStackTrace(e));
+                response.setDescription(e.getMessage());
+            }
         }
         HttpHelper.setResponseParameters(resp, response);
     }
