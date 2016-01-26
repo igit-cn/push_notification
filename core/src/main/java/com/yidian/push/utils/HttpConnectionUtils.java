@@ -2,6 +2,7 @@ package com.yidian.push.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.Charsets;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -131,8 +132,7 @@ public class HttpConnectionUtils {
                     if (entity == null) {
                         throw new ClientProtocolException("Response contains no content");
                     }
-                    ContentType contentType = ContentType.getOrDefault(entity);
-                    Charset charset = contentType.getCharset();
+                    Charset charset = getCharSetWithDefault(entity, Charsets.UTF_8);
                     return EntityUtils.toString(entity, charset);
                 }
             });
@@ -208,8 +208,7 @@ public class HttpConnectionUtils {
                     if (entity == null) {
                         throw new ClientProtocolException("Response contains no content");
                     }
-                    ContentType contentType = ContentType.getOrDefault(entity);
-                    Charset charset = contentType.getCharset();
+                    Charset charset = getCharSetWithDefault(entity, Charsets.UTF_8);
                     return EntityUtils.toString(entity, charset);
                 }
             });
@@ -273,8 +272,7 @@ public class HttpConnectionUtils {
                     if (entity == null) {
                         throw new ClientProtocolException("Response contains no content");
                     }
-                    ContentType contentType = ContentType.getOrDefault(entity);
-                    Charset charset = contentType.getCharset();
+                    Charset charset = getCharSetWithDefault(entity, Charsets.UTF_8);
                     return EntityUtils.toString(entity, charset);
                 }
             });
@@ -284,5 +282,15 @@ public class HttpConnectionUtils {
         }
 
     }
+
+    public static Charset getCharSetWithDefault(HttpEntity entity, Charset defaultCharset) {
+        ContentType contentType = ContentType.getOrDefault(entity);
+        Charset charset = contentType.getCharset();
+        if (null == charset) {
+            charset = defaultCharset;
+        }
+        return charset;
+    }
+
 
 }

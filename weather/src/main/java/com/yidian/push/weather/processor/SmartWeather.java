@@ -234,12 +234,17 @@ public class SmartWeather {
             Document document = cachedAlarmIdDocMapping.get(alarmId);
             String publishDate = document.getPublishTime();
             if (StringUtils.isEmpty(publishDate)) {
-                document.setPublishTime(now.toString("yyyy-MM-dd HH:mm:ss"));
+                document.setPublishTime(now.toString("yyyy-MM-dd HH:mm"));
                 continue;
             }
-            DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-            DateTime publishTime = DateTime.parse(publishDate, format);
-            if (publishTime.isBefore(timeToClean)) {
+            try {
+                DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
+                DateTime publishTime = DateTime.parse(publishDate, format);
+                if (publishTime.isBefore(timeToClean)) {
+                    alarmIdList.add(alarmId);
+                }
+            } catch (Exception e) {
+                log.error("bad time format for publishDate: " + publishDate);
                 alarmIdList.add(alarmId);
             }
         }
