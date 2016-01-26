@@ -1,8 +1,8 @@
 {
-    "lockFile" : "/tmp/push_notification_instant_push.lck",
+    "lockFile" : "/tmp/push_notification_weather_push.lck",
     "pushRequestBaseDir" : "/ssd/data/push_notification/request",
     "weatherPushConfig" : {
-        "lockFile": "/tmp/push_notification_instant_push.lck",
+        "lockFile": "/tmp/push_notification_weather_push.lck",
         "hostPortList" : [
             {"host": "10.101.2.2", "port":8080}
         ],

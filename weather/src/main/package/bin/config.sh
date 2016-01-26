@@ -42,11 +42,11 @@ LIB_DIR_JARS=$(get_all_jars ${LIB_DIR})
 #JAVA_FLAGS="-Dhttp.proxyHost=proxy1.yidian.com -Dhttp.proxyPort=3128"
 JAVA_FLAGS="\
 -Dcom.sun.management.jmxremote=true \
--Dcom.sun.management.jmxremote.port=9990 \
+-Dcom.sun.management.jmxremote.port=10000 \
 -Dcom.sun.management.jmxremote.ssl=false \
 -Dcom.sun.management.jmxremote.authenticate=false \
 "
-OPTS="${JAVA_FLAGS} -Xmx12G -Xms4G -server -XX:+UseCompressedOops -XX:+UseParNewGC -cp .:${LIB_DIR}:${CONFIG_DIR}:${LIB_DIR_JARS} com.yidian.push.instant.services.Service ${CONFIG_DIR}/prod_config.json"
+OPTS="${JAVA_FLAGS} -Xmx12G -Xms4G -server -XX:+UseCompressedOops -XX:+UseParNewGC -cp .:${LIB_DIR}:${CONFIG_DIR}:${LIB_DIR_JARS} com.yidian.push.weather.services.Service ${CONFIG_DIR}/prod_config.json"
 KILLPROC_OPTS=""
 
 #######################
