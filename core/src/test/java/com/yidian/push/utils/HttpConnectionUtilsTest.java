@@ -16,14 +16,14 @@ public class HttpConnectionUtilsTest {
     @Test
     public void testGetPostContent() throws Exception {
         String url = "http://dataplatform.yidian.com:4242/api/query?start=3m-ago&m=sum:prediction.default.qps.m1";
-       // url = "http://www.baidu.com";
+        url = "http://www.baidu.com";
         System.out.println(HttpConnectionUtils.getGetResult(url, null));
 
         url = "http://10.111.0.108:9080/push_service/getLocalChannel";
         Map<String, Object> params = new HashMap<>();
         params.put("ip", "219.147.36.6");
         System.out.println("get: " + HttpConnectionUtils.getGetResult(url, params).trim());
-        System.out.println("post: " + HttpConnectionUtils.getPostResult(url, params).trim());
+        //System.out.println("post: " + HttpConnectionUtils.getPostResult(url, params).trim());
 
     }
 
