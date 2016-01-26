@@ -63,7 +63,10 @@ public class MongoUtil {
                 doc.setShouldPush(document.getBoolean("shouldPush", false));
                 doc.setPushed(document.getBoolean("pushed", true));
                 doc.setFromIdPushed(document.get("fromIdPushed", Map.class));
-                doc.setAreas(new HashSet<>(document.get("areas", List.class)));
+                List<String> areaList = document.get("areas", List.class);
+                if (null != areaList) {
+                    doc.setAreas(new HashSet<>(areaList));
+                }
                 String alarmString = document.getString("alarm");
                 if (StringUtils.isNotEmpty(alarmString)) {
                     try {
