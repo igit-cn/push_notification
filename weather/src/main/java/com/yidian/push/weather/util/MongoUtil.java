@@ -63,6 +63,7 @@ public class MongoUtil {
                 doc.setShouldPush(document.getBoolean("shouldPush", false));
                 doc.setPushed(document.getBoolean("pushed", true));
                 doc.setFromIdPushed(document.get("fromIdPushed", Map.class));
+                doc.setAreas(document.get("areas", Set.class));
                 String alarmString = document.getString("alarm");
                 if (StringUtils.isNotEmpty(alarmString)) {
                     try {
@@ -98,6 +99,7 @@ public class MongoUtil {
                         .append("shouldPush", doc.isShouldPush())
                         .append("pushed", doc.isPushed())
                         .append("fromIdPushed", doc.getFromIdPushed())
+                        .append("areas", doc.getAreas())
                         .append("alarm", GsonFactory.getNonPrettyGson().toJson(doc.getAlarm()))
                         .append("lastUpdateTime", lastUpdateTime);
                 collection.findOneAndUpdate(query,
@@ -146,6 +148,8 @@ public class MongoUtil {
                 Integer count = fromIdCounters.get(fromId);
                 update.append("fromIdCounters." + fromId, count);
             }
+            String lastUpdateTime = DateTime.now().toString("yyyy-MM-dd HH:mm:ss");
+            update.append("lastUpdateTime", lastUpdateTime);
             collection.findOneAndUpdate(
                     query,
                     new Document().append("$set", update),

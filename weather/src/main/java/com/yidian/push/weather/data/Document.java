@@ -5,7 +5,9 @@ import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by tianyuzhi on 16/1/20.
@@ -22,6 +24,7 @@ public class Document {
     private boolean shouldPush = false;
     private boolean pushed = false;
     private Map<String, Boolean> fromIdPushed = new HashMap<>();
+    private Set<String> areas = new HashSet<>();
 
     public Document(){}
 
@@ -36,6 +39,14 @@ public class Document {
         this.publishTime = alarm.getPublishTime();
     }
 
+    public void addArea(String area) {
+        if (areas == null) {
+            areas = new HashSet<>();
+        }
+        if (StringUtils.isNotEmpty(area)) {
+            areas.add(area);
+        }
+    }
     public void addFromId(String fromId) {
         if (null == fromIdPushed) {
             fromIdPushed = new HashMap<>();
@@ -49,7 +60,8 @@ public class Document {
     public void markFromIdAsPushed(String fromId) {
         if (fromIdPushed != null
                 && StringUtils.isNotEmpty(fromId)
-                && fromIdPushed.containsKey(fromId)) {
+                //&& fromIdPushed.containsKey(fromId)
+                ) {
             fromIdPushed.put(fromId, true);
 
         }

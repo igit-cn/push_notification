@@ -88,7 +88,7 @@ public class SmartWeather {
             String area = idToAreaMapping.get(areaId);
             try {
                 String fromId = SmartWeatherUtil.getLocalChannel(config.getGetLocalChannelUrl(), area);
-                if (StringUtils.isEmpty(fromId)) {
+                if (!StringUtils.isEmpty(fromId)) {
                     newAreaIdToChannel.put(areaId, fromId);
                 }
             } catch (Exception e) {
@@ -134,9 +134,13 @@ public class SmartWeather {
         for (String alarmId : newlyIncomingAlarmIds) {
             Document document = cachedAlarmIdDocMapping.get(alarmId);
             if (config.isDebug()) {
-                log.info("try to push document: " + GsonFactory.getDefaultGson().toJson(document) + " to " + config.getDebugChannels());
+                String channels = config.getDebugChannels();
+                log.info("try to push document: " + GsonFactory.getDefaultGson().toJson(document) + " to " + channels);
                 SmartWeatherUtil.pushDocument(document, config.getPushUrl(),
-                        config.getPushKey(), config.getPushUserIds(), config.getDebugChannels());
+                        config.getPushKey(), config.getPushUserIds(), channels);
+                document.markFromIdAsPushed(channels);
+                todayFromIdPushedTimes.put(channels, todayFromIdPushedTimes.getOrDefault(channels, 0) + 1);
+                document.markAsPushed();
             }
             else if (document.isShouldPush() && !document.isPushed()) {
                 log.info("try to push document: " + GsonFactory.getDefaultGson().toJson(document));
@@ -144,14 +148,17 @@ public class SmartWeather {
             }
             MongoUtil.saveOrUpdateDocuments(Arrays.asList(document));
         }
+        log.info("save push counters");
         MongoUtil.saveOrUpdateDocuments(day, todayFromIdPushedTimes);
         return true;
     }
+
 
     public void reset() {
         incomingAlarmQueue.clear();
         incomingAlarmList.clear();
         newlyIncomingAlarmIds.clear();
+        log.info("reset");
     }
 
     public boolean pushDocument(Document document) {
@@ -180,6 +187,9 @@ public class SmartWeather {
                 config.getPushUrl(), config.getPushKey(),
                 config.getPushUserIds(), channels);
         if (pushed) {
+            for (String channel : channelList) {
+                document.markFromIdAsPushed(channel);
+            }
             document.markAsPushed();
         }
         return pushed;
@@ -213,6 +223,7 @@ public class SmartWeather {
             log.error("interrupt failed.");
         }
         incomingAlarmQueue.drainTo(incomingAlarmList);
+        log.info("totally got " + incomingAlarmList.size() + " alarms");
     }
 
     public void cleanCache() {
@@ -265,6 +276,7 @@ public class SmartWeather {
             }
 
             String channel = areaIdToChannel.getOrDefault(areaId, "");
+            String area = weather.getArea(areaId);
             if (!docGenerated) {
                 Document document = new Document(alarm);
                 boolean shouldPush = shouldPush(areaId, alarm);
@@ -277,13 +289,24 @@ public class SmartWeather {
                         config.getGetDocIdUrl()
                 );
                 if (StringUtils.isNotEmpty(docId)) {
-                    MongoUtil.saveOrUpdateDocuments(Arrays.asList(document));
                     document.setDocId(docId);
                     cachedAlarmIdDocMapping.put(alarmId, document);
                     newlyIncomingAlarmIds.add(alarmId);
                 }
             }
-            cachedAlarmIdDocMapping.get(alarmId).addFromId(channel);
+            if (StringUtils.isNotEmpty(channel)) {
+                cachedAlarmIdDocMapping.get(alarmId).addFromId(channel);
+            }
+            else {
+                log.error("NO_CHANNEL for area: " + area);
+            }
+            cachedAlarmIdDocMapping.get(alarmId).addArea(area);
+        }
+        log.info("totally got " + newlyIncomingAlarmIds.size() + " new alarm(s)");
+        for (String alarmId : newlyIncomingAlarmIds) {
+            Document document = cachedAlarmIdDocMapping.get(alarmId);
+            log.info("insert doc into mongo, alarmId [" + alarmId + "], docId:[" + document.getDocId() );
+            MongoUtil.saveOrUpdateDocuments(Arrays.asList(document));
         }
         return true;
     }

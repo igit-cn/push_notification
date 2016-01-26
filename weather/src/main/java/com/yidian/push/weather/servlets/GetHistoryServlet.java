@@ -2,6 +2,7 @@ package com.yidian.push.weather.servlets;
 
 import com.yidian.push.weather.processor.SmartWeather;
 import com.yidian.push.weather.response.HistoryResponse;
+import com.yidian.push.weather.util.HttpHelper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,5 +18,6 @@ public class GetHistoryServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HistoryResponse response = new HistoryResponse();
         response.setResult(SmartWeather.getInstance().getCachedAlarmIdDocMapping());
+        HttpHelper.setResponseParameters(resp, response);
     }
 }

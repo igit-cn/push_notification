@@ -187,7 +187,7 @@ public class HttpConnectionUtils {
                         nameValuePairList.add(new BasicNameValuePair(key, String.valueOf(object)));
                     }
                 }
-                String paramStr = EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairList), StandardCharsets.UTF_8.toString());
+                String paramStr = EntityUtils.toString(new UrlEncodedFormEntity(nameValuePairList, StandardCharsets.UTF_8.toString()), StandardCharsets.UTF_8.toString());
                 httpGet.setURI(new URI(httpGet.getURI().toString() + "?" + paramStr));
             }
             if (null != headers && headers.size() > 0) {
@@ -254,7 +254,8 @@ public class HttpConnectionUtils {
             HttpClientBuilder httpClientBuilder =  HttpClients.custom().setConnectionManager(cm);
             CloseableHttpClient client =  httpClientBuilder.build();
 
-            StringEntity s = new StringEntity(json.toString());
+            String string = json.toString();
+            StringEntity s = new StringEntity(string, "UTF-8");
             s.setContentEncoding("UTF-8");
             s.setContentType("application/json");
             post.setEntity(s);

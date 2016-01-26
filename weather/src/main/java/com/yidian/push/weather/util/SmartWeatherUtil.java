@@ -45,7 +45,8 @@ public class SmartWeatherUtil {
         JSONObject json = new JSONObject();
         json.put("title", title);
         json.put("content", content);
-        json.put("cate", "天气");
+        json.put("cate", "社会");
+        json.put("import_url", "http://openweather.weather.com.cn/Home/Help/Product.html"); // TODO
         json.put("media_id", mediaId);
         try {
             String response = HttpConnectionUtils.doPostJSON(url, json);
