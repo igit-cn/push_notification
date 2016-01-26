@@ -14,6 +14,10 @@
     <artifactId>weather</artifactId>
     <version>1.0.0</version>
     <description>weather info from : http://openweather.weather.com.cn/ </description>
+    <properties>
+        <theMainClass></theMainClass>
+        <package_dir>${project.build.directory}/package</package_dir>
+    </properties>
 
     <dependencies>
         <dependency>
