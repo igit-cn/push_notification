@@ -48,7 +48,7 @@
         "pushUrl": "http://lc1.haproxy.yidian.com:8703/push/add_task.php",
         "pushKey": "2c6875aa781253ce445c450fd08e066e",
         "pushUserIds": "auto",
-        "isDebug": true,
+        "isDebug": false,
         "debugChannels": "u_faked",
         "dayPushThreshold": 1,
 
