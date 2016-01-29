@@ -7,9 +7,19 @@ import org.testng.annotations.Test;
  */
 public class SmartWeatherUtilTest {
 
-    @Test
+    //@Test
+    // when run, generated doc will be like : http://www.yidianzixun.com/0CE5ScrP
     public void testGenDocAndGetDocId() throws Exception {
+        String url = "http://10.101.0.150:9999/service/inject_self_news";
+        String title = "test_title测试标题";
+        String content = "test_content测试内容";
+        String date = "1454050109000"; // in micro-seconds
+        String uid = "tianzy";
+        String source = "中国气象局";
+        String srcUrl = "http://openweather.weather.com.cn/Home/Help/Product.html";
 
+        String docId = SmartWeatherUtil.genDocAndGetDocId(url, title, content, date, uid, source, srcUrl);
+        System.out.println(docId);
     }
 
   // @Test

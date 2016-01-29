@@ -293,12 +293,16 @@ public class SmartWeather {
                 Document document = new Document(alarm);
                 boolean shouldPush = shouldPush(areaId, alarm);
                 document.setShouldPush(shouldPush);
+                String date = String.valueOf(DateTime.now().getMillis());
                 String docId = SmartWeatherUtil.genDocAndGetDocId(
-                        config.getGenDocUrl(),
+                        config.getGenDocAndGetDocIdUrl(),
                         document.getTitle(),
                         document.getContent(),
-                        config.getGenDocMediaId(),
-                        config.getGetDocIdUrl()
+                        date,
+                        config.getGenDocUid(),
+                        config.getDocSource(),
+                        config.getDocFromUrl(),
+                        config.getRequestConfig()
                 );
                 if (StringUtils.isNotEmpty(docId)) {
                     document.setDocId(docId);

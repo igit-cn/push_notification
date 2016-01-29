@@ -36,13 +36,17 @@
             "url": "http://webapi.weather.com.cn/data/"
         },
         "refreshIntervalInSeconds": 600,
-        "refreshFetchPoolSize": 20,
+        "refreshFetchPoolSize": 1,
         "localChannelRefreshIntervalInSeconds": 3600,
         "cleanCacheDays": 3,
 
         "genDocUrl": "http://lc2.haproxy.yidian.com:9100/post/save?action=2&uid=12299265",
         "genDocMediaId": "64485",
         "getDocIdUrl": "http://lc2.haproxy.yidian.com:9100/post/get-post",
+        "genDocAndGetDocIdUrl": "http://10.101.0.150:9999/service/inject_self_news",
+        "genDocUid": "tianzy",
+        "docSource": "中国气象局",
+        "docFromUrl": "http://openweather.weather.com.cn/Home/Help/Product.html",
         "getLocalChannelUrl": "http://lc1.haproxy.yidian.com:8701/push_service/cityToChannel",
         "_getLocalChannelUrl": "http://localhost:8888/push_service/cityToChannel",
         "pushUrl": "http://lc1.haproxy.yidian.com:8703/push/add_task.php",
@@ -53,6 +57,8 @@
         "dayPushThreshold": 1,
 
         "alarmPushLevel": "03",
-        "alarmGuangdongPushLevel": "04"
+        "alarmGuangdongPushLevel": "04",
+        "socketConnectTimeout": 10,
+        "socketReadTimeout": 10
     }
 }

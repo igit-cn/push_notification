@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.http.client.config.RequestConfig;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -34,7 +35,68 @@ public class SmartWeatherUtil {
         return URLEncoder.encode(new Base64().encodeAsString(signature), encoding);
     }
 
-    public static String genDocAndGetDocId(String genDocUrl, String title, String content, String mediaId, String getDocIdUrl) {
+    /**
+     * @param genUrl        : url to generate doc
+     * @param title         : doc title
+     * @param content       : doc content
+     * @param date          : date in micro-seconds
+     * @param uid           : user id which is used to demonstrate who publish this doc
+     * @param source        : doc source
+     * @param url           : where the content from
+     * @return generated doc id
+     */
+    public static String genDocAndGetDocId(String genUrl, String title, String content,
+                                           String date, String uid, String source, String url) {
+        int timeout = 5;
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(timeout * 1000)
+                .setConnectionRequestTimeout(timeout * 1000)
+                .setSocketTimeout(timeout * 1000).build();
+        return genDocAndGetDocId(genUrl, title, content, date, uid, source, url, config);
+    }
+    /**
+     * @param genUrl        : url to generate doc
+     * @param title         : doc title
+     * @param content       : doc content
+     * @param date          : date in micro-seconds
+     * @param uid           : user id which is used to demonstrate who publish this doc
+     * @param source        : doc source
+     * @param url           : where the content from
+     * @param requestConfig
+     * @return generated doc id
+     */
+    public static String genDocAndGetDocId(String genUrl, String title, String content,
+                                           String date, String uid, String source, String url,
+                                           RequestConfig requestConfig) {
+        /**title, content, date(long in micro-seconds),
+         uid: 提交人一点id
+
+         可选字段：
+         source*/
+        String docId = null;
+        Map<String, Object> params = new HashMap<>();
+        params.put("title", title);
+        params.put("content", content);
+        params.put("date", date);
+        params.put("uid", uid);
+        params.put("source", source);
+        params.put("url", url);
+        try {
+            String response = HttpConnectionUtils.getPostResult(genUrl, params, requestConfig);
+            //{"result":{"id":"0CE5ScrP"},"status":"success"}
+            JSONObject jsonObject = JSONObject.parseObject(response);
+            if (SUCCESS.equals(jsonObject.getString("status"))
+                    && jsonObject.containsKey("result")) {
+                JSONObject result = jsonObject.getJSONObject("result");
+                docId = result.getString("id");
+            }
+        } catch (Exception e) {
+            log.error("could not gen doc with exception:" + ExceptionUtils.getFullStackTrace(e));
+        }
+        return docId;
+    }
+
+    public static String genDocAndGetDocIdThroughMedia(String genDocUrl, String title, String content, String mediaId, String getDocIdUrl) {
         String weMediaId = genDoc(genDocUrl, title, content, mediaId);
         String docId = getDocId(getDocIdUrl, weMediaId);
         return docId;
@@ -97,7 +159,6 @@ public class SmartWeatherUtil {
     }
 
 
-
     public static boolean pushDocument(Document document, String pushUrl, String pushKey, String pushUserIds) {
         //		String url="http://lc1.haproxy.yidian.com:8703/push/add_task.php?host=push.yidian-inc.com&userids=auto_break&type[]=weather&docid="+docid+"&channel="+"u_faked"+"&key="+key;
         boolean succeeded = false;
@@ -112,8 +173,7 @@ public class SmartWeatherUtil {
             log.info("no channel to push for docid [" + document.getDocId()
                     + "], alarmId [" + document.getAlarmId() + "]");
             succeeded = true;
-        }
-        else {
+        } else {
             String channels = StringUtils.join(channelList, ",");
             succeeded = pushDocument(document, pushUrl, pushKey, pushUserIds, channels);
         }
@@ -124,8 +184,7 @@ public class SmartWeatherUtil {
         boolean succeeded = false;
         if (StringUtils.isEmpty(channels)) {
             succeeded = true;
-        }
-        else {
+        } else {
             Map<String, Object> params = new HashMap<>();
             params.put("key", pushKey);
             params.put("userids", pushUserIds);
@@ -139,8 +198,7 @@ public class SmartWeatherUtil {
                 if (jsonObject.containsKey("status") && SUCCESS.equals(jsonObject.getString("status"))) {
                     log.info(GsonFactory.getNonPrettyGson().toJson(document) + " push succeeded");
                     succeeded = true;
-                }
-                else {
+                } else {
                     succeeded = false;
                     log.error(GsonFactory.getNonPrettyGson().toJson(document) + " push failed with reason:"
                             + jsonObject.getString("reason"));
