@@ -45,6 +45,7 @@ JAVA_FLAGS="\
 -Dcom.sun.management.jmxremote.port=9090 \
 -Dcom.sun.management.jmxremote.ssl=false \
 -Dcom.sun.management.jmxremote.authenticate=false \
+-Dfile.encoding=UTF-8 \
 "
 OPTS="${JAVA_FLAGS} -Xmx12G -Xms4G -server -XX:+UseCompressedOops -XX:+UseParNewGC -cp .:${LIB_DIR}:${CONFIG_DIR}:${LIB_DIR_JARS} com.yidian.push.generator.services.Service ${CONFIG_DIR}/prod_config.json"
 KILLPROC_OPTS=""
