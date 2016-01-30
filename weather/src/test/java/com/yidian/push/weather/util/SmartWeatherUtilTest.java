@@ -6,8 +6,9 @@ import org.testng.annotations.Test;
  * Created by tianyuzhi on 16/1/21.
  */
 public class SmartWeatherUtilTest {
+    // ignore the test , for it will generate the doc online .
 
-    //@Test
+    @Test
     // when run, generated doc will be like : http://www.yidianzixun.com/0CE5ScrP
     public void testGenDocAndGetDocId() throws Exception {
         String url = "http://10.101.0.150:9999/service/inject_self_news";
@@ -22,19 +23,24 @@ public class SmartWeatherUtilTest {
         System.out.println(docId);
     }
 
-  // @Test
+   //@Test
     public void testGenDoc() throws Exception {
-        String url =  "http://lc2.haproxy.yidian.com:9100/post/save?action=2&uid=12299265";
-        String title = "test-title";
-        String content = "test-content";
+        String url =  "http://10.111.0.153:9901/post/save?action=2&uid=12299265";
+        String title = "test-title中文标题";
+        String content = "test-content中文内容";
         System.out.println(SmartWeatherUtil.genDoc(url, title, content, "64485"));
 
     }
 
     //@Test
     public void testGetDocId() throws Exception {
-        String id = "2985601";
-        String url = "http://lc2.haproxy.yidian.com:9100/post/get-post";
+        String id = "86";
+        String url = "http://10.111.0.153:9901/post/get-post";
         System.out.println(SmartWeatherUtil.getDocId(url, id));
+    }
+
+    @Test
+    public void testGenDocAndGetDocIdThroughMedia() throws Exception {
+
     }
 }

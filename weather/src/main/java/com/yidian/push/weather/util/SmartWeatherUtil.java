@@ -65,6 +65,7 @@ public class SmartWeatherUtil {
      * @param requestConfig
      * @return generated doc id
      */
+    @Deprecated // this needs a different url for each newly doc
     public static String genDocAndGetDocId(String genUrl, String title, String content,
                                            String date, String uid, String source, String url,
                                            RequestConfig requestConfig) {
@@ -96,7 +97,16 @@ public class SmartWeatherUtil {
         return docId;
     }
 
-    public static String genDocAndGetDocIdThroughMedia(String genDocUrl, String title, String content, String mediaId, String getDocIdUrl) {
+    /**
+     *
+     * @param genDocUrl
+     * @param title
+     * @param content
+     * @param mediaId
+     * @param getDocIdUrl
+     * @return
+     */
+    public static String genDocAndGetDocIdThroughTinyPush(String genDocUrl, String title, String content, String mediaId, String getDocIdUrl) {
         String weMediaId = genDoc(genDocUrl, title, content, mediaId);
         String docId = getDocId(getDocIdUrl, weMediaId);
         return docId;
