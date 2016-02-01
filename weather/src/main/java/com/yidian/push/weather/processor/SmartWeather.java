@@ -106,7 +106,12 @@ public class SmartWeather {
 
     public void process() {
          while (!Thread.currentThread().isInterrupted()) {
-            task();
+             try {
+                 task();
+             } catch (Exception e) {
+                 // add try catch here to make the it works well
+                 log.error("run task failed with exception:" + ExceptionUtils.getFullStackTrace(e));
+             }
             try {
                 Thread.sleep(config.getRefreshIntervalInSeconds() * 1000);
             } catch (InterruptedException e) {
@@ -304,6 +309,9 @@ public class SmartWeather {
                     document.setDocId(docId);
                     cachedAlarmIdDocMapping.put(alarmId, document);
                     newlyIncomingAlarmIds.add(alarmId);
+                }
+                else {
+                    continue;
                 }
             }
             if (StringUtils.isNotEmpty(channel)) {
