@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 public class SmartWeatherUtilTest {
     // ignore the test , for it will generate the doc online .
 
-    @Test
+    //@Test
     // when run, generated doc will be like : http://www.yidianzixun.com/0CE5ScrP
     public void testGenDocAndGetDocId() throws Exception {
         String url = "http://10.101.0.150:9999/service/inject_self_news";
@@ -32,7 +32,7 @@ public class SmartWeatherUtilTest {
 
     }
 
-    //@Test
+   // @Test
     public void testGetDocId() throws Exception {
         String id = "86";
         String url = "http://10.111.0.153:9901/post/get-post";

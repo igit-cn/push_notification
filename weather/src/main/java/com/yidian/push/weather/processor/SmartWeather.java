@@ -107,7 +107,9 @@ public class SmartWeather {
     public void process() {
          while (!Thread.currentThread().isInterrupted()) {
              try {
+                 log.info("before task");
                  task();
+                 log.info("after task");
              } catch (Exception e) {
                  // add try catch here to make the it works well
                  log.error("run task failed with exception:" + ExceptionUtils.getFullStackTrace(e));
@@ -121,11 +123,18 @@ public class SmartWeather {
     }
 
     public void task() {
+        log.info("start task");
+        log.info("reset");
         reset();
+        log.info("get alarms");
         getAlarms();
+        log.info("gen docid ");
         generateDocIfNeeded();
+        log.info("push");
         push();
+        log.info("clean");
         cleanCache();
+        log.info("end task");
     }
 
     public boolean push() {
@@ -314,7 +323,7 @@ public class SmartWeather {
                     continue;
                 }
             }
-            if (StringUtils.isNotEmpty(channel)) {
+            if (StringUtils.isNotEmpty(channel) && cachedAlarmIdDocMapping.containsKey(alarmId)) {
                 cachedAlarmIdDocMapping.get(alarmId).addFromId(channel);
                 cachedAlarmIdDocMapping.get(alarmId).addArea(area, channel);
             } else {
