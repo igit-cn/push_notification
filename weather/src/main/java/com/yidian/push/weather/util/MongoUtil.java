@@ -126,8 +126,8 @@ public class MongoUtil {
                     tmpCounters = document.get("fromIdCounters", Map.class);
                 break;
             }
+            fromIdCounters.clear();
             if (tmpCounters != null && !tmpCounters.isEmpty()) {
-                fromIdCounters.clear();
                 fromIdCounters.putAll(tmpCounters);
             }
             succeed = true;
