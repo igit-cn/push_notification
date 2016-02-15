@@ -143,6 +143,7 @@ public class SmartWeather {
         }
         String day = DateTime.now().toString("yyyy-MM-dd");
         if (!MongoUtil.getFromIdPushCounter(day, todayFromIdPushedTimes) ) {
+            log.info("could not get counters from DB, and just skip push");
             return false;
         }
         for (String alarmId : newlyIncomingAlarmIds) {

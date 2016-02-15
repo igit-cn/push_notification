@@ -116,7 +116,7 @@ public class MongoUtil {
     }
 
     public static boolean getFromIdPushCounter(String day, Map<String, Integer> fromIdCounters) {
-        boolean succeed = true;
+        boolean succeed = false;
         try {
             MongoDatabase db = mongoClient.getDatabase(config.getMongoDBName());
             MongoCollection collection = db.getCollection(config.getMongoPushCounterCollName());
