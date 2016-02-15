@@ -32,9 +32,16 @@ public class Document {
     public Document(Alarm alarm) {
         this.alarm = alarm;
         this.alarmId = alarm.getId();
-        this.title = alarm.getProvince() + alarm.getCity() + alarm.getCounty()
-                + "气象台发布" + alarm.getCategoryName() + alarm.getLevelName()
-                + "预警";
+        if (StringUtils.isNotEmpty(alarm.getCity())) {
+            this.title = alarm.getCity() + alarm.getCounty()
+                    + "气象台发布" + alarm.getCategoryName() + alarm.getLevelName()
+                    + "预警";
+        }
+        else {
+            this.title = alarm.getProvince() + alarm.getCity() + alarm.getCounty()
+                    + "气象台发布" + alarm.getCategoryName() + alarm.getLevelName()
+                    + "预警";
+        }
         this.content = alarm.getContent();
         this.publishTime = alarm.getPublishTime();
     }
