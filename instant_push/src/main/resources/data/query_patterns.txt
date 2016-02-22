@@ -645,5 +645,8 @@ START_TAG sports
 (ttl:吉林 AND ttl:佛山) AND (-ttl:首节 AND -ttl:首节 AND -ttl:半场 AND -ttl:三节 AND -ttl:四节 AND -ttl:调查 AND -ttl:民调) AND (ttl:分 OR ttl:胜 OR ttl:负 OR ttl:败 OR ttl:连败 OR ttl:连胜 OR ttl:加时 OR ttl:横扫 OR ttl:痛宰 OR ttl:季后赛 OR ttl:晋级 OR ttl:双杀 OR ttl:"+") AND (cnt:吉林 AND cnt:佛山 AND cnt:节) AND (src:手机腾讯网 OR src:新浪体育 OR src:凤凰体育 OR src:虎扑 OR src:腾讯 OR src:新浪 OR src:凤凰网 OR src:虎扑 OR src:腾讯体育 OR src:虎扑足球)
 (ttl:天津 AND ttl:佛山) AND (-ttl:首节 AND -ttl:首节 AND -ttl:半场 AND -ttl:三节 AND -ttl:四节 AND -ttl:调查 AND -ttl:民调) AND (ttl:分 OR ttl:胜 OR ttl:负 OR ttl:败 OR ttl:连败 OR ttl:连胜 OR ttl:加时 OR ttl:横扫 OR ttl:痛宰 OR ttl:季后赛 OR ttl:晋级 OR ttl:双杀 OR ttl:"+") AND (cnt:天津 AND cnt:佛山 AND cnt:节) AND (src:手机腾讯网 OR src:新浪体育 OR src:凤凰体育 OR src:虎扑 OR src:腾讯 OR src:新浪 OR src:凤凰网 OR src:虎扑 OR src:腾讯体育 OR src:虎扑足球)
 END_TAG
+START_TAG cars
+(ttl:降价  AND ct:汽车) OR (ttl:上市  AND src:汽车之家) OR (ttl:试驾  AND src:汽车之家) OR (src:ams车评) OR (ttl:召回 AND src:盖世汽车网) OR (src:汽车行业关注 OR src:东拉西车 OR src:中国汽车画报 OR src:名车志Daily OR src:车业杂谈)
+END_TAG
 # end of sports
 # TODO: add more...
