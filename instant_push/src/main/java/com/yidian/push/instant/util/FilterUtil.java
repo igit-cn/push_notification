@@ -168,6 +168,7 @@ public class FilterUtil {
                 for (Query query : tagToQueryList.get(tag)) {
                     if (query.match(documentData)) {
                         DocChannelInfo matchedItem = docIdMapping.get(documentData.getDocid());
+                        matchedItem.setDocDate(documentData.getDate());
                         matchedItem.setMatchedQueryTag(tag);
                         matchedItem.setSrc(documentData.getDsource());
                         matchedList.add(matchedItem);

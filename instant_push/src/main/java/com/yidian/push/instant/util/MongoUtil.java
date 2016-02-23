@@ -86,6 +86,7 @@ public class MongoUtil {
             String day = new DateTime(DateTimeZone.UTC).toString("yyyy-MM-dd");
             String localDay = new DateTime().toString("yyyy-MM-dd");
             String insertTime = new DateTime(DateTimeZone.UTC).toString("yyyy-MM-dd HH:mm:ss");
+            String docDate = new DateTime(docChannelInfo.getDocDate(), DateTimeZone.UTC).toString("yyyy-MM-dd HH:mm:ss");
 
             Document queryDocument = new Document()
                     .append("_id", docChannelInfo.getDocId());
@@ -94,6 +95,7 @@ public class MongoUtil {
                     .append("modifiedAt", docChannelInfo.getModifiedAt())
                     .append("matchedQueryTag", docChannelInfo.getMatchedQueryTag())
                     .append("src", docChannelInfo.getSrc())
+                    .append("docDate", docDate)
                     .append("lastUpdateTime", insertTime);
             boolean foundChannel = false;
             for (Channel channel : docChannelInfo.getChannels()) {

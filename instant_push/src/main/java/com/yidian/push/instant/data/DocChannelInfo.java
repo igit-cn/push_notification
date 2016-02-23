@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,6 +29,7 @@ public class DocChannelInfo {
     private long modifiedAt = 0;
     private String matchedQueryTag = null;
     private String src = null;
+    private Date docDate = null;
 
 
     public List<Channel> getChannels() {
