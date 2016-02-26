@@ -7,6 +7,7 @@ import com.yidian.push.utils.GsonFactory;
 import com.yidian.serving.metrics.MetricsFactoryUtil;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.FileUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,11 @@ public class FilterThread extends Thread {
     private String queryFile = null;
     private List<Query> queryList;
     private Map<String, List<Query>> tagToQueries = null;
+    private long filterDocTimeInSeconds = Long.MAX_VALUE;
 
     public FilterThread(String name, BlockingQueue<String> docInfoStringQueue,
                         BlockingQueue<DocChannelInfo> docChannelInfoLinkedBlockingQueue,
-                        int fetchSize, String queryFile) {
+                        int fetchSize, String queryFile, long filterDocTimeInSeconds) {
         super(name);
         this.threadName = name;
         this.docInfoStringQueue = docInfoStringQueue;
@@ -39,6 +41,7 @@ public class FilterThread extends Thread {
         this.queryFile = queryFile;
         this.queryList = FilterUtil.loadQueries(this.queryFile);
         this.tagToQueries = FilterUtil.loadTagQueries(this.queryFile);
+        this.filterDocTimeInSeconds = filterDocTimeInSeconds;
     }
 
     @Override
@@ -66,7 +69,8 @@ public class FilterThread extends Thread {
                 }
             }
             List<DocChannelInfo> matchedList = FilterUtil.matchQueries(tagToQueries, docChannelInfoList);
-            for (DocChannelInfo docChannelInfo : matchedList) {
+            List<DocChannelInfo> filteredList = FilterUtil.filterByDocTime(matchedList, filterDocTimeInSeconds);
+            for (DocChannelInfo docChannelInfo : filteredList) {
                 docChannelInfoQueue.add(docChannelInfo);
                 MetricsFactoryUtil.getRegisteredFactory().getMeter(MATCHED_QPS).mark();
             }

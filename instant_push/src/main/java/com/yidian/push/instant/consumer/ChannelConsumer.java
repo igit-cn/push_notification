@@ -47,7 +47,8 @@ public class ChannelConsumer {
             String name = "channel_consumer-" + i;
             FilterThread thread = new FilterThread(name, docInfoStringQueue,
                     docChannelInfoQueue,
-                    fetchSize, queryFile);
+                    fetchSize, queryFile,
+                    config.getFilterDocTimeInSeconds());
             threadPool.add(thread);
             thread.start();
             log.info("start thread " + name);

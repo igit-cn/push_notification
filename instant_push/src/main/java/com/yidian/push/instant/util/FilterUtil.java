@@ -17,10 +17,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by tianyuzhi on 15/12/24.
@@ -179,5 +176,24 @@ public class FilterUtil {
             }
         }
         return matchedList;
+    }
+
+    public static List<DocChannelInfo> filterByDocTime(List<DocChannelInfo> docChannelInfoList, long filterDocTimeInSeconds) {
+        if (null == docChannelInfoList) {
+            return new ArrayList<>(0);
+        }
+        List<DocChannelInfo> res = new ArrayList<>(docChannelInfoList.size());
+        Date now = new Date();
+        for (DocChannelInfo docChannelInfo : docChannelInfoList) {
+            Date docDate = docChannelInfo.getDocDate();
+            long gapSeconds = (now.getTime() - docDate.getTime()) / 1000;
+            if (gapSeconds <= filterDocTimeInSeconds) {
+                res.add(docChannelInfo);
+            }
+            else {
+                log.info("FILTER_BY_DOC_TIME:" + docChannelInfo.getDocId());
+            }
+        }
+        return res;
     }
 }

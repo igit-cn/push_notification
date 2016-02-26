@@ -29,6 +29,7 @@ public class InstantPushConfig {
     private String opentsdbAddress = "http://dataplatform.yidian.com:4245/api/put";
     private Map<String, String> opentsdbTags = null;
     private double relevanceThreshold = 0.8;
+    private long filterDocTimeInSeconds = 86400;// 1 day
 
 
 
