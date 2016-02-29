@@ -334,7 +334,7 @@ public class SmartWeather {
         log.info("totally got " + newlyIncomingAlarmIds.size() + " new alarm(s)");
         for (String alarmId : newlyIncomingAlarmIds) {
             Document document = cachedAlarmIdDocMapping.get(alarmId);
-            log.info("insert doc into mongo, alarmId [" + alarmId + "], docId:[" + document.getDocId() );
+            log.info("insert doc into mongo, alarmId [" + alarmId + "], docId:[" + document.getDocId() + "]");
             MongoUtil.saveOrUpdateDocuments(Arrays.asList(document));
         }
         return true;
@@ -342,25 +342,52 @@ public class SmartWeather {
 
 
     public boolean shouldPush(String areaId, Alarm alarm) {
+        int localTime = new DateTime().getMinuteOfDay();
+        return shouldPush(areaId, alarm, localTime);
+    }
+
+    public boolean shouldPush(String areaId, Alarm alarm, int minOfDay) {
         String alarmLevel = alarm.getLevelId();
-        if (weather.isInGuangdong(areaId)) {
-            if (StringUtils.isNotEmpty(config.getAlarmGuangdongPushLevel())
-                    && config.getAlarmGuangdongPushLevel().compareTo(alarmLevel) <= 0) {
-                return true;
+        boolean shouldPush = false;
+        boolean isWest = weather.isWestAreaId(areaId);
+        boolean isInGuangDong = weather.isInGuangdong(areaId);
+
+        if (isWest) {
+            if (minOfDay >= config.getWestDayPushStartTimeInMinutes() && minOfDay < config.getWestDayPushEndTimeInMinutes()) {
+                shouldPush = isShouldPush(alarmLevel, config.getDayAlarmPushLevel());
             }
             else {
-                return false;
+                shouldPush = isShouldPush(alarmLevel, config.getNightAlarmPushLevel());
             }
         }
-        else {
-            if (StringUtils.isNotEmpty(config.getAlarmPushLevel())
-                    && config.getAlarmPushLevel().compareTo(alarmLevel) <= 0) {
-                return true;
+        else { // east
+            if (minOfDay >= config.getEastDayPushStartTimeInMinutes() && minOfDay < config.getEastDayPushEndTimeInMinutes()) {
+                if (isInGuangDong) {
+                    shouldPush = isShouldPush(alarmLevel, config.getDayAlarmGuangdongPushLevel());
+                } else {
+                    shouldPush = isShouldPush(alarmLevel, config.getDayAlarmPushLevel());
+                }
             }
             else {
-                return false;
+                if (isInGuangDong) {
+                    shouldPush = isShouldPush(alarmLevel, config.getNightAlarmGuangdongPushLevel());
+                } else {
+                    shouldPush = isShouldPush(alarmLevel, config.getNightAlarmPushLevel());
+                }
             }
         }
+        return shouldPush;
+    }
+
+    public static boolean isShouldPush(String alarmLevel, String thresholdAlarmLevel) {
+        boolean shouldPush;
+        if (StringUtils.isNotEmpty(thresholdAlarmLevel)
+                && thresholdAlarmLevel.compareTo(alarmLevel) <= 0) {
+            shouldPush = true;
+        } else {
+            shouldPush = false;
+        }
+        return shouldPush;
     }
 
 }

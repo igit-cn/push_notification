@@ -33,7 +33,8 @@
             "encoding": "UTF-8",
             "appId": "sjwz3i2zw1u5419n",
             "privateKey": "yidianzixun_data",
-            "url": "http://webapi.weather.com.cn/data/"
+            "url": "http://webapi.weather.com.cn/data/",
+            "westAreaIds": "101130101,101130201,101130301,101130401,101130501,101130601,101130701,101130801,101130901,101131001,101131101,101131201,101131301,101131401,101131501,101131601,101140101,101140201,101140301,101140401,101140501,101140601,101140701"
         },
         "refreshIntervalInSeconds": 600,
         "refreshFetchPoolSize": 20,
@@ -57,10 +58,15 @@
         "isDebug": false,
         "debugChannels": "u_faked",
         "dayPushThreshold": 1,
-
-        "alarmPushLevel": "03",
-        "alarmGuangdongPushLevel": "04",
         "socketConnectTimeout": 10,
-        "socketReadTimeout": 10
+        "socketReadTimeout": 3,
+        "dayAlarmPushLevel": "03",
+        "dayAlarmGuangdongPushLevel": "04",
+        "nightAlarmPushLevel": "04",
+        "nightAlarmGuangdongPushLevel": "05",
+        "eastDayPushStartTimeInMinutes": 420,
+        "eastDayPushEndTimeInMinutes": 1440,
+        "westDayPushStartTimeInMinutes": 480,
+        "westDayPushEndTimeInMinutes": 1440
     }
 }

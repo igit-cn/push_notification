@@ -12,11 +12,9 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.protocol.HTTP;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -48,6 +46,9 @@ public class Weather {
     private Map<String, String> idToGuangdongAlarmLevlMapping = new HashMap<>();
     private Map<String, String> idToGuangdongAreaMapping = new HashMap<>();
     private Map<String, String> guangdongAreaToIdMapping = new HashMap<>();
+    //xinjiang xizang areas
+    private Set<String> westAreaIds = new HashSet<>();
+
 
 
     private String macAlgorithmName = "HmacSHA1";
@@ -82,6 +83,8 @@ public class Weather {
         updateMapping(idToGuangdongAlarmCategoryMapping, guangdongAlarmCategoryToIdMapping, weatherConfig.getIdToGuangdongAlarmCategoryStr());
         updateMapping(idToGuangdongAlarmLevlMapping, guangdongAlarmLevelToIdMapping, weatherConfig.getIdToGuangdongAlarmLevelStr());
         updateMapping(idToGuangdongAreaMapping, guangdongAreaToIdMapping, weatherConfig.getIdToGuangdongAreaStr());
+
+        westAreaIds.addAll(Arrays.asList(StringUtils.split(weatherConfig.getWestAreaIds(), ",")));
 
 
         this.macAlgorithmName = weatherConfig.getMacAlgorithmName();
@@ -138,6 +141,9 @@ public class Weather {
     }
     public boolean isInGuangdong(String areaId) {
         return idToGuangdongAreaMapping.containsKey(areaId);
+    }
+    public boolean isWestAreaId(String areaId) {
+        return westAreaIds.contains(areaId);
     }
 
     public List<Alarm> getAreaAlarms(String area) throws IOException, UrlGenerationException {

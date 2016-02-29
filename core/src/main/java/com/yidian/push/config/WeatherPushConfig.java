@@ -55,11 +55,19 @@ public class WeatherPushConfig {
     private String debugChannels = "u_faked";
     private int dayPushThreshold = 1;
 
-    private String alarmPushLevel = "03";
-    private String alarmGuangdongPushLevel = "04";
-
     private int socketConnectTimeout = 10;
     private int socketReadTimeout = 3;
+
+    private String dayAlarmPushLevel = "03";
+    private String dayAlarmGuangdongPushLevel = "04";
+    private String nightAlarmPushLevel = "04";
+    private String nightAlarmGuangdongPushLevel = "05";
+    // add for protect time
+    private int eastDayPushStartTimeInMinutes = 7 * 60;
+    private int eastDayPushEndTimeInMinutes = 24 * 60;
+    private int westDayPushStartTimeInMinutes = 8 * 60;
+    private int westDayPushEndTimeInMinutes = 24 * 60;
+
 
     public RequestConfig getRequestConfig() {
         return RequestConfig.custom()
