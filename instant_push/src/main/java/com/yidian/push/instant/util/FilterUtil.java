@@ -9,6 +9,8 @@ import com.hipu.relevance.core.queryparser.ParseException;
 import com.hipu.relevance.core.queryparser.QueryParser;
 import com.yidian.push.instant.data.DocChannelInfo;
 import lombok.extern.log4j.Log4j;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -191,7 +193,9 @@ public class FilterUtil {
                 res.add(docChannelInfo);
             }
             else {
-                log.info("FILTER_BY_DOC_TIME:" + docChannelInfo.getDocId());
+                log.info("FILTER_BY_DOC_TIME:" + docChannelInfo.getDocId() + ",docDate["
+                        + new DateTime(docChannelInfo.getDocDate(), DateTimeZone.UTC).toString("yyyy-MM-dd HH:mm:ss")
+                + "],todayDate["+ new DateTime(DateTimeZone.UTC).toString("yyyy-MM-dd HH:mm:ss") +"]");
             }
         }
         return res;
