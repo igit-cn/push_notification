@@ -190,7 +190,9 @@ public class SmartWeatherUtil {
         return succeeded;
     }
 
-    public static boolean pushDocument(Document document, String pushUrl, String pushKey, String pushUserIds, String channels) {
+    public static boolean pushDocument(Document document, String pushUrl,
+                                       String pushKey, String pushUserIds,
+                                       String channels) {
         boolean succeeded = false;
         if (StringUtils.isEmpty(channels)) {
             succeeded = true;
@@ -201,23 +203,28 @@ public class SmartWeatherUtil {
             params.put("docid", document.getDocId());
             params.put("type", Arrays.asList("weather"));
             params.put("channel", channels);
+            succeeded = push(pushUrl, params);
+        }
+        return succeeded;
+    }
 
-            try {
-                String response = HttpConnectionUtils.getGetResult(pushUrl, params);
-                JSONObject jsonObject = JSONObject.parseObject(response);
-                if (jsonObject.containsKey("status") && SUCCESS.equals(jsonObject.getString("status"))) {
-                    log.info(GsonFactory.getNonPrettyGson().toJson(document) + " push succeeded");
-                    succeeded = true;
-                } else {
-                    succeeded = false;
-                    log.error(GsonFactory.getNonPrettyGson().toJson(document) + " push failed with reason:"
-                            + jsonObject.getString("reason"));
-                }
-            } catch (IOException e) {
-                log.error(GsonFactory.getNonPrettyGson().toJson(document) + " push failed with reason:"
-                        + ExceptionUtils.getFullStackTrace(e));
+    public static boolean push(String pushUrl, Map<String, Object> params) {
+        boolean succeeded;
+        try {
+            String response = HttpConnectionUtils.getGetResult(pushUrl, params);
+            JSONObject jsonObject = JSONObject.parseObject(response);
+            if (jsonObject.containsKey("status") && SUCCESS.equals(jsonObject.getString("status"))) {
+                log.info(GsonFactory.getNonPrettyGson().toJson(params) + " push succeeded");
+                succeeded = true;
+            } else {
                 succeeded = false;
+                log.error(GsonFactory.getNonPrettyGson().toJson(params) + " push failed with reason:"
+                        + jsonObject.getString("reason"));
             }
+        } catch (IOException e) {
+            log.error(GsonFactory.getNonPrettyGson().toJson(params) + " push failed with reason:"
+                    + ExceptionUtils.getFullStackTrace(e));
+            succeeded = false;
         }
         return succeeded;
     }

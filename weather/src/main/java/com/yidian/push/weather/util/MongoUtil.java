@@ -5,6 +5,7 @@ import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.yidian.push.utils.GsonFactory;
 import com.yidian.push.weather.data.Alarm;
+import com.yidian.push.weather.data.Sound;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -61,6 +62,7 @@ public class MongoUtil {
                 doc.setContent(document.getString("content"));
                 doc.setPublishTime(document.getString("publishTime"));
                 doc.setShouldPush(document.getBoolean("shouldPush", false));
+                doc.setSound(Sound.getSound(document.getString("sound")));
                 doc.setPushed(document.getBoolean("pushed", true));
                 doc.setFromIdPushed(document.get("fromIdPushed", Map.class));
                 doc.setAreas(document.get("areas", Map.class));
@@ -98,6 +100,7 @@ public class MongoUtil {
                         .append("content", doc.getContent())
                         .append("publishTime", doc.getPublishTime())
                         .append("shouldPush", doc.isShouldPush())
+                        .append("sound", doc.getSound().toString())
                         .append("pushed", doc.isPushed())
                         .append("fromIdPushed", doc.getFromIdPushed())
                         .append("areas", doc.getAreas())

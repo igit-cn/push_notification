@@ -51,6 +51,7 @@ public class WeatherPushConfig {
     private String pushUrl = "http://lc1.haproxy.yidian.com:8703/push/add_task.php";
     private String pushKey = "2c6875aa781253ce445c450fd08e066e";
     private String pushUserIds = "auto";
+    private int pushProtectTime = -1;
     private boolean isDebug = true;
     private String debugChannels = "u_faked";
     private int dayPushThreshold = 1;

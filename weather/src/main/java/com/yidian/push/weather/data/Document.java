@@ -22,6 +22,7 @@ public class Document {
     private String content;
     private String publishTime;
     private boolean shouldPush = false;
+    private Sound sound = Sound.NO_SOUND;
     private boolean pushed = false;
     private Map<String, Boolean> fromIdPushed = new HashMap<>();
     private Map<String, String> areas = new HashMap<>();

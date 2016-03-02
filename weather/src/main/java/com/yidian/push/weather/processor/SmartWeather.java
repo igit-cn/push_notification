@@ -3,10 +3,7 @@ package com.yidian.push.weather.processor;
 import com.yidian.push.config.Config;
 import com.yidian.push.config.WeatherPushConfig;
 import com.yidian.push.utils.GsonFactory;
-import com.yidian.push.weather.data.Alarm;
-import com.yidian.push.weather.data.Document;
-import com.yidian.push.weather.data.Pair;
-import com.yidian.push.weather.data.Weather;
+import com.yidian.push.weather.data.*;
 import com.yidian.push.weather.util.MongoUtil;
 import com.yidian.push.weather.util.SmartWeatherUtil;
 import lombok.Getter;
@@ -41,6 +38,7 @@ public class SmartWeather {
     private volatile Map<String, String> areaIdToChannel = new HashMap<>();
 
     private volatile static SmartWeather singleton;
+
     public static SmartWeather getInstance() {
         if (singleton == null) {
             synchronized (SmartWeather.class) {
@@ -105,15 +103,15 @@ public class SmartWeather {
 
 
     public void process() {
-         while (!Thread.currentThread().isInterrupted()) {
-             try {
-                 log.info("before task");
-                 task();
-                 log.info("after task");
-             } catch (Exception e) {
-                 // add try catch here to make the it works well
-                 log.error("run task failed with exception:" + ExceptionUtils.getFullStackTrace(e));
-             }
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                log.info("before task");
+                task();
+                log.info("after task");
+            } catch (Exception e) {
+                // add try catch here to make the it works well
+                log.error("run task failed with exception:" + ExceptionUtils.getFullStackTrace(e));
+            }
             try {
                 Thread.sleep(config.getRefreshIntervalInSeconds() * 1000);
             } catch (InterruptedException e) {
@@ -142,7 +140,7 @@ public class SmartWeather {
             return true;
         }
         String day = DateTime.now().toString("yyyy-MM-dd");
-        if (!MongoUtil.getFromIdPushCounter(day, todayFromIdPushedTimes) ) {
+        if (!MongoUtil.getFromIdPushCounter(day, todayFromIdPushedTimes)) {
             log.info("could not get counters from DB, and just skip push");
             return false;
         }
@@ -156,8 +154,7 @@ public class SmartWeather {
                 document.markFromIdAsPushed(channels);
                 todayFromIdPushedTimes.put(channels, todayFromIdPushedTimes.getOrDefault(channels, 0) + 1);
                 document.markAsPushed();
-            }
-            else if (document.isShouldPush() && !document.isPushed()) {
+            } else if (document.isShouldPush() && !document.isPushed()) {
                 log.info("try to push document: " + GsonFactory.getDefaultGson().toJson(document));
                 pushDocument(document);
             }
@@ -186,8 +183,7 @@ public class SmartWeather {
                 if (curPushCount < config.getDayPushThreshold()) {
                     channelList.add(channel);
                     todayFromIdPushedTimes.put(channel, curPushCount + 1);
-                }
-                else {
+                } else {
                     log.info("filter channel[" + channel + "] due to threshold.");
                 }
             }
@@ -198,9 +194,13 @@ public class SmartWeather {
         }
 
         String channels = StringUtils.join(channelList, ",");
-        boolean pushed = SmartWeatherUtil.pushDocument(document,
-                config.getPushUrl(), config.getPushKey(),
-                config.getPushUserIds(), channels);
+        Map<String, Object> params = new HashMap<>();
+        params.put("key", config.getPushKey());
+        params.put("userids", config.getPushUserIds());
+        params.put("docid", document.getDocId());
+        params.put("type", Arrays.asList("weather"));
+        params.put("channel", channels);
+        boolean pushed = SmartWeatherUtil.push(config.getPushUrl(), params);
         if (pushed) {
             for (String channel : channelList) {
                 document.markFromIdAsPushed(channel);
@@ -258,8 +258,7 @@ public class SmartWeather {
                 DateTime publishTime;
                 if (publishDate.length() == 16) {
                     publishTime = DateTime.parse(publishDate, format1);
-                }
-                else {
+                } else {
                     publishTime = DateTime.parse(publishDate, format2);
                 }
                 if (publishTime.isBefore(timeToClean)) {
@@ -307,7 +306,9 @@ public class SmartWeather {
             if (!docGenerated) {
                 Document document = new Document(alarm);
                 boolean shouldPush = shouldPush(areaId, alarm);
+                Sound sound = getSound(areaId);
                 document.setShouldPush(shouldPush);
+                document.setSound(sound);
                 String docId = SmartWeatherUtil.genDocAndGetDocIdThroughTinyPush(
                         config.getGenDocUrl(),
                         document.getTitle(),
@@ -319,8 +320,7 @@ public class SmartWeather {
                     document.setDocId(docId);
                     cachedAlarmIdDocMapping.put(alarmId, document);
                     newlyIncomingAlarmIds.add(alarmId);
-                }
-                else {
+                } else {
                     continue;
                 }
             }
@@ -355,20 +355,17 @@ public class SmartWeather {
         if (isWest) {
             if (minOfDay >= config.getWestDayPushStartTimeInMinutes() && minOfDay < config.getWestDayPushEndTimeInMinutes()) {
                 shouldPush = isShouldPush(alarmLevel, config.getDayAlarmPushLevel());
-            }
-            else {
+            } else {
                 shouldPush = isShouldPush(alarmLevel, config.getNightAlarmPushLevel());
             }
-        }
-        else { // east
+        } else { // east
             if (minOfDay >= config.getEastDayPushStartTimeInMinutes() && minOfDay < config.getEastDayPushEndTimeInMinutes()) {
                 if (isInGuangDong) {
                     shouldPush = isShouldPush(alarmLevel, config.getDayAlarmGuangdongPushLevel());
                 } else {
                     shouldPush = isShouldPush(alarmLevel, config.getDayAlarmPushLevel());
                 }
-            }
-            else {
+            } else {
                 if (isInGuangDong) {
                     shouldPush = isShouldPush(alarmLevel, config.getNightAlarmGuangdongPushLevel());
                 } else {
@@ -388,6 +385,31 @@ public class SmartWeather {
             shouldPush = false;
         }
         return shouldPush;
+    }
+
+    public Sound getSound(String areaId) {
+        int localTime = new DateTime().getMinuteOfDay();
+        return getSound(areaId, localTime);
+    }
+
+    public Sound getSound(String areaId, int minOfDay) {
+        Sound sound;
+        boolean isWest = weather.isWestAreaId(areaId);
+
+        if (isWest) {
+            if (minOfDay >= config.getWestDayPushStartTimeInMinutes() && minOfDay < config.getWestDayPushEndTimeInMinutes()) {
+                sound = Sound.SOUND;
+            } else {
+                sound = Sound.NO_SOUND;;
+            }
+        } else { // east
+            if (minOfDay >= config.getEastDayPushStartTimeInMinutes() && minOfDay < config.getEastDayPushEndTimeInMinutes()) {
+                sound = Sound.SOUND;
+            } else {
+                sound = Sound.NO_SOUND;;
+            }
+        }
+        return sound;
     }
 
 }
