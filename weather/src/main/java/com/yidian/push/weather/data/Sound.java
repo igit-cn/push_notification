@@ -1,5 +1,7 @@
 package com.yidian.push.weather.data;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Created by tianyuzhi on 16/3/1.
  */
@@ -18,7 +20,10 @@ public enum Sound {
     }
 
     public static Sound getSound(String soundStr) {
-        Sound sound = Sound.valueOf(soundStr);
+        Sound sound = null;
+        if (StringUtils.isNotEmpty(soundStr)) {
+            sound = Sound.valueOf(soundStr);
+        }
         if (null == sound) {
             sound = NO_SOUND;
         }
