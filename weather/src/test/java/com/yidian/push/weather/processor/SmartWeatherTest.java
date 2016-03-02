@@ -21,7 +21,7 @@ public class SmartWeatherTest {
     @Test
     public void isShouldPush2() {
         System.out.println(System.getProperty("user.dir"));
-        Config.setCONFIG_FILE("weather/src/main/resources/config/config.json");
+        Config.setCONFIG_FILE("src/main/resources/config/config.json");
         SmartWeather smartWeather = SmartWeather.getInstance();
         Alarm alarm = new Alarm();
         String areaId = "101130101";//乌鲁木齐
