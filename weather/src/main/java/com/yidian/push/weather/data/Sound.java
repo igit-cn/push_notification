@@ -2,6 +2,9 @@ package com.yidian.push.weather.data;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by tianyuzhi on 16/3/1.
  */
@@ -19,11 +22,15 @@ public enum Sound {
         return name;
     }
 
-    public static Sound getSound(String soundStr) {
-        Sound sound = null;
-        if (StringUtils.isNotEmpty(soundStr)) {
-            sound = Sound.valueOf(soundStr);
+    private static Map<String, Sound> stringSoundMap = new HashMap<>();
+    static {
+        for (Sound sound : Sound.values()) {
+            stringSoundMap.put(sound.name, sound);
         }
+    }
+
+    public static Sound getSound(String soundStr) {
+        Sound sound = stringSoundMap.get(soundStr);
         if (null == sound) {
             sound = NO_SOUND;
         }
