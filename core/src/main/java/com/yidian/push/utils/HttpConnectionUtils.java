@@ -3,6 +3,8 @@ package com.yidian.push.utils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.Charsets;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
