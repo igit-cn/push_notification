@@ -36,7 +36,7 @@ public class SmartWeatherTest {
 
         areaId = "101010100"; //北京
         alarm.setLevelId("03");
-        assert !smartWeather.shouldPush(areaId, alarm, 360);
+        assert smartWeather.shouldPush(areaId, alarm, 360);
         alarm.setLevelId("04");
         assert smartWeather.shouldPush(areaId, alarm, 360);
         alarm.setLevelId("03");
@@ -46,7 +46,7 @@ public class SmartWeatherTest {
 
         areaId = "101280101"; //广州
         alarm.setLevelId("04");
-        assert !smartWeather.shouldPush(areaId, alarm, 350);
+        assert smartWeather.shouldPush(areaId, alarm, 350);
         alarm.setLevelId("05");
         assert smartWeather.shouldPush(areaId, alarm, 350);
         alarm.setLevelId("04");
