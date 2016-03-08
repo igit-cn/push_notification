@@ -32,6 +32,6 @@
             "component": "push_notification"
         },
         "relevanceThreshold": 0.8,
-        "filterDocTimeInSeconds": 86400
+        "filterDocTimeInSeconds": 166400
     }
 }

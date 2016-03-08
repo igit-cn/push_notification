@@ -162,17 +162,16 @@ public class FilterUtil {
         List<DocumentData> documentDataList = DocDAO.getInstance().getDocuments(docIdMapping.keySet());
         for (DocumentData documentData : documentDataList) {
             log.info("FILTER docid:" + documentData.getDocid());
-            found_matched:
             for (String tag : tagToQueryList.keySet()) {
                 for (Query query : tagToQueryList.get(tag)) {
                     if (query.match(documentData)) {
                         DocChannelInfo matchedItem = docIdMapping.get(documentData.getDocid());
                         matchedItem.setDocDate(documentData.getDate());
-                        matchedItem.setMatchedQueryTag(tag);
+                        matchedItem.addTag(tag);
                         matchedItem.setSrc(documentData.getDsource());
                         matchedList.add(matchedItem);
-                        log.info("MATCHED:" + documentData.getDocid());
-                        break found_matched;
+                        log.info(tag + " MATCHED:" + documentData.getDocid());
+                        break;
                     }
                 }
             }

@@ -4,9 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by tianyuzhi on 15/12/24.
@@ -14,6 +12,7 @@ import java.util.List;
 @Setter
 @Getter
 public class DocChannelInfo {
+
     /*
     {"docid":"0Beo8Sjb",
     "channels":[{"signature":"6cc4a0e87b2cd8a1411b5d8c688c2d6c","name":"保定","fromId":"u751","r":0.46035966835312947,"score":0.330924391746521},
@@ -27,9 +26,16 @@ public class DocChannelInfo {
     private String docId = null;
     private List<Channel> channels = null;
     private long modifiedAt = 0;
-    private String matchedQueryTag = null;
+    private Map<String, String> matchedQueryTags = null;
     private String src = null;
     private Date docDate = null;
+
+    public void addTag(String tag) {
+        if (matchedQueryTags == null) {
+            matchedQueryTags = new HashMap<>();
+        }
+        matchedQueryTags.put(tag, "1");
+    }
 
 
     public List<Channel> getChannels() {

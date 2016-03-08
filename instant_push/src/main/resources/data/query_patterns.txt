@@ -651,5 +651,8 @@ END_TAG
 START_TAG local_news
 (ttl:成都 OR cnt:成都 OR ttl:自贡 OR cnt:自贡 OR ttl:攀枝花 OR cnt:攀枝花 OR ttl:德阳 OR cnt:德阳 OR ttl:绵阳 OR cnt:绵阳 OR ttl:广元 OR cnt:广元 OR ttl:遂宁 OR cnt:遂宁 OR ttl:内江 OR cnt:内江 OR ttl:乐山 OR cnt:乐山 OR ttl:南充 OR cnt:南充 OR ttl:眉山 OR cnt:眉山 OR ttl:宜宾 OR cnt:宜宾 OR ttl:广安 OR cnt:广安 OR ttl:达州 OR cnt:达州 OR ttl:雅安 OR cnt:雅安 OR ttl:巴中 OR cnt:巴中 OR ttl:资阳 OR cnt:资阳 OR ttl:泸州 OR cnt:泸州 OR ttl:甘孜 OR cnt:甘孜 OR ttl:凉山 OR cnt:凉山 OR ttl:阿坝 OR cnt:阿坝) AND (src:四川新闻网 OR src:旅游四川 OR src:天府早报 OR src:四川日报网 OR src:四川新闻网 OR src:成都商报 OR src:四川广播电视台 OR src:四川在线 OR src:华西都市报 OR src:四川在线 OR src:新浪四川 OR src:人民网―四川频道 OR src:成都晚报 OR src:成都日报 OR src:四川省人民政府 OR src:四川省人事厅考试中心 OR src:四川法制报 OR src:四川经济网 OR src:四川共青团 OR src:腾讯大成网 OR src:国际在线四川频道 OR src:四川法制报 OR src:成都房帮帮 OR src:成都房产 OR src:成都商报房产 OR src:四川高考 OR src:四川旅游在线 OR src:四川旅游生活广播 OR src:四川旅游耍耍帮 OR src:成都自助旅游 OR src:旅游四川 OR src:印象四川 OR src:成都美食街 OR src:成都美食搜索 OR src:成都美食团 OR src:成都美食小吃 OR src:成都美食搜 OR src:成都美食榜 OR src:成都美食 OR src:成都美食全搜索 OR src:四川气象 OR src:成都汽车 OR src:泸州新闻网 OR src:成都圈搜索新闻网 OR src:南充经济网 OR src:成都工商 OR src:成都人社局 OR src:四川发布 OR src:成都交通运输 OR src:成都发展改革 OR src:四川交通广播 OR src:成都同城会 OR src:联播成都 OR src:看四川 OR src:成都绿色播报 OR src:四川食药监 OR src:四川卫生计生 OR src:微成都 OR src:四川画报 OR src:四川共青团 OR src:成都教育 OR src:泸州新闻 OR src:四川发布 OR src:大泸州网 OR src:泸州圈子 OR src:泸州日报 OR src:泸州那点事 OR src:泸州交通 OR src:泸州资讯 OR src:绵阳味道 OR src:绵阳全搜索 OR src:绵阳吃住行 OR src:德阳全搜索 OR src:内江第一城 OR src:大千社区 OR src:新三江周刊 OR src:成都头条 OR src:大乐山 OR src:新乐山 OR src:青春成都 OR src:华西社区报 OR src:文明成都)
 END_TAG
+START_TAG da6
+(da:[6 TO 6])
+END_TAG
 # end of sports
 # TODO: add more...0

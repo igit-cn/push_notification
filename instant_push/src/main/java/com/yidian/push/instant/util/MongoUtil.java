@@ -1,7 +1,5 @@
 package com.yidian.push.instant.util;
 
-import com.google.gson.Gson;
-import com.mongodb.InsertOptions;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -93,10 +91,15 @@ public class MongoUtil {
 
             Document updateDocument = new Document()
                     .append("modifiedAt", docChannelInfo.getModifiedAt())
-                    .append("matchedQueryTag", docChannelInfo.getMatchedQueryTag())
                     .append("src", docChannelInfo.getSrc())
                     .append("docDate", docDate)
                     .append("lastUpdateTime", insertTime);
+            if (null != docChannelInfo.getMatchedQueryTags()) {
+                Map<String, String> map = docChannelInfo.getMatchedQueryTags();
+                for (String tag : map.keySet()) {
+                    updateDocument.append("matchedQueryTags." + tag, map.getOrDefault(tag, "1"));
+                }
+            }
             boolean foundChannel = false;
             for (Channel channel : docChannelInfo.getChannels()) {
                 if (channel.getRelevance() < config.getRelevanceThreshold()) {
