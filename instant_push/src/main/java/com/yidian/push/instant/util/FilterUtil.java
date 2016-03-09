@@ -168,7 +168,8 @@ public class FilterUtil {
                         DocChannelInfo matchedItem = docIdMapping.get(documentData.getDocid());
                         matchedItem.setDocDate(documentData.getDate());
                         matchedItem.addTag(tag);
-                        matchedItem.setSrc(documentData.getDsource());
+                        matchedItem.setSrc(documentData.getSource());
+                        matchedItem.setDSource(documentData.getDsource());
                         matchedList.add(matchedItem);
                         log.info(tag + " MATCHED:" + documentData.getDocid());
                         break;

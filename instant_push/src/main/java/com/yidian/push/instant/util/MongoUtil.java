@@ -92,6 +92,7 @@ public class MongoUtil {
             Document updateDocument = new Document()
                     .append("modifiedAt", docChannelInfo.getModifiedAt())
                     .append("src", docChannelInfo.getSrc())
+                    .append("dSource", docChannelInfo.getDSource())
                     .append("docDate", docDate)
                     .append("lastUpdateTime", insertTime);
             if (null != docChannelInfo.getMatchedQueryTags()) {

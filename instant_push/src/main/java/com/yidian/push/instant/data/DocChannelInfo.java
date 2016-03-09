@@ -28,6 +28,7 @@ public class DocChannelInfo {
     private long modifiedAt = 0;
     private Map<String, String> matchedQueryTags = null;
     private String src = null;
+    private String dSource = null;
     private Date docDate = null;
 
     public void addTag(String tag) {
