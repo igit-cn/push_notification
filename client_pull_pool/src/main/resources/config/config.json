@@ -11,8 +11,8 @@
         "jettyMinThreads": 50,
         "jettyMaxThreads": 100,
         "jettyMaxFormContentSize": 20971520,
-        "docInfoURL": "http://a1.go2yd.com/Website/contents/content";
-        "newsPoolURL": "http://pandora.yidian-inc.com/tools/newspool/getlist";
+        "docInfoURL": "http://a1.go2yd.com/Website/contents/content",
+        "newsPoolURL": "http://pandora.yidian-inc.com/tools/newspool/getlist",
         "newsPoolBatch": 100,
         "newsPoolInitSize": 1000,
         "newsMaxPoolSize": 10000,

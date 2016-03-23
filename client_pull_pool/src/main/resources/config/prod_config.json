@@ -5,15 +5,15 @@
     "clientPullPoolConfig" : {
         "lockFile" : "/tmp/push_notification_client_pull_pool.lck",
         "hostPortList" : [
-            {"host": "localhost", "port": 9090},
-            {"host": "10.101.2.1", "port": 9090}
+            {"host": "localhost", "port": 7070},
+            {"host": "10.101.2.1", "port": 7070}
         ],
         "httpsHostPortList" : [],
         "jettyMinThreads": 50,
         "jettyMaxThreads": 100,
         "jettyMaxFormContentSize": 20971520,
-        "docInfoURL": "http://a1.go2yd.com/Website/contents/content";
-        "newsPoolURL": "http://pandora.yidian-inc.com/tools/newspool/getlist";
+        "docInfoURL": "http://a1.go2yd.com/Website/contents/content",
+        "newsPoolURL": "http://pandora.yidian-inc.com/tools/newspool/getlist",
         "newsPoolBatch": 100,
         "newsPoolInitSize": 1000,
         "newsMaxPoolSize": 10000,
