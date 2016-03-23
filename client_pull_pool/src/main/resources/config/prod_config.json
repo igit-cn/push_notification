@@ -5,7 +5,8 @@
     "clientPullPoolConfig" : {
         "lockFile" : "/tmp/push_notification_client_pull_pool.lck",
         "hostPortList" : [
-            {"host": "localhost", "port": 5266}
+            {"host": "localhost", "port": 9090},
+            {"host": "10.101.2.1", "port": 9090}
         ],
         "httpsHostPortList" : [],
         "jettyMinThreads": 50,
