@@ -1,0 +1,26 @@
+{
+    "lockFile" : "/tmp/push_notification_client_pull_pool.lck",
+    "pushRequestBaseDir" : "/home/services/tianzy/test_generator/requests",
+    "requestBaseDir" : "/home/services/tianzy/test_generator/task",
+    "clientPullPoolConfig" : {
+        "lockFile" : "/tmp/push_notification_client_pull_pool.lck",
+        "hostPortList" : [
+            {"host": "localhost", "port": 5266}
+        ],
+        "httpsHostPortList" : [],
+        "jettyMinThreads": 50,
+        "jettyMaxThreads": 100,
+        "jettyMaxFormContentSize": 20971520,
+        "docInfoURL": "http://a1.go2yd.com/Website/contents/content";
+        "newsPoolURL": "http://pandora.yidian-inc.com/tools/newspool/getlist";
+        "newsPoolBatch": 100,
+        "newsPoolInitSize": 1000,
+        "newsMaxPoolSize": 10000,
+        "refreshPeriodInSeconds": 60,
+        "socketConnectTimeoutInSeconds": 10,
+        "socketReadTimeoutInSeconds": 3,
+        "userNewsSize": 5,
+        "logRetainDays": 5,
+        "writeAccessLog": true
+    }
+}
