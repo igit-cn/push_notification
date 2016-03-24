@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by tianyuzhi on 16/1/20.
@@ -29,20 +26,27 @@ public class Document {
 
     public Document(){}
 
-
     public Document(Alarm alarm) {
         this.alarm = alarm;
         this.alarmId = alarm.getId();
+        List<String> contents = null;
         if (StringUtils.isNotEmpty(alarm.getCity())) {
-            this.title = alarm.getCity() + alarm.getCounty()
-                    + "气象台发布" + alarm.getCategoryName() + alarm.getLevelName()
-                    + "预警";
+            if (StringUtils.equals(alarm.getCity(), alarm.getCounty())) {
+                contents = Arrays.asList(alarm.getCity(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName() );
+            }
+            else {
+                contents = Arrays.asList(alarm.getCity(), alarm.getCounty(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName() );
+            }
         }
         else {
-            this.title = alarm.getProvince() + alarm.getCity() + alarm.getCounty()
-                    + "气象台发布" + alarm.getCategoryName() + alarm.getLevelName()
-                    + "预警";
+            if (StringUtils.equals(alarm.getProvince(), alarm.getCounty())) {
+                contents = Arrays.asList(alarm.getProvince(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName() );
+            }
+            else {
+                contents = Arrays.asList(alarm.getProvince(), alarm.getCounty(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName() );
+            }
         }
+        this.title = StringUtils.join(contents, "");
         this.content = alarm.getContent();
         this.publishTime = alarm.getPublishTime();
     }

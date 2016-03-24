@@ -29,4 +29,25 @@ public class DocumentTest {
         assert document.getTitle().contains("province");
     }
 
+    @Test
+    public void testDocumentTitle() {
+        Alarm alarm = new Alarm();
+        alarm.setProvince("province");
+        alarm.setCity("same");
+        alarm.setCounty("same");
+        alarm.setContent("content");
+        Document document = new Document(alarm);
+        assert 0 == document.getTitle().indexOf("same", 0);
+        assert -1 == document.getTitle().indexOf("same", 2);
+
+        alarm = new Alarm();
+        alarm.setProvince("same");
+        alarm.setCity("");
+        alarm.setCounty("same");
+        alarm.setContent("content");
+        document = new Document(alarm);
+        assert 0 == document.getTitle().indexOf("same", 0);
+        assert -1 == document.getTitle().indexOf("same", 2);
+    }
+
 }
