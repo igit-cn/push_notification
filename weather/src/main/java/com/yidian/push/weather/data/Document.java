@@ -12,6 +12,8 @@ import java.util.*;
 @Getter
 @Setter
 public class Document {
+    private static final String WARNING = "预警";
+
     private Alarm alarm;
     private String alarmId;
     private String docId;
@@ -32,18 +34,18 @@ public class Document {
         List<String> contents = null;
         if (StringUtils.isNotEmpty(alarm.getCity())) {
             if (StringUtils.equals(alarm.getCity(), alarm.getCounty())) {
-                contents = Arrays.asList(alarm.getCity(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName() );
+                contents = Arrays.asList(alarm.getCity(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName(), WARNING );
             }
             else {
-                contents = Arrays.asList(alarm.getCity(), alarm.getCounty(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName() );
+                contents = Arrays.asList(alarm.getCity(), alarm.getCounty(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName(), WARNING );
             }
         }
         else {
             if (StringUtils.equals(alarm.getProvince(), alarm.getCounty())) {
-                contents = Arrays.asList(alarm.getProvince(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName() );
+                contents = Arrays.asList(alarm.getProvince(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName(), WARNING );
             }
             else {
-                contents = Arrays.asList(alarm.getProvince(), alarm.getCounty(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName() );
+                contents = Arrays.asList(alarm.getProvince(), alarm.getCounty(), "气象台发布", alarm.getCategoryName(), alarm.getLevelName(), WARNING );
             }
         }
         this.title = StringUtils.join(contents, "");
